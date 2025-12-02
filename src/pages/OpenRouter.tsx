@@ -1,5 +1,5 @@
 // src/pages/OpenRouter.tsx
-import { useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { createParser, EventSourceParserEvent } from 'eventsource-parser';
 import {
     Box,
@@ -33,7 +33,8 @@ import {
   ContentCopyOutlined,
   SettingsOutlined
 } from '@mui/icons-material';
-import { format } from 'date-fns';
+import { format, max, set } from 'date-fns';
+import { on } from 'events';
 
 // Define types
 interface Conversation {
@@ -84,6 +85,14 @@ interface ModelPricing {
     per_request_limits: ModelLimits;
   }
 
+  function displayTokenCost(tokens: number): string {
+    if(tokens < 1000000) {
+      return `${(tokens / 1000).toFixed(0)}K`;
+    } else {
+      return `${(tokens / 1000000).toFixed(0)}M`;
+    }
+  }
+
 const OpenRouterComponent = () => {
   // State for tabs
   const [tabValue, setTabValue] = useState(0);
@@ -91,6 +100,10 @@ const OpenRouterComponent = () => {
     // Add new state for models
     const [availableModels, setAvailableModels] = useState<OpenRouterModel[]>([]);
     const [isLoadingModels, setIsLoadingModels] = useState(false);
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const promptRef = useRef<HTMLTextAreaElement | null>(null);
+    const selectRef = useRef<HTMLSelectElement | null>(null);
 
     // Helper function to check if a model is free
     const isModelFree = (model: OpenRouterModel): boolean => {
@@ -149,7 +162,8 @@ const OpenRouterComponent = () => {
   const apiKey = process.env.ZUZU_OPENROUTER_KEY;
   const [prompt, setPrompt] = useState("");
   const [results, setResults] = useState("");
-  const [model, setModel] = useState("openrouter/quasar-alpha");
+  const [model, setModel] = useState("");
+  const [modelObject, setModelObject] = useState<OpenRouterModel | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [apiKeyError, setApiKeyError] = useState<string | null>(null);
   const [messages, setMessages] = useState<Array<{role: string, content: string}>>([]);
@@ -158,7 +172,7 @@ const OpenRouterComponent = () => {
   // State for advanced parameters
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [temperature, setTemperature] = useState(0.7);
-  const [maxTokens, setMaxTokens] = useState(1000);
+  const [maxTokens, setMaxTokens] = useState(2000000);
   const [systemMessage, setSystemMessage] = useState("");
   
   // State for conversation history
@@ -626,18 +640,18 @@ const OpenRouterComponent = () => {
                   <Slider
                     value={maxTokens}
                     onChange={(_, value) => setMaxTokens(value as number)}
-                    min={100}
-                    max={4000}
-                    step={100}
+                    min={maxTokens/1000}
+                    max={maxTokens}
+                    step={maxTokens/1000}
                     valueLabelDisplay="auto"
                     marks={[
-                      { value: 100, label: '100' },
-                      { value: 2000, label: '2000' },
-                      { value: 4000, label: '4000' }
+                      { value: maxTokens/1000, label: displayTokenCost(maxTokens/1000) },
+                      { value: maxTokens/2, label: displayTokenCost(maxTokens/2) },
+                      { value: maxTokens, label: displayTokenCost(maxTokens) }
                     ]}
                   />
                   <Typography variant="caption" color="text.secondary">
-                    Maximum length of the generated response
+                    Maximum length of the context (in tokens) the model can handle
                   </Typography>
                 </Grid>
               </Grid>
@@ -652,19 +666,24 @@ const OpenRouterComponent = () => {
         onChange={(e) => setPrompt(e.target.value)}
         placeholder="Enter your prompt here..."
         fullWidth
+        inputRef={promptRef}
     />
     
     <FormControl fullWidth>
       <InputLabel id="model-select-label">Model</InputLabel>
       <Select
+        inputRef={selectRef}
         labelId="model-select-label"
         value={model}
         label="Model"
-        onChange={(e) => setModel(e.target.value)}
         renderValue={(selected) => {
-          const selectedModel = availableModels.find(m => m.id === selected);
-          return selectedModel ? selectedModel.name : selected;
+         // if(selected !== model){
+            console.log('Rendering selected model:', selected);
+            const selectedModel = availableModels.find(m => m.id === selected);
+            return selectedModel ? selectedModel.name : selected;
+          // }
         }}
+        onClose={() => { console.log('Model select closed'); }}
       >
         {isLoadingModels ? (
           <MenuItem disabled>
@@ -680,8 +699,15 @@ const OpenRouterComponent = () => {
               .filter(model => isModelFree(model))
               .map((modelOption) => (
                 <MenuItem 
-                  key={modelOption.id} 
+                  key={modelOption.id}
                   value={modelOption.id}
+                  onClick={(event) => {
+                    console.log('Menu - selected free model:', modelOption.id);
+                    let modelSelectedModel = availableModels.find(m => m.id === modelOption.id);
+                    setMaxTokens(modelSelectedModel ? modelSelectedModel.context_length : 2000000);
+                    setModel(modelOption.id);
+                    setModelObject(modelSelectedModel || null);
+                  }}
                 >
                   <Box sx={{ width: '100%' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -759,7 +785,26 @@ const OpenRouterComponent = () => {
         )}
       </Select>
     </FormControl>
-    
+    {/* display selected model details */}
+    {modelObject && (
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="h6">{modelObject.id}</Typography>
+        <Typography variant="body2" gutterBottom>{modelObject.description}</Typography>
+        <Typography variant="body2">
+          <b>Pricing:</b> Prompt - ${(Number(modelObject.pricing.prompt) * 100).toFixed(6)}¢ per token, Completion - ${(Number(modelObject.pricing.completion) * 100).toFixed(6)}¢ per token
+        </Typography>
+        <Typography variant="body2">
+          <b>Input Modalities:</b> {modelObject.architecture.input_modalities.join(', ')}
+        </Typography>
+        <Typography variant="body2">
+          <b>Output Modalities:</b> {modelObject.architecture.output_modalities.join(', ')}
+        </Typography>
+        <Typography variant="body2">
+          <b>Context Length:</b> {maxTokens.toLocaleString()} tokens
+        </Typography>
+      </Box>
+    )}
+
     <Box sx={{ display: 'flex', gap: 2 }}>
         <Button 
             variant="contained" 

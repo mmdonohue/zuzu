@@ -1,4 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
+// set env vars
+console.log('process.env.SUPABASE_URL:', process.env.SUPABASE_URL ? 'Loaded' : 'Not Loaded');
+console.log('process.env.SUPABASE_KEY:', process.env.SUPABASE_KEY ? 'Loaded' : 'Not Loaded');
 // Initialize Supabase client (replace these with your actual Supabase credentials)
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_KEY || "";

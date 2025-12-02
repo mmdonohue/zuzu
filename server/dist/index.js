@@ -46,7 +46,7 @@ app.use((err, req, res, next) => {
 });
 // Start the server
 app.listen(PORT, () => {
-    console.log('/********************************* SERVER *********************************************/');
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log('/********************************* SERVER *********************************************/');
+    console.log('/********************************* SERVER *********************************************/\n');
+    console.log(`Server running on http://localhost:${PORT}\n`);
+    console.log('/********************************* SERVER *********************************************/\n');
 });
