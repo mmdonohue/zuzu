@@ -1,5 +1,4 @@
 // server/services/supabase.ts
-import dotenv from 'dotenv';
 // set env vars
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });

@@ -1,53 +1,120 @@
-import dotenv from 'dotenv';
-// set env vars
-dotenv.config();
-import { fileURLToPath } from 'url';
-import path from 'path';
+// server/index.ts
 import express from 'express';
 import cors from 'cors';
-import {default as apiRoutes} from './routes/api.js';
-import {default as openRouterRoutes} from './routes/openrouter.js';
+import morgan from 'morgan';
+import fs from 'fs';
+import path from 'path';
+import apiRoutes from './routes/api.js';
+import openRouterRoutes from './routes/openrouter.js';
+import logRoutes from './routes/logs.js';
+import { logger, httpLogger } from './config/logger.js';
 
+const currDir = path.resolve();
 
-/*
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-console.log('Current directory:', __dirname);
-console.log('Looking for routes in:', path.join(__dirname, 'routes', 'api.js'));
-*/
-
+console.log('Current directory:', currDir);
+console.log('Looking for routes in:', path.join(currDir, 'routes', 'api.js'));
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.set('trust proxy', true);
+
+// Ensure logs directory exists at project root
+const logsDir = path.join(process.cwd(), 'logs');
+console.log('Logs directory path:', logsDir);
+
+if (!fs.existsSync(logsDir)) {
+  console.log('Creating logs directory...');
+  fs.mkdirSync(logsDir, { recursive: true });
+  console.log('Logs directory created');
+} else {
+  console.log('Logs directory already exists');
+}
+
+// Morgan logger setup - custom format that outputs to log4js
+
+morgan.token('real-ip', (req) => {
+  // Check various headers for the real client IP
+  return req.headers['x-forwarded-for'] as string || 
+         req.headers['x-real-ip'] as string || 
+         req.socket.remoteAddress || 
+         'unknown';
+});
+
+app.use(morgan(
+  ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" - :response-time ms',
+  {
+    stream: {
+      write: (message: string) => {
+        httpLogger.info(message.trim());
+      }
+    }
+  }
+));
 
 // Middleware
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+  'http://localhost:3000',
+  'https://zuzu-frontend.onrender.com', // Your Render frontend URL
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000', // Allow your frontend origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  const realIp = req.headers['x-forwarded-for'] || 
+                 req.headers['x-real-ip'] || 
+                 req.socket.remoteAddress || 
+                 req.ip;
+                 
+  logger.info(`${req.method} ${req.path}`, {
+    ip: realIp,
+    query: req.query,
+    headers: {
+      'x-forwarded-for': req.headers['x-forwarded-for'],
+      'x-real-ip': req.headers['x-real-ip']
+    }
+  });
+  next();
+});
 
 // Routes
 app.use('/api', apiRoutes);
 app.use('/api/openrouter', openRouterRoutes);
+app.use('/api/logs', logRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  logger.info('Health check requested');
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // 404 handler
 app.use((req, res) => {
+  logger.warn(`404 - Route not found: ${req.method} ${req.path}`);
   res.status(404).json({ message: 'Route not found' });
 });
 
 // Error handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Server error:', err);
+  logger.error('Server error:', err);
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
   
@@ -60,7 +127,13 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 // Start the server
 app.listen(PORT, () => {
-  console.log('/********************************* SERVER *********************************************/\n')
-  console.log(`Server running on http://localhost:${PORT}\n`);
-  console.log('/********************************* SERVER *********************************************/\n')
+  console.log('/********************************* SERVER *********************************************/');
+  logger.info(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log('/********************************* SERVER *********************************************/');
+    // Test that logging is working
+  logger.info('Test log entry - server started successfully');
+  logger.warn('Test warning log');
+  logger.error('Test error log');
 });
+
