@@ -1,4 +1,5 @@
 # ZuZu
+<img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/a7fc82ea-07df-4ad1-9eac-4a13fd57291c" />
 
 ZuZu is a scaffold application for practicing integration of different tech stacks with a React JavaScript demo site.
 
