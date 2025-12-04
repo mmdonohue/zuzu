@@ -35,7 +35,7 @@ const App: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/openrouter" element={<OpenRouterComponent />} /> {/* Add the new route */}
-          <Route path="/logs" element={<Logs />} /> {/* Add the logs route */}
+          <Route path="/logs" element={<Logs />} />
         </Routes>
       </Container>
       <Footer />
