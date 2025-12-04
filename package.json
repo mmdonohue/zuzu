@@ -10,7 +10,7 @@
     "test": "cypress run",
     "test:open": "cypress open",
     "server": "ts-node --esm server/index.ts",
-    "build:server": "cd server && tsc -p tsconfig.json",
+    "build:server": "cd server && npm install && tsc -p tsconfig.json",
     "server:dev": "ts-node --esm server/index.ts",
     "server:start": "node server/dist/index.js",
     "dev:server": "npm run build:server && npm run server:start",
