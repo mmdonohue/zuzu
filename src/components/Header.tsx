@@ -35,6 +35,7 @@ const pages = [
   { name: 'About', path: '/about' },
   { name: 'Dashboard', path: '/dashboard' },
   { name: 'OpenRouter', path: '/openrouter' }, 
+  { name: 'Logs', path: '/logs' }, // Add this
 ];
 const settings = ['Profile', 'Account', 'Logout'];
 

@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Dashboard from './pages/Dashboard';
 import OpenRouterComponent from './pages/OpenRouter';
+import Logs from './pages/Logs';
 
 
 const App: React.FC = () => {
@@ -34,6 +35,7 @@ const App: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/openrouter" element={<OpenRouterComponent />} /> {/* Add the new route */}
+          <Route path="/logs" element={<Logs />} /> {/* Add the logs route */}
         </Routes>
       </Container>
       <Footer />

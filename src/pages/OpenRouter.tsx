@@ -1,5 +1,5 @@
 // src/pages/OpenRouter.tsx
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, SyntheticEvent } from 'react';
 import { createParser, EventSourceParserEvent } from 'eventsource-parser';
 import {
     Box,
@@ -104,6 +104,14 @@ const OpenRouterComponent = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const promptRef = useRef<HTMLTextAreaElement | null>(null);
     const selectRef = useRef<HTMLSelectElement | null>(null);
+
+    const handleMenuOpen = (event: SyntheticEvent<Element>) => {
+        setAnchorEl(event.currentTarget as HTMLElement);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
 
     // Helper function to check if a model is free
     const isModelFree = (model: OpenRouterModel): boolean => {
@@ -638,6 +646,7 @@ const OpenRouterComponent = () => {
                 <Grid item xs={12} sm={6}>
                   <Typography variant="body2" gutterBottom>Max Tokens: {maxTokens}</Typography>
                   <Slider
+                    sx={{ mb: 2 }}
                     value={maxTokens}
                     onChange={(_, value) => setMaxTokens(value as number)}
                     min={maxTokens/1000}
@@ -683,7 +692,12 @@ const OpenRouterComponent = () => {
             return selectedModel ? selectedModel.name : selected;
           // }
         }}
-        onClose={() => { console.log('Model select closed'); }}
+        onClose={() => { console.log('Model select closed'); 
+            handleMenuClose(); }}
+        onOpen={(event) => { 
+            console.log('Model select opened'); 
+            handleMenuOpen(event);
+        }}
       >
         {isLoadingModels ? (
           <MenuItem disabled>
@@ -707,6 +721,7 @@ const OpenRouterComponent = () => {
                     setMaxTokens(modelSelectedModel ? modelSelectedModel.context_length : 2000000);
                     setModel(modelOption.id);
                     setModelObject(modelSelectedModel || null);
+                    handleMenuClose();
                   }}
                 >
                   <Box sx={{ width: '100%' }}>
