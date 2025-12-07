@@ -167,7 +167,7 @@ const OpenRouterComponent = () => {
     }, []);
   
   // State for OpenRouter API
-  const apiKey = process.env.ZUZU_OPENROUTER_KEY;
+  const apiKey = process.env.REACT_APP_ZUZU_OPENROUTER_KEY;
   const [prompt, setPrompt] = useState("");
   const [results, setResults] = useState("");
   const [model, setModel] = useState("");
