@@ -7,6 +7,7 @@
   "scripts": {
     "start": "webpack serve --config webpack.config.cjs --mode development --no-devtool --open",
     "build": "webpack --config webpack.config.cjs --mode production --no-devtool",
+    "serve": "serve -s dist -l ${PORT:-3000}",
     "test": "cypress run",
     "test:open": "cypress open",
     "server": "ts-node --esm server/index.ts",
