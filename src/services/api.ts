@@ -1,7 +1,9 @@
 // API service for making requests to the backend
 
+import { API_CONFIG } from '../config/api';
+
 // Base API URL
-const API_URL =  '/api';
+const API_URL =  `${API_CONFIG.baseURL}/api`;
 
 // Helper for handling response status
 const handleResponse = async (response: Response) => {
