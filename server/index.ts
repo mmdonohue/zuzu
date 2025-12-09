@@ -54,10 +54,21 @@ app.use(morgan(
 ));
 
 // Middleware
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
-  'http://localhost:3000',
-  'https://zuzu-frontend.onrender.com', // Your Render frontend URL
-];
+// Build allowed origins list
+const allowedOrigins: string[] = ['http://localhost:3000'];
+
+// Add production frontend URL if set
+if (process.env.PRODUCTION_FRONTEND_URL) {
+  allowedOrigins.push(process.env.PRODUCTION_FRONTEND_URL);
+}
+
+// Add any additional origins from ALLOWED_ORIGINS
+if (process.env.ALLOWED_ORIGINS) {
+  const additionalOrigins = process.env.ALLOWED_ORIGINS.split(',')
+    .map(origin => origin.trim())
+    .filter(origin => origin.length > 0);
+  allowedOrigins.push(...additionalOrigins);
+}
 
 app.use(cors({
   origin: (origin, callback) => {

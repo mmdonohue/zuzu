@@ -58,18 +58,28 @@ const Home: React.FC<appProps> = ({message}) => {
     setShowModal(false);
   }
 
-  const technologies = [
-    { name: 'React', description: 'A JavaScript library for building user interfaces' },
-    { name: 'MUI', description: 'React components for faster and easier web development' },
-    { name: 'TypeScript', description: 'A typed superset of JavaScript that compiles to plain JavaScript' },
-    { name: 'Redux', description: 'A predictable state container for JavaScript apps' },
-    { name: 'Tailwind CSS', description: 'A utility-first CSS framework' },
-    { name: 'Webpack', description: 'A static module bundler for modern JavaScript applications' },
-    { name: 'Express', description: 'Fast, unopinionated, minimalist web framework for Node.js' },
-    { name: 'TanStack Query', description: 'Powerful asynchronous state management for React' },
-    { name: 'Cypress', description: 'JavaScript End to End Testing Framework' },
-    { name: 'Supabase', description: 'The open source Firebase alternative' },
-  ];
+  const frontendTech = [
+  { name: 'React', description: 'A JavaScript library for building user interfaces' },
+  { name: 'MUI', description: 'React components for faster and easier web development' },
+  { name: 'TypeScript', description: 'A typed superset of JavaScript that compiles to plain JavaScript' },
+  { name: 'Redux', description: 'A predictable state container for JavaScript apps' },
+  { name: 'Tailwind CSS', description: 'A utility-first CSS framework' },
+  { name: 'TanStack Query', description: 'Powerful asynchronous state management for React' },
+];
+
+const backendTech = [
+  { name: 'Express', description: 'Fast, unopinionated, minimalist web framework for Node.js' },
+  { name: 'log4js', description: 'Logging framework for Node.js applications' },
+  { name: 'Morgan', description: 'HTTP request logger middleware for Node.js' },
+  { name: 'Supabase', description: 'The open source Firebase alternative' },
+   { name: 'OpenRouter', description: 'Unified API for accessing multiple AI models with streaming support' },
+];
+
+const devTools = [
+  { name: 'Webpack', description: 'A static module bundler for modern JavaScript applications' },
+  { name: 'Cypress', description: 'JavaScript End to End Testing Framework' },
+  { name: 'TypeScript', description: 'A typed superset of JavaScript that compiles to plain JavaScript' },
+];
 
   return (
     <Box>
@@ -184,11 +194,12 @@ const Home: React.FC<appProps> = ({message}) => {
       </Paper>
 
       {/* Technologies grid */}
-      <Typography variant="h4" component="h2" gutterBottom sx={{ mb: 4 }}>
-        Integrated Technologies
+     <Box>
+      <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+        Frontend Technologies
       </Typography>
-      <Grid container spacing={3}>
-        {technologies.map((tech) => (
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {frontendTech.map((tech) => (
           <Grid item xs={12} sm={6} md={4} key={tech.name}>
             <Card className="h-full hover:shadow-md transition-shadow">
               <CardContent>
@@ -203,6 +214,47 @@ const Home: React.FC<appProps> = ({message}) => {
           </Grid>
         ))}
       </Grid>
+
+      <Typography variant="h5" gutterBottom>
+        Backend Technologies
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {backendTech.map((tech) => (
+          <Grid item xs={12} sm={6} md={4} key={tech.name}>
+            <Card className="h-full hover:shadow-md transition-shadow">
+              <CardContent>
+                <Typography variant="h6" component="h3" gutterBottom>
+                  {tech.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {tech.description}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      <Typography variant="h5" gutterBottom>
+        Development Tools
+      </Typography>
+      <Grid container spacing={3}>
+        {devTools.map((tech) => (
+          <Grid item xs={12} sm={6} md={4} key={tech.name}>
+            <Card className="h-full hover:shadow-md transition-shadow">
+              <CardContent>
+                <Typography variant="h6" component="h3" gutterBottom>
+                  {tech.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {tech.description}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
     </Box>
   );
 };

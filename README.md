@@ -45,10 +45,33 @@ This project integrates the following technologies:
    npm install
    ```
 
-3. Configure Supabase
-   - Create a Supabase project at [supabase.com](https://supabase.com)
-   - Copy your Supabase URL and anon key
-   - Update the values in `src/services/supabase.ts`
+3. Set up environment variables
+
+   **Frontend configuration:**
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+   ```
+
+   Edit `.env` and add your credentials:
+   - `REACT_APP_SUPABASE_URL`: Your Supabase project URL (get from [supabase.com](https://supabase.com))
+   - `REACT_APP_SUPABASE_KEY`: Your Supabase anon key
+   - `REACT_APP_ZUZU_OPENROUTER_KEY`: Your OpenRouter API key (get from [openrouter.ai/keys](https://openrouter.ai/keys))
+   - `REACT_APP_PRODUCTION`: Your production frontend URL (optional, for production deployments)
+
+   **Backend configuration:**
+   ```bash
+   # Copy the example file
+   cp server/.env.example server/.env
+   ```
+
+   Edit `server/.env` and add your credentials:
+   - `SUPABASE_URL`: Your Supabase project URL
+   - `SUPABASE_KEY`: Your Supabase service role key (⚠️ keep this secret!)
+   - `ZUZU_OPENROUTER_KEY`: Your OpenRouter API key
+   - `PORT`: Server port (default: 5000)
+   - `PRODUCTION_FRONTEND_URL`: Your production frontend URL (automatically added to CORS allowed origins)
+   - `ALLOWED_ORIGINS`: Additional allowed CORS origins (optional, comma-separated)
 
 ### Running the Application
 
