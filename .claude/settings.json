@@ -1,0 +1,77 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(openssl rand:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run build:server:*)",
+      "Bash(tsc:*)",
+      "Bash(/usr/bin/say:*)",
+      "Bash(say:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'USER PROMPT RECEIVED' && /usr/bin/say 'prompt received' -v Zarvox"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is online and ready for your command' -v Zarvox"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is going offline, goodbye' -v Zarvox"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is requesting additional permissions' -v Zarvox"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is ready for your command' -v Zarvox"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is finished' -v Zarvox && claude-code /usage"
+          }
+        ]
+      }
+    ]
+  }
+}

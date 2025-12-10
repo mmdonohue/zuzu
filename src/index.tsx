@@ -9,6 +9,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import App from './App';
 import { store } from './store';
+import { AuthProvider } from './context/AuthContext';
 import './styles/globals.css';
 
 // Create a client for TanStack Query
@@ -56,7 +57,9 @@ root.render(
         <BrowserRouter>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <App />
+            <AuthProvider>
+              <App />
+            </AuthProvider>
           </ThemeProvider>
         </BrowserRouter>
         <ReactQueryDevtools initialIsOpen={false} />

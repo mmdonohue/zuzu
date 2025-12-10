@@ -17,29 +17,30 @@ console.log('Log file will be written to:', logFilePath);
 
 log4js.configure({
   appenders: {
-    console: { 
-      type: 'console' 
+    console: {
+      type: 'console'
     },
     file: {
       type: 'file',
       filename: logFilePath,
       maxLogSize: 10485760, // 10MB
       backups: 5,
-      compress: true
+      compress: true,
+      layout: { type: 'json' }
     }
   },
   categories: {
-    default: { 
-      appenders: ['console', 'file'], 
-      level: 'info' 
+    default: {
+      appenders: ['console', 'file'],
+      level: 'info'
     },
-    http: { 
-      appenders: ['console', 'file'], 
-      level: 'info' 
+    http: {
+      appenders: ['console', 'file'],
+      level: 'info'
     },
-    error: { 
-      appenders: ['console', 'file'], 
-      level: 'error' 
+    error: {
+      appenders: ['console', 'file'],
+      level: 'error'
     }
   }
 });

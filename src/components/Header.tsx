@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -19,6 +19,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
 
 import logo from '../assets/img/zuzu-logo.png';
+import { useAuth } from '@/context/AuthContext';
 
 function Logo() {
   return (
@@ -30,20 +31,26 @@ function Logo() {
   );
 }
 
-const pages = [
+const publicPages = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
-  { name: 'Dashboard', path: '/dashboard' },
-  { name: 'OpenRouter', path: '/openrouter' }, 
-  { name: 'Logs', path: '/logs' }, // Add this
 ];
-const settings = ['Profile', 'Account', 'Logout'];
+
+const protectedPages = [
+  { name: 'Dashboard', path: '/dashboard' },
+  { name: 'OpenRouter', path: '/openrouter' },
+  { name: 'Logs', path: '/logs' },
+];
 
 const Header: React.FC = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const pages = isAuthenticated ? [...publicPages, ...protectedPages] : publicPages;
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -58,6 +65,28 @@ const Header: React.FC = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleSettingClick = async (setting: string) => {
+    handleCloseUserMenu();
+
+    switch (setting) {
+      case 'Account':
+        navigate('/account');
+        break;
+      case 'Logout':
+        await logout();
+        navigate('/');
+        break;
+      case 'Login':
+        navigate('/login');
+        break;
+      case 'Sign Up':
+        navigate('/signup');
+        break;
+      default:
+        break;
+    }
   };
 
 
@@ -160,35 +189,58 @@ const Header: React.FC = () => {
 
           {/* User menu */}
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                  <PersonIcon />
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+            {isAuthenticated ? (
+              <>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                      {user?.firstName?.[0]?.toUpperCase() || <PersonIcon />}
+                    </Avatar>
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <MenuItem onClick={() => handleSettingClick('Account')}>
+                    <Typography textAlign="center">Account</Typography>
+                  </MenuItem>
+                  <MenuItem onClick={() => handleSettingClick('Logout')}>
+                    <Typography textAlign="center">Logout</Typography>
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Button
+                  component={RouterLink}
+                  to="/login"
+                  sx={{ color: 'white', mr: 1 }}
+                >
+                  Login
+                </Button>
+                <Button
+                  component={RouterLink}
+                  to="/signup"
+                  variant="outlined"
+                  sx={{ color: 'white', borderColor: 'white' }}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
           </Box>
         </Toolbar>
       </Container>

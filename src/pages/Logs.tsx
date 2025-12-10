@@ -28,7 +28,9 @@ import {
   DeleteOutlined,
   FilterListOutlined,
   DownloadOutlined,
-  ExpandMoreOutlined
+  ExpandMoreOutlined,
+  KeyboardArrowDownOutlined,
+  KeyboardArrowRightOutlined
 } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
 
@@ -163,29 +165,45 @@ const Logs: React.FC = () => {
   // Define columns for DataGrid
   const columns: GridColDef[] = [
     {
+      field: 'expand',
+      headerName: '',
+      width: 50,
+      sortable: false,
+      filterable: false,
+      renderCell: (params: GridRenderCellParams) => (
+        <IconButton
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedLog(params.row);
+          }}
+          disabled={!params.row.data}
+        >
+          <KeyboardArrowRightOutlined fontSize="small" />
+        </IconButton>
+      )
+    },
+    {
         field: 'timestamp',
         headerName: 'Timestamp',
         width: 180,
-        valueFormatter: (params) => {
-        if (!params) {
-            console.log('No timestamp value', params);
+        valueFormatter: (value) => {
+        if (!value) {
             return 'N/A';
         }
-        
+
         try {
-            console.log('Formatting timestamp:', params);
             // Parse the ISO string first
-            const date = parseISO(params as string);
+            const date = parseISO(value);
 
             if (isNaN(date.getTime())) {
-            console.log('Invalid date:', params);
             return 'Invalid Date';
             }
-            
+
             return format(date, 'MMM d, HH:mm:ss');
         } catch (error) {
-            console.error('Error formatting timestamp:', error, params);
-            return params;
+            console.error('Error formatting timestamp:', error, value);
+            return String(value);
         }
         }
     },
@@ -222,22 +240,29 @@ const Logs: React.FC = () => {
       headerName: 'Category',
       width: 120
     },
-    { field: 'ip', headerName: 'IP Address', width: 130,
-        renderCell: (params: GridRenderCellParams) => (
-          <Typography sx={{ fontSize: '0.875rem' }}>
-            {params.value['id'] || 'N/A'}
-          </Typography>
-        )
-    },
     {
       field: 'message',
       headerName: 'Message',
       flex: 1,
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography sx={{ fontSize: '0.875rem' }}>
-          {params.value}
-        </Typography>
-      )
+      renderCell: (params: GridRenderCellParams) => {
+        const hasData = params.row.data && Object.keys(params.row.data).length > 0;
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+            <Typography sx={{ fontSize: '0.875rem', flex: 1 }}>
+              {params.value}
+            </Typography>
+            {hasData && (
+              <Chip
+                size="small"
+                label="JSON"
+                color="primary"
+                variant="outlined"
+                sx={{ fontSize: '0.7rem', height: '20px' }}
+              />
+            )}
+          </Box>
+        );
+      }
     }
   ];
   
@@ -444,47 +469,76 @@ const Logs: React.FC = () => {
         </Paper>
       )}
       {selectedLog && (
-        <Dialog open={!!selectedLog} onClose={() => setSelectedLog(null)} maxWidth="md" fullWidth>
-            <DialogTitle>Log Details</DialogTitle>
-            <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box>
-                <Typography variant="caption" color="text.secondary">Timestamp</Typography>
-                <Typography variant="body2">{selectedLog.timestamp}</Typography>
-                </Box>
-                <Box>
-                <Typography variant="caption" color="text.secondary">IP Address</Typography>
-                <Typography variant="body2">{selectedLog.ip}</Typography>
-                </Box>
-                <Box>
-                <Typography variant="caption" color="text.secondary">Level</Typography>
-                <Typography variant="body2">{selectedLog.level}</Typography>
-                </Box>
-                <Box>
-                <Typography variant="caption" color="text.secondary">Category</Typography>
-                <Typography variant="body2">{selectedLog.category}</Typography>
-                </Box>
-                <Box>
-                <Typography variant="caption" color="text.secondary">Message</Typography>
-                <Typography variant="body2">{selectedLog.message}</Typography>
-                </Box>
-                {selectedLog.data && (
-                <Box>
-                    <Typography variant="caption" color="text.secondary">Additional Data</Typography>
-                    <Paper sx={{ p: 2, bgcolor: 'grey.100', mt: 1 }}>
-                    <pre style={{ margin: 0, fontSize: '0.8rem' }}>
-                        {JSON.stringify(selectedLog.data, null, 2)}
-                    </pre>
-                    </Paper>
-                </Box>
-                )}
+        <Dialog open={!!selectedLog} onClose={() => setSelectedLog(null)} maxWidth="lg" fullWidth>
+          <DialogTitle>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6">Log Entry Details</Typography>
+              <Chip
+                size="small"
+                label={selectedLog.level}
+                color={getLevelColor(selectedLog.level) as any}
+              />
             </Box>
-            </DialogContent>
-            <DialogActions>
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="caption" color="text.secondary">Timestamp</Typography>
+                  <Typography variant="body2" fontFamily="monospace">
+                    {selectedLog.timestamp}
+                  </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Typography variant="caption" color="text.secondary">IP Address</Typography>
+                  <Typography variant="body2" fontFamily="monospace">
+                    {selectedLog.ip === '::1' ? 'localhost' : selectedLog.ip}
+                  </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Typography variant="caption" color="text.secondary">Category</Typography>
+                  <Typography variant="body2">{selectedLog.category}</Typography>
+                </Grid>
+              </Grid>
+
+              <Box>
+                <Typography variant="caption" color="text.secondary">Message</Typography>
+                <Typography variant="body1" sx={{ mt: 0.5 }}>
+                  {selectedLog.message}
+                </Typography>
+              </Box>
+
+              {selectedLog.data && Object.keys(selectedLog.data).length > 0 && (
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                    JSON Data
+                  </Typography>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      bgcolor: '#1e1e1e',
+                      color: '#d4d4d4',
+                      overflow: 'auto',
+                      maxHeight: '400px'
+                    }}
+                  >
+                    <pre style={{
+                      margin: 0,
+                      fontSize: '0.85rem',
+                      fontFamily: 'Consolas, Monaco, "Courier New", monospace'
+                    }}>
+                      {JSON.stringify(selectedLog.data, null, 2)}
+                    </pre>
+                  </Paper>
+                </Box>
+              )}
+            </Box>
+          </DialogContent>
+          <DialogActions>
             <Button onClick={() => setSelectedLog(null)}>Close</Button>
-            </DialogActions>
+          </DialogActions>
         </Dialog>
-        )}
+      )}
     </Box>
   );
 };

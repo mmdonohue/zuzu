@@ -60,6 +60,10 @@ module.exports = {
       favicon: './public/favicon.ico'
     }),
   ],
+  experiments: {
+      asyncWebAssembly: true,
+      layers: true,
+  },
   devServer: {
     historyApiFallback: true,
     port: 3000,

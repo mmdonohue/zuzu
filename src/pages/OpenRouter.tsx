@@ -1,6 +1,7 @@
 // src/pages/OpenRouter.tsx
 import { useRef, useEffect, useState, SyntheticEvent } from 'react';
 import { createParser, EventSourceParserEvent } from 'eventsource-parser';
+import { get_encoding, encoding_for_model, Tiktoken, TiktokenModel } from "tiktoken";
 import {
     Box,
     Button,
@@ -35,6 +36,8 @@ import {
 } from '@mui/icons-material';
 import { format, max, set } from 'date-fns';
 import { on } from 'events';
+import { useAuth } from '@/context/AuthContext';
+import { apiFetch } from '@/utils/api';
 
 // Define types
 interface Conversation {
@@ -44,6 +47,9 @@ interface Conversation {
   prompt: string;
   response: string;
   response_time: number;
+  user_id?: string;
+  first_name?: string;
+  last_name?: string;
   active: boolean;
 }
 
@@ -94,6 +100,9 @@ interface ModelPricing {
   }
 
 const OpenRouterComponent = () => {
+  // Get current user from auth context
+  const { user } = useAuth();
+
   // State for tabs
   const [tabValue, setTabValue] = useState(0);
 
@@ -104,6 +113,8 @@ const OpenRouterComponent = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const promptRef = useRef<HTMLTextAreaElement | null>(null);
     const selectRef = useRef<HTMLSelectElement | null>(null);
+
+
 
     const handleMenuOpen = (event: SyntheticEvent<Element>) => {
         setAnchorEl(event.currentTarget as HTMLElement);
@@ -176,6 +187,7 @@ const OpenRouterComponent = () => {
   const [apiKeyError, setApiKeyError] = useState<string | null>(null);
   const [messages, setMessages] = useState<Array<{role: string, content: string}>>([]);
   const [controller, setController] = useState<AbortController | null>(null);
+  const [promptTokens, setPromptTokens] = useState<number>(0);
   
   // State for advanced parameters
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -187,47 +199,95 @@ const OpenRouterComponent = () => {
   const [historyTimeframe, setHistoryTimeframe] = useState<'day' | 'week'>('day');
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-  
+    
+  // update tokens
+  // const tokens = encoding.encode(prompt);
+
   // Define columns for DataGrid
   const columns: GridColDef[] = [
-    { 
-      field: 'created', 
-      headerName: 'Date', 
-      width: 180,
-      valueFormatter: (params: any) => {
-        return format(new Date(params.value), 'MMM d, yyyy h:mm a');
+    {
+      field: 'created',
+      headerName: 'Date',
+      width: 170,
+      valueFormatter: (value: any) => {
+        if (!value) return 'N/A';
+        try {
+          return format(new Date(value), 'MMM d, yyyy h:mm a');
+        } catch (error) {
+          console.error('Error formatting date:', error, value);
+          return String(value);
+        }
       }
     },
-    { 
-      field: 'model', 
-      headerName: 'Model', 
-      width: 200,
+    {
+      field: 'user_id',
+      headerName: 'User',
+      width: 130,
+      renderCell: (params: GridRenderCellParams) => {
+        const firstName = params.row.first_name;
+        const lastName = params.row.last_name;
+        const userId = params.value;
+
+        // Display full name if available, otherwise show user_id
+        const displayText = (firstName && lastName)
+          ? `${firstName} ${lastName}`
+          : userId || 'N/A';
+
+        return (
+          <Typography sx={{ fontSize: '0.875rem' }}>
+            {displayText}
+          </Typography>
+        );
+      }
+    },
+    {
+      field: 'model',
+      headerName: 'Model',
+      width: 180,
       renderCell: (params: GridRenderCellParams) => {
         const modelName = params.value.split('/').pop();
         return <Chip size="small" label={modelName} />;
       }
     },
-    { 
-      field: 'prompt', 
-      headerName: 'Prompt', 
+    {
+      field: 'prompt',
+      headerName: 'Prompt',
+      width: 230,
+      renderCell: (params: GridRenderCellParams) => {
+        const text = params.value as string;
+        return (
+          <Tooltip title={text} placement="top">
+            <Typography>{text.length > 60 ? text.substring(0, 60) + '...' : text}</Typography>
+          </Tooltip>
+        );
+      }
+    },
+    {
+      field: 'response',
+      headerName: 'Response',
+      width: 320,
       flex: 1,
       renderCell: (params: GridRenderCellParams) => {
         const text = params.value as string;
-        return <Typography>{text.length > 60 ? text.substring(0, 60) + '...' : text}</Typography>;
+        return (
+          <Tooltip title={text} placement="top">
+            <Typography>{text.length > 100 ? text.substring(0, 100) + '...' : text}</Typography>
+          </Tooltip>
+        );
       }
     },
-    { 
-      field: 'response_time', 
-      headerName: 'Time (s)', 
-      width: 100,
-      valueFormatter: (params: any) => {
-        return params.value ? params.value.toFixed(2) : 'N/A';
+    {
+      field: 'response_time',
+      headerName: 'Time',
+      width: 60,
+      valueFormatter: (value: any) => {
+        return value ? value.toFixed(2) : 'N/A';
       }
     },
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 150,
+      width: 120,
       renderCell: (params: GridRenderCellParams) => (
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="Use this prompt">
@@ -265,7 +325,7 @@ const OpenRouterComponent = () => {
   const loadHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const response = await fetch(`/api/openrouter/history?timeframe=${historyTimeframe}`);
+      const response = await apiFetch(`/api/openrouter/history?timeframe=${historyTimeframe}`);
       if (!response.ok) throw new Error('Failed to fetch history');
       const data = await response.json();
       setConversations(data);
@@ -279,10 +339,16 @@ const OpenRouterComponent = () => {
   // Save conversation to Supabase
   const saveConversation = async (model: string, prompt: string, response: string, responseTime: number) => {
     try {
-      await fetch('/api/openrouter/save', {
+      await apiFetch('/api/openrouter/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, prompt, response, response_time: responseTime }),
+        body: JSON.stringify({
+          model,
+          prompt,
+          response,
+          response_time: responseTime,
+          user_id: user?.id || null
+        }),
       });
       // Reload history if we're on the history tab
       if (tabValue === 1) {
@@ -296,7 +362,7 @@ const OpenRouterComponent = () => {
   // Deactivate a conversation
   const deactivateConversation = async (id: string) => {
     try {
-      await fetch(`/api/openrouter/status/${id}`, {
+      await apiFetch(`/api/openrouter/status/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ active: false }),
@@ -406,7 +472,7 @@ const OpenRouterComponent = () => {
           messages: conversationMessages,
           stream: true,
           temperature: temperature,
-          max_tokens: maxTokens
+          max_tokens: maxTokens - (promptTokens * 1.2), // Adjust max tokens based on prompt size
         }),
         signal: abortController.signal // For cancellation
       });
@@ -666,18 +732,23 @@ const OpenRouterComponent = () => {
               </Grid>
             </Paper>
           )}
-          
     <TextField
         label="Enter your prompt"
         multiline
         rows={5}
         value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
+        onChange={(e) => {
+          const encoding = get_encoding("cl100k_base");
+          setPrompt(e.target.value);
+          setPromptTokens(encoding.encode(e.target.value).length);
+          encoding.free();
+        }}
         placeholder="Enter your prompt here..."
         fullWidth
         inputRef={promptRef}
     />
-    
+    <div>Prompt Tokens: <b>{promptTokens.toString()}</b></div>
+    <div>API Tokens: <b>{(maxTokens - Math.floor(promptTokens * 1.2)).toString()}</b></div>
     <FormControl fullWidth>
       <InputLabel id="model-select-label">Model</InputLabel>
       <Select

@@ -2,12 +2,17 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import fs from 'fs';
 import path from 'path';
 import apiRoutes from './routes/api.js';
 import openRouterRoutes from './routes/openrouter.js';
 import logRoutes from './routes/logs.js';
+import authRoutes from './routes/auth.routes.js';
 import { logger, httpLogger } from './config/logger.js';
+import { errorHandler } from './middleware/errorHandler.middleware.js';
+import { apiLimiter } from './middleware/rateLimiter.middleware.js';
 
 const currDir = path.resolve();
 
@@ -18,7 +23,13 @@ console.log('Looking for routes in:', path.join(currDir, 'routes', 'api.js'));
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
+
+// Security headers
+app.use(helmet());
+
+// Cookie parser
+app.use(cookieParser());
 
 // Ensure logs directory exists at project root
 const logsDir = path.join(process.cwd(), 'logs');
@@ -45,6 +56,13 @@ morgan.token('real-ip', (req) => {
 app.use(morgan(
   ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" - :response-time ms',
   {
+    skip: (req, res) => {
+      // Skip logging for specific routes
+      console.log('Morgan skip check for path:', req.path);
+      return req.path.includes('files') || req.path.includes('current') || req.path.includes('hello') ||
+           req.path === '/health' ||
+           req.path === '/favicon.ico'
+    },
     stream: {
       write: (message: string) => {
         httpLogger.info(message.trim());
@@ -106,7 +124,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// API rate limiting
+app.use('/api', apiLimiter);
+
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/openrouter', openRouterRoutes);
 app.use('/api/logs', logRoutes);
@@ -123,18 +145,8 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Error handler
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  logger.error('Server error:', err);
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
-  
-  res.status(statusCode).json({
-    status: 'error',
-    statusCode,
-    message,
-  });
-});
+// Centralized error handler (must be last)
+app.use(errorHandler);
 
 // Start the server
 app.listen(PORT, () => {

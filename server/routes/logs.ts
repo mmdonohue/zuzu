@@ -24,95 +24,122 @@ interface LogEntry {
 
 const parseLogLine = (line: string): LogEntry | null => {
   if (!line.trim()) return null;
-  
-  try {
-    // Morgan format: IP - - [timestamp] "METHOD URL HTTP/version" status size "referer" "user-agent" - response-time ms
-    const morganRegex = /^(\S+)\s+-\s+-\s+\[([^\]]+)\]\s+"(\w+)\s+([^\s]+)\s+HTTP\/[\d.]+"\s+(\d+)\s+(\S+)\s+"([^"]*)"\s+"([^"]*)"\s+-\s+([\d.]+)\s+ms$/;
-    const match = line.match(morganRegex);
-    
-    if (match) {
-      const ip = match[1];
-      const timestamp = match[2]; // e.g., "03/Dec/2025:03:55:24 +0000"
-      const method = match[3];
-      const url = match[4];
-      const status = match[5];
-      const size = match[6];
-      const referer = match[7];
-      const userAgent = match[8];
-      const responseTime = match[9];
-      
-      // Convert the timestamp to ISO format
-      // Format: "03/Dec/2025:03:55:24 +0000"
-      const [datePart, timePart] = timestamp.split(':');
-      const [day, month, year] = datePart.split('/');
-      const monthMap: { [key: string]: string } = {
-        'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-        'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
-        'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
-      };
-      const monthNum = monthMap[month] || '01';
-      
-      // Reconstruct as ISO timestamp
-      const isoTimestamp = `${year}-${monthNum}-${day}T${timePart}`;
-      
-      // Determine level based on status code
-      let level = 'INFO';
-      const statusNum = parseInt(status);
-      if (statusNum >= 500) level = 'ERROR';
-      else if (statusNum >= 400) level = 'WARN';
-      else if (statusNum >= 300) level = 'INFO';
-      
-      return {
-        timestamp: isoTimestamp,
-        level,
-        category: 'http',
-        message: `${method} ${url} - ${status} (${responseTime}ms)`,
-        ip, // Add IP at the top level for easier access
-        data: {
-          ip,
-          method,
-          url,
-          status: statusNum,
-          size,
-          referer,
-          userAgent,
-          responseTime: parseFloat(responseTime)
-        }
-      };
-    }
-    
-    // Fallback: Log4js format for non-HTTP logs
-    const log4jsRegex = /^\[([^\]]+)\]\s*\[([^\]]+)\]\s*([^\s]+)\s*-\s*(.+)$/;
 
-    const log4jsMatch = line.match(log4jsRegex);
-    
-    if (log4jsMatch) {
+  try {
+    // Try to parse as JSON first (log4js JSON format)
+    const jsonLog = JSON.parse(line);
+
+    // Extract fields from log4js JSON format
+    const timestamp = jsonLog.startTime || new Date().toISOString();
+    const level = jsonLog.level?.levelStr || 'INFO';
+    const category = jsonLog.categoryName || 'default';
+
+    // Handle different types of log data
+    let message = '';
+    let ip = '-';
+    let data: any = {};
+
+    // Check if this is a structured log with data
+    if (Array.isArray(jsonLog.data) && jsonLog.data.length > 0) {
+      const firstData = jsonLog.data[0];
+
+      // If first element is a string, use it as the message
+      if (typeof firstData === 'string') {
+        message = firstData;
+
+        // If there's additional data, store it
+        if (jsonLog.data.length > 1) {
+          data = jsonLog.data[1];
+          ip = data.ip || '-';
+        }
+      } else if (typeof firstData === 'object') {
+        // If first element is an object, extract message and data
+        message = firstData.message || JSON.stringify(firstData);
+        data = firstData;
+        ip = firstData.ip || '-';
+      }
+    } else {
+      message = JSON.stringify(jsonLog.data || jsonLog);
+    }
+
+    return {
+      timestamp,
+      level,
+      category,
+      message,
+      ip,
+      data: Object.keys(data).length > 0 ? data : undefined
+    };
+  } catch (jsonError) {
+    // Not JSON, try legacy formats
+    try {
+      // Morgan format: IP - - [timestamp] "METHOD URL HTTP/version" status size "referer" "user-agent" - response-time ms
+      const morganRegex = /^(\S+)\s+-\s+-\s+\[([^\]]+)\]\s+"(\w+)\s+([^\s]+)\s+HTTP\/[\d.]+"\s+(\d+)\s+(\S+)\s+"([^"]*)"\s+"([^"]*)"\s+-\s+([\d.]+)\s+ms$/;
+      const match = line.match(morganRegex);
+
+      if (match) {
+        const ip = match[1];
+        const timestamp = match[2];
+        const method = match[3];
+        const url = match[4];
+        const status = match[5];
+        const size = match[6];
+        const referer = match[7];
+        const userAgent = match[8];
+        const responseTime = match[9];
+
+        // Convert timestamp to ISO format
+        const [datePart, timePart] = timestamp.split(':');
+        const [day, month, year] = datePart.split('/');
+        const monthMap: { [key: string]: string } = {
+          'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+          'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+          'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+        };
+        const monthNum = monthMap[month] || '01';
+        const isoTimestamp = `${year}-${monthNum}-${day}T${timePart}`;
+
+        let level = 'INFO';
+        const statusNum = parseInt(status);
+        if (statusNum >= 500) level = 'ERROR';
+        else if (statusNum >= 400) level = 'WARN';
+
+        return {
+          timestamp: isoTimestamp,
+          level,
+          category: 'http',
+          message: `${method} ${url} - ${status} (${responseTime}ms)`,
+          ip,
+          data: {
+            method,
+            url,
+            status: statusNum,
+            size,
+            referer,
+            userAgent,
+            responseTime: parseFloat(responseTime)
+          }
+        };
+      }
+
+      // Fallback: plain text
       return {
-        timestamp: log4jsMatch[1].trim(),
-        level: log4jsMatch[2].trim(),
-        category: log4jsMatch[3].trim(),
-        message: log4jsMatch[4].trim(),
-        ip: '-' // No IP for non-HTTP logs
+        timestamp: new Date().toISOString(),
+        level: 'INFO',
+        category: 'default',
+        message: line,
+        ip: '-'
+      };
+    } catch (error) {
+      console.error('Error parsing log line:', error);
+      return {
+        timestamp: new Date().toISOString(),
+        level: 'UNKNOWN',
+        category: 'default',
+        message: line,
+        ip: '-'
       };
     }
-    
-    // If all parsing fails, return a basic entry
-    return {
-      timestamp: new Date().toISOString(),
-      level: 'INFO',
-      category: 'default',
-      message: line,
-      ip: '-'
-    };
-  } catch (error) {
-    console.error('Error parsing log line:', error, 'Line:', line);
-    return {
-      timestamp: new Date().toISOString(),
-      level: 'UNKNOWN',
-      category: 'default',
-      message: line,
-      ip: '-'
-    };
   }
 };
 

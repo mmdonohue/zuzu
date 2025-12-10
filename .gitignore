@@ -1,3 +1,8 @@
+/docs
+/CLAUDE.md
+/sql
+/server/migrations
+
 # dependencies
 /server/node_modules
 /node_modules
