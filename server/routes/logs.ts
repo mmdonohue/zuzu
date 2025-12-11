@@ -7,6 +7,14 @@ import { logger } from '../config/logger.js';
 
 const router = express.Router();
 
+// Cache for log data
+interface LogCache {
+  size: number;
+  mtime: number;
+  logs: LogEntry[];
+}
+
+let logCache: LogCache | null = null;
 
 // Use process.cwd() to get the project root
 const getLogsDir = () => path.join(process.cwd(), 'logs');
@@ -18,48 +26,95 @@ interface LogEntry {
   category: string;
   message: string;
   ip?: string;
+  url?: string;
   data?: any;
 }
 
 
-const parseLogLine = (line: string): LogEntry | null => {
-  if (!line.trim()) return null;
+// Split log content into individual entries (timestamp to timestamp)
+const splitLogEntries = (content: string): string[] => {
+  // Match log4js timestamp format: [2025-12-10T17:35:11.323]
+  const timestampRegex = /\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})\]/g;
+
+  const entries: string[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = timestampRegex.exec(content)) !== null) {
+    if (lastIndex > 0) {
+      // Extract entry from lastIndex to current match
+      entries.push(content.substring(lastIndex, match.index).trim());
+    }
+    lastIndex = match.index;
+  }
+
+  // Add the last entry
+  if (lastIndex > 0) {
+    entries.push(content.substring(lastIndex).trim());
+  }
+  // console.log(`Split log content into ${entries.length} entries`);
+  return entries.filter(entry => entry.length > 0);
+};
+
+// Extract JSON data from markers [[[ ... ]]]
+const extractJsonData = (text: string): any[] => {
+  const jsonObjects: any[] = [];
+  const jsonRegex = /\[\[\[([\s\S]*?)\]\]\]/g;
+  let match;
+
+  while ((match = jsonRegex.exec(text)) !== null) {
+    try {
+      const jsonStr = match[1].trim();
+      const parsed = JSON.parse(jsonStr);
+      jsonObjects.push(parsed);
+    } catch (error) {
+      // console.error('Error parsing JSON from markers:', error);
+    }
+  }
+
+  return jsonObjects;
+};
+
+const parseLogEntry = (entry: string): LogEntry | null => {
+  if (!entry.trim()) return null;
 
   try {
-    // Try to parse as JSON first (log4js JSON format)
-    const jsonLog = JSON.parse(line);
+    // Extract timestamp [2025-12-10T17:35:11.323]
+    const timestampMatch = entry.match(/\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})\]/);
+    const timestamp = timestampMatch ? timestampMatch[1] : new Date().toISOString();
 
-    // Extract fields from log4js JSON format
-    const timestamp = jsonLog.startTime || new Date().toISOString();
-    const level = jsonLog.level?.levelStr || 'INFO';
-    const category = jsonLog.categoryName || 'default';
+    // Extract level [INFO], [ERROR], etc.
+    const levelMatch = entry.match(/\]\s*\[(INFO|ERROR|WARN|DEBUG|TRACE)\]/);
+    const level = levelMatch ? levelMatch[1] : 'INFO';
 
-    // Handle different types of log data
-    let message = '';
+    // Extract category
+    const categoryMatch = entry.match(/\]\s*\[(?:INFO|ERROR|WARN|DEBUG|TRACE)\]\s*(\S+)/);
+    const category = categoryMatch ? categoryMatch[1] : 'default';
+
+    // Extract JSON data from markers
+    const jsonData = extractJsonData(entry);
+
+    // Remove JSON markers from message to get clean text
+    let message = entry
+      .replace(/\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})\]/, '')
+      .replace(/\[(?:INFO|ERROR|WARN|DEBUG|TRACE)\]/, '')
+      .replace(/^\s*\S+\s*-\s*/, '') // Remove category
+      .replace(/\[\[\[[\s\S]*?\]\]\]/g, '[JSON]') // Replace JSON blocks with placeholder
+      .trim();
+
+    // Extract IP from data if available
     let ip = '-';
-    let data: any = {};
+    let combinedData: any = {};
+    let url = '-';
 
-    // Check if this is a structured log with data
-    if (Array.isArray(jsonLog.data) && jsonLog.data.length > 0) {
-      const firstData = jsonLog.data[0];
-
-      // If first element is a string, use it as the message
-      if (typeof firstData === 'string') {
-        message = firstData;
-
-        // If there's additional data, store it
-        if (jsonLog.data.length > 1) {
-          data = jsonLog.data[1];
-          ip = data.ip || '-';
-        }
-      } else if (typeof firstData === 'object') {
-        // If first element is an object, extract message and data
-        message = firstData.message || JSON.stringify(firstData);
-        data = firstData;
-        ip = firstData.ip || '-';
-      }
-    } else {
-      message = JSON.stringify(jsonLog.data || jsonLog);
+    if (jsonData.length > 0) {
+      // Merge all JSON objects
+      jsonData.forEach(obj => {
+        combinedData = { ...combinedData, ...obj };
+      });
+      ip = combinedData.ip || combinedData.clientIp || '-';
+      url = combinedData.url || '-';
+      // combinedData.body = combinedData.body ? JSON.parse(combinedData.body) : '-';
     }
 
     return {
@@ -68,119 +123,89 @@ const parseLogLine = (line: string): LogEntry | null => {
       category,
       message,
       ip,
-      data: Object.keys(data).length > 0 ? data : undefined
+      url,
+      data: Object.keys(combinedData).length > 0 ? combinedData : undefined
     };
-  } catch (jsonError) {
-    // Not JSON, try legacy formats
-    try {
-      // Morgan format: IP - - [timestamp] "METHOD URL HTTP/version" status size "referer" "user-agent" - response-time ms
-      const morganRegex = /^(\S+)\s+-\s+-\s+\[([^\]]+)\]\s+"(\w+)\s+([^\s]+)\s+HTTP\/[\d.]+"\s+(\d+)\s+(\S+)\s+"([^"]*)"\s+"([^"]*)"\s+-\s+([\d.]+)\s+ms$/;
-      const match = line.match(morganRegex);
-
-      if (match) {
-        const ip = match[1];
-        const timestamp = match[2];
-        const method = match[3];
-        const url = match[4];
-        const status = match[5];
-        const size = match[6];
-        const referer = match[7];
-        const userAgent = match[8];
-        const responseTime = match[9];
-
-        // Convert timestamp to ISO format
-        const [datePart, timePart] = timestamp.split(':');
-        const [day, month, year] = datePart.split('/');
-        const monthMap: { [key: string]: string } = {
-          'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-          'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
-          'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
-        };
-        const monthNum = monthMap[month] || '01';
-        const isoTimestamp = `${year}-${monthNum}-${day}T${timePart}`;
-
-        let level = 'INFO';
-        const statusNum = parseInt(status);
-        if (statusNum >= 500) level = 'ERROR';
-        else if (statusNum >= 400) level = 'WARN';
-
-        return {
-          timestamp: isoTimestamp,
-          level,
-          category: 'http',
-          message: `${method} ${url} - ${status} (${responseTime}ms)`,
-          ip,
-          data: {
-            method,
-            url,
-            status: statusNum,
-            size,
-            referer,
-            userAgent,
-            responseTime: parseFloat(responseTime)
-          }
-        };
-      }
-
-      // Fallback: plain text
-      return {
-        timestamp: new Date().toISOString(),
-        level: 'INFO',
-        category: 'default',
-        message: line,
-        ip: '-'
-      };
-    } catch (error) {
-      console.error('Error parsing log line:', error);
-      return {
-        timestamp: new Date().toISOString(),
-        level: 'UNKNOWN',
-        category: 'default',
-        message: line,
-        ip: '-'
-      };
-    }
+  } catch (error) {
+    console.error('Error parsing log entry:', error);
+    return {
+      timestamp: new Date().toISOString(),
+      level: 'UNKNOWN',
+      category: 'default',
+      message: entry,
+      ip: '-'
+    };
   }
 };
 
 // GET current log file
 router.get('/current', async (req: Request, res: Response) => {
   const { limit = 100, level } = req.query;
-  
+
   try {
     const logFile = getLogFile();
-    console.log('Reading log file from:', logFile);
-    
+
     // Check if log file exists
     if (!fs.existsSync(logFile)) {
-      console.log('Log file does not exist yet');
-      return res.json({ logs: [], message: 'No logs available yet' });
+      return res.json({ logs: [], message: 'No logs available yet', cached: false });
     }
-    
-    // Read the log file
+
+    // Get file stats
+    const stats = fs.statSync(logFile);
+    const currentSize = stats.size;
+    const currentMtime = stats.mtimeMs;
+
+    // Check if cache is valid
+    if (logCache &&
+        logCache.size === currentSize &&
+        logCache.mtime === currentMtime) {
+      // File hasn't changed, return cached data
+      let logs = [...logCache.logs];
+
+      // Apply filters to cached data
+      if (level && typeof level === 'string') {
+        logs = logs.filter(log => log.level.toLowerCase() === level.toLowerCase());
+      }
+
+      const limitNum = parseInt(limit as string, 10);
+      if (!isNaN(limitNum)) {
+        logs = logs.slice(0, limitNum);
+      }
+
+      return res.json({ logs, total: logs.length, cached: true });
+    }
+
+    // File has changed or no cache, read and parse
     const fileContent = fs.readFileSync(logFile, 'utf-8');
-    const lines = fileContent.split('\n').filter(line => line.trim());
-    
-    // Parse each line
-    let logs = lines
-      .map(parseLogLine)
+    const entries = splitLogEntries(fileContent);
+
+    // Parse all entries
+    let allLogs = entries
+      .map(parseLogEntry)
       .filter((log): log is LogEntry => log !== null)
       .reverse(); // Most recent first
-    
-    // Filter by level if specified
+
+    // Update cache with all parsed logs
+    logCache = {
+      size: currentSize,
+      mtime: currentMtime,
+      logs: allLogs
+    };
+
+    // Apply filters for response
+    let logs = [...allLogs];
+
     if (level && typeof level === 'string') {
       logs = logs.filter(log => log.level.toLowerCase() === level.toLowerCase());
     }
-    
-    // Limit results
+
     const limitNum = parseInt(limit as string, 10);
     if (!isNaN(limitNum)) {
       logs = logs.slice(0, limitNum);
     }
-    
-    logger.info(`Retrieved ${logs.length} log entries`);
-    res.json({ logs, total: logs.length });
-    
+
+    res.json({ logs, total: logs.length, cached: false });
+
   } catch (error) {
     logger.error('Error reading log file:', error);
     res.status(500).json({ error: 'Failed to read log file' });
@@ -226,9 +251,12 @@ router.delete('/clear', async (req: Request, res: Response) => {
       fs.writeFileSync(logFile, '');
       logger.info('Log file cleared');
     }
-    
+
+    // Invalidate cache
+    logCache = null;
+
     res.json({ message: 'Logs cleared successfully' });
-    
+
   } catch (error) {
     logger.error('Error clearing log file:', error);
     res.status(500).json({ error: 'Failed to clear log file' });

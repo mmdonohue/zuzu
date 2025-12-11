@@ -53,15 +53,18 @@ morgan.token('real-ip', (req) => {
          'unknown';
 });
 
+const jsonFormat = '[[[{"remote_addr": ":remote-addr", "remote_user": ":remote-user", "date": ":date[clf]", "method": ":method", "url": ":url", "http_version": ":http-version", "status": ":status", "result_length": ":res[content-length]", "referrer": ":referrer", "user_agent": ":user-agent", "response_time": ":response-time"}]]]';
+const combinedFormat = ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time ms';
 app.use(morgan(
-  ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" - :response-time ms',
+  jsonFormat,
   {
     skip: (req, res) => {
       // Skip logging for specific routes
-      console.log('Morgan skip check for path:', req.path);
-      return req.path.includes('files') || req.path.includes('current') || req.path.includes('hello') ||
-           req.path === '/health' ||
-           req.path === '/favicon.ico'
+      if(['/files', '/current', '/hello', '/me', '/refresh-token' , '/health', '/favicon.ico'].some(pathPart => req.path.includes(pathPart))) {
+        // console.log('Skipping logging for path:', req.path);
+        return true;
+      }
+      return false;
     },
     stream: {
       write: (message: string) => {
@@ -107,20 +110,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 app.use((req, res, next) => {
-  const realIp = req.headers['x-forwarded-for'] || 
-                 req.headers['x-real-ip'] || 
-                 req.socket.remoteAddress || 
-                 req.ip;
-                 
-  logger.info(`${req.method} ${req.path}`, {
-    ip: realIp,
-    query: req.query,
-    headers: {
-      'x-forwarded-for': req.headers['x-forwarded-for'],
-      'x-real-ip': req.headers['x-real-ip']
+  if(req.method === 'POST') {
+    if(Object.keys(req.body).length > 0) {
+      logger.info(`POST ${req.path} - Body: [[[${JSON.stringify(req.body)}]]]`);
     }
-  });
+    else {
+      logger.info(`POST ${req.path}`);
+    }
+  }
   next();
 });
 

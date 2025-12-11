@@ -95,7 +95,7 @@ interface ModelPricing {
     if(tokens < 1000000) {
       return `${(tokens / 1000).toFixed(0)}K`;
     } else {
-      return `${(tokens / 1000000).toFixed(0)}M`;
+      return `${(tokens / 1000000).toFixed(1)}M`;
     }
   }
 
@@ -193,6 +193,7 @@ const OpenRouterComponent = () => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(2000000);
+  const [currTokens, setCurrTokens] = useState(1600000);
   const [systemMessage, setSystemMessage] = useState("");
   
   // State for conversation history
@@ -246,7 +247,10 @@ const OpenRouterComponent = () => {
       width: 180,
       renderCell: (params: GridRenderCellParams) => {
         const modelName = params.value.split('/').pop();
-        return <Chip size="small" label={modelName} />;
+        return <Chip size="small" label={modelName} onClick={() => {
+          setModel(modelName);
+          setTabValue(0);
+        }} />;
       }
     },
     {
@@ -377,8 +381,8 @@ const OpenRouterComponent = () => {
   // Reload a prompt from history
   const reloadPrompt = (conversation: Conversation) => {
     setTabValue(0); // Switch to the chat tab
-    setPrompt(conversation.prompt);
-    setModel(conversation.model);
+    setPrompt(prompt ? prompt + '\n' + conversation.prompt : conversation.prompt);
+    // setModel(conversation.model);
   };
   
   // Copy response to clipboard
@@ -472,7 +476,7 @@ const OpenRouterComponent = () => {
           messages: conversationMessages,
           stream: true,
           temperature: temperature,
-          max_tokens: maxTokens - (promptTokens * 1.2), // Adjust max tokens based on prompt size
+          max_tokens: currTokens - Math.floor(promptTokens * 1.2), // Adjust max tokens based on prompt size
         }),
         signal: abortController.signal // For cancellation
       });
@@ -710,14 +714,14 @@ const OpenRouterComponent = () => {
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" gutterBottom>Max Tokens: {maxTokens}</Typography>
+                  <Typography variant="body2" gutterBottom>Max Tokens: <b>{displayTokenCost(maxTokens)}</b> | Current Tokens: <b>{displayTokenCost(currTokens)}</b></Typography>
                   <Slider
                     sx={{ mb: 2 }}
-                    value={maxTokens}
-                    onChange={(_, value) => setMaxTokens(value as number)}
-                    min={maxTokens/1000}
+                    value={currTokens ? currTokens : Math.floor(maxTokens * 0.8)}
+                    onChange={(_, value) => setCurrTokens(value as number)}
+                    min={maxTokens / 1000}
                     max={maxTokens}
-                    step={maxTokens/1000}
+                    step={maxTokens / 1000}
                     valueLabelDisplay="auto"
                     marks={[
                       { value: maxTokens/1000, label: displayTokenCost(maxTokens/1000) },
@@ -748,7 +752,7 @@ const OpenRouterComponent = () => {
         inputRef={promptRef}
     />
     <div>Prompt Tokens: <b>{promptTokens.toString()}</b></div>
-    <div>API Tokens: <b>{(maxTokens - Math.floor(promptTokens * 1.2)).toString()}</b></div>
+    <div>API Tokens: <b>{(currTokens - Math.floor(promptTokens * 1.2)).toString()}</b></div>
     <FormControl fullWidth>
       <InputLabel id="model-select-label">Model</InputLabel>
       <Select
@@ -790,6 +794,7 @@ const OpenRouterComponent = () => {
                     console.log('Menu - selected free model:', modelOption.id);
                     let modelSelectedModel = availableModels.find(m => m.id === modelOption.id);
                     setMaxTokens(modelSelectedModel ? modelSelectedModel.context_length : 2000000);
+                    setCurrTokens(modelSelectedModel ? Math.floor(modelSelectedModel.context_length * .8) : 2000000);
                     setModel(modelOption.id);
                     setModelObject(modelSelectedModel || null);
                     handleMenuClose();

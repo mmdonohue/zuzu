@@ -9,13 +9,20 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  // Log error
-  logger.error(`Error: ${err.message}`, {
-    stack: err.stack,
-    path: req.path,
-    method: req.method,
-    body: req.body
-  });
+  // Don't log authentication errors (token expiration is normal)
+  const isAuthError = err.message?.includes('Invalid or expired token') ||
+                     err.message?.includes('No authentication token') ||
+                     err.message?.includes('refresh token');
+
+  // Log error (skip auth errors)
+  if (!isAuthError) {
+    logger.error(`Error: ${err.message}`, {
+      stack: err.stack,
+      path: req.path,
+      method: req.method,
+      body: req.body
+    });
+  }
 
   // Handle operational errors
   if (err instanceof AppError && err.isOperational) {
@@ -26,7 +33,9 @@ export const errorHandler = (
   }
 
   // Handle unexpected errors
-  console.error('Unexpected error:', err);
+  if (!isAuthError) {
+    console.error('Unexpected error:', err);
+  }
   return res.status(500).json({
     success: false,
     message: 'An unexpected error occurred'

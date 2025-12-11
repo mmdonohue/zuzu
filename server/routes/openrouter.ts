@@ -3,6 +3,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { supabase } from '../services/supabase.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
+import logger from '../config/logger.js';
 
 const router = express.Router();
 

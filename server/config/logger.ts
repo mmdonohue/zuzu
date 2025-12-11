@@ -25,8 +25,7 @@ log4js.configure({
       filename: logFilePath,
       maxLogSize: 10485760, // 10MB
       backups: 5,
-      compress: true,
-      layout: { type: 'json' }
+      compress: true
     }
   },
   categories: {

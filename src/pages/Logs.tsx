@@ -208,6 +208,20 @@ const Logs: React.FC = () => {
         }
     },
     {
+        field: 'url',
+        headerName: 'URL',
+        width: 200,
+        renderCell: (params: GridRenderCellParams) => {
+            const urlValue = params.value || params.row.data?.url || '-';
+            return (
+                <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace' }}>
+                    {urlValue}
+                </Typography>
+            );
+        }
+    },
+    /*
+    {
         field: 'ip',
         headerName: 'IP Address',
         width: 130,
@@ -223,6 +237,7 @@ const Logs: React.FC = () => {
         );
         }
     },
+    */
     {
       field: 'level',
       headerName: 'Level',
@@ -238,7 +253,15 @@ const Logs: React.FC = () => {
     {
       field: 'category',
       headerName: 'Category',
-      width: 120
+      width: 120,
+      renderCell: (params: GridRenderCellParams) => {
+        params.value  = params.value === 'default' ? 'server' : params.value;
+        return (  
+          <Typography sx={{ fontSize: '0.875rem' }}>
+            {params.value === undefined || params.value === null ? '-' : params.value}
+          </Typography>
+        );
+      }
     },
     {
       field: 'message',

@@ -49,11 +49,14 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Don't try to refresh token for auth endpoints themselves
-    const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
+    // Allow refresh for /me endpoint, but not for login/signup/refresh itself
+    const isLoginOrSignup = originalRequest?.url?.includes('/auth/login') ||
+                           originalRequest?.url?.includes('/auth/signup') ||
+                           originalRequest?.url?.includes('/auth/verify-code');
     const isRefreshRequest = originalRequest?.url?.includes('/auth/refresh-token');
 
-    if (error.response?.status === 401 && !isAuthEndpoint && !originalRequest._retry) {
+    // Retry with refresh for 401 errors, except during login/signup/refresh
+    if (error.response?.status === 401 && !isLoginOrSignup && !isRefreshRequest && !originalRequest._retry) {
       originalRequest._retry = true;
 
       // Try to refresh token
