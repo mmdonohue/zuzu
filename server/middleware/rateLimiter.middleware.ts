@@ -30,6 +30,11 @@ export const loginLimiter = rateLimit({
   skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: {
+    ip: false,
+    trustProxy: false,
+    forwardedHeader: false
+  },
   handler: (req, res) => {
     res.status(429).json({
       success: false,
