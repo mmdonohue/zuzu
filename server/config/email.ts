@@ -1,22 +1,18 @@
 // server/config/email.ts
 import nodemailer from 'nodemailer';
 
-const port = parseInt(process.env.SMTP_PORT || '587');
-
-export const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.mailgun.org',
-  port: port,
-  secure: port === 465, // true for 465 (implicit TLS), false for 587 (STARTTLS)
-  authMethod: process.env.SMTP_AUTH_METHOD || 'LOGIN',
+const mailcreds = {
+  host: process.env.SMTP_HOST || 'mg.seravanna.com',
+  port: parseInt(process.env.SMTP_PORT || '465', 10),
+  secure: true,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD
-  },
-  // Add timeout and connection logging
-  connectionTimeout: 10000, // 10 seconds
-  logger: true,
-  debug: true
-});
+    user: process.env.SMTP_USER || 'user@example.com',
+    pass: process.env.SMTP_PASSWORD || 'password',
+  }
+};
+
+
+export const transporter = nodemailer.createTransport(mailcreds);
 
 export const EMAIL_CONFIG = {
   from: process.env.SMTP_FROM || 'ZuZu Auth <noreply@zuzu.com>',
