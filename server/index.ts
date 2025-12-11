@@ -45,6 +45,7 @@ if (!fs.existsSync(logsDir)) {
 
 // Morgan logger setup - custom format that outputs to log4js
 
+/*
 morgan.token('real-ip', (req) => {
   // Check various headers for the real client IP
   return req.headers['x-forwarded-for'] as string || 
@@ -52,6 +53,7 @@ morgan.token('real-ip', (req) => {
          req.socket.remoteAddress || 
          'unknown';
 });
+*/
 
 const jsonFormat = '[[[{"remote_addr": ":remote-addr", "remote_user": ":remote-user", "date": ":date[clf]", "method": ":method", "url": ":url", "http_version": ":http-version", "status": ":status", "result_length": ":res[content-length]", "referrer": ":referrer", "user_agent": ":user-agent", "response_time": ":response-time"}]]]';
 const combinedFormat = ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time ms';
