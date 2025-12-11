@@ -23,7 +23,7 @@ console.log('Looking for routes in:', path.join(currDir, 'routes', 'api.js'));
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// app.set('trust proxy', true);
+app.set('trust proxy', true);
 
 // Security headers
 app.use(helmet());
