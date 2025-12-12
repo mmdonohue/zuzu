@@ -3,7 +3,7 @@
 import { API_CONFIG } from '../config/api';
 
 // Base API URL
-const API_URL =  `${API_CONFIG.baseURL}/api`;
+const API_URL =  API_CONFIG.API_URL;
 
 // Helper for handling response status
 const handleResponse = async (response: Response) => {
