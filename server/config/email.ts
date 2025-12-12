@@ -4,14 +4,12 @@ import nodemailer from 'nodemailer';
 
 const mailcreds = {
   host: 'smtp.mailgun.org',
-  port: 2525,
-  secure: false,
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASSWORD,
   },
-  logger: true,
-  debug: true,
   connectionTimeout: 10000,
   greetingTimeout: 10000,
   socketTimeout: 10000,
