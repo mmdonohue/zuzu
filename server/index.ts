@@ -62,7 +62,7 @@ app.use(morgan(
   {
     skip: (req, res) => {
       // Skip logging for specific routes
-      if(['/login', '/files', '/current', '/hello', '/me', '/refresh-token' , '/health', '/favicon.ico'].some(pathPart => req.path.includes(pathPart))) {
+      if(['/files', '/current', '/hello', '/me', '/refresh-token' , '/health', '/favicon.ico'].some(pathPart => req.path.includes(pathPart))) {
         // console.log('Skipping logging for path:', req.path);
         return true;
       }
