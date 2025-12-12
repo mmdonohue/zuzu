@@ -101,6 +101,7 @@ export class EmailService {
     // Send email
     try {
       // Send email via nodemailer
+      logger.info(`Sending email: ${type} to ${recipient}`);
       const info = await transporter.sendMail({
         from: EMAIL_CONFIG.from,
         to: recipient,
