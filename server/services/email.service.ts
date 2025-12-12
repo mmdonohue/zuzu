@@ -94,9 +94,9 @@ export class EmailService {
     // test config
     try {
       await transporter.verify();
-      console.log("Server is ready to take our messages", EMAIL_CONFIG.from);
+      logger.info(`Server is ready to take our messages ${EMAIL_CONFIG.from}`);
     } catch (err) {
-      console.error("Verification failed", err);
+      logger.error(`Verification failed ${EMAIL_CONFIG.from}`, err);
     }
     // Send email
     try {

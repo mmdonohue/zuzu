@@ -3,19 +3,21 @@ import { log } from 'console';
 import nodemailer from 'nodemailer';
 
 const mailcreds = {
-  host: process.env.SMTP_HOST || 'mg.seravanna.com',
+  host: process.env.SMTP_HOST || 'smtp.mailgun.org',
   port: parseInt(process.env.SMTP_PORT || '465', 10),
   secure: true,
-  authMethod: 'PLAIN',
   auth: {
-    user: process.env.SMTP_USER || 'user@example.com',
-    pass: process.env.SMTP_PASSWORD || 'password',
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
   },
   logger: true,
   debug: true,
   connectionTimeout: 10000,
   greetingTimeout: 10000,
   socketTimeout: 10000,
+  tls: {
+    rejectUnauthorized: false
+  }
 };
 
 
