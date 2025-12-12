@@ -1,4 +1,5 @@
 /docs
+/.claud
 /CLAUDE.md
 /sql
 /server/migrations
