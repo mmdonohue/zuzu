@@ -3,8 +3,8 @@ import { log } from 'console';
 import nodemailer from 'nodemailer';
 
 const mailcreds = {
-  host: process.env.SMTP_HOST || 'smtp.mailgun.org',
-  port: 587,
+  host: 'smtp.mailgun.org',
+  port: 2525,
   secure: false,
   auth: {
     user: process.env.SMTP_USER,
