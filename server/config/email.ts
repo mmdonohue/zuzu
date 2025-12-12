@@ -11,9 +11,11 @@ const mailcreds = {
     user: process.env.SMTP_USER || 'user@example.com',
     pass: process.env.SMTP_PASSWORD || 'password',
   },
-  logging: true,
   logger: true,
   debug: true,
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 };
 
 
