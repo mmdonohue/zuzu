@@ -1,6 +1,8 @@
 // src/utils/api.ts
 // Fetch wrapper with automatic token refresh
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
 
@@ -13,7 +15,7 @@ async function refreshToken(): Promise<boolean> {
   isRefreshing = true;
   refreshPromise = (async () => {
     try {
-      const response = await fetch('/api/auth/refresh-token', {
+      const response = await fetch(`${API_URL}/auth/refresh-token`, {
         method: 'POST',
         credentials: 'include',
       });
@@ -37,10 +39,29 @@ async function refreshToken(): Promise<boolean> {
   return refreshPromise;
 }
 
+// Helper to build full API URL
+function buildUrl(path: string): string {
+  // If path already starts with http, return as-is
+  if (path.startsWith('http')) {
+    return path;
+  }
+
+  // Remove leading slash if present
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+
+  // If path starts with 'api/', remove it since API_URL already includes /api
+  const finalPath = cleanPath.startsWith('api/') ? cleanPath.substring(4) : cleanPath;
+
+  return `${API_URL}/${finalPath}`;
+}
+
 export async function apiFetch(
   url: string,
   options: RequestInit = {}
 ): Promise<Response> {
+  // Build full URL
+  const fullUrl = buildUrl(url);
+
   // Ensure credentials are included
   const fetchOptions: RequestInit = {
     ...options,
@@ -48,7 +69,7 @@ export async function apiFetch(
   };
 
   // Make the request
-  let response = await fetch(url, fetchOptions);
+  let response = await fetch(fullUrl, fetchOptions);
 
   // If 401 and not already a refresh request, try to refresh token
   if (response.status === 401 && !url.includes('/auth/')) {
@@ -56,7 +77,7 @@ export async function apiFetch(
 
     if (refreshed) {
       // Retry the original request
-      response = await fetch(url, fetchOptions);
+      response = await fetch(fullUrl, fetchOptions);
     }
   }
 

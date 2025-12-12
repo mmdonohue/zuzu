@@ -33,6 +33,7 @@ import {
   KeyboardArrowRightOutlined
 } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
+import { apiFetch } from '@/utils/api';
 
 interface LogEntry {
   id?: number;
@@ -85,10 +86,10 @@ const Logs: React.FC = () => {
   const fetchLogs = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const levelParam = selectedLevel !== 'all' ? `&level=${selectedLevel}` : '';
-      const response = await fetch(`/api/logs/current?limit=${limit}${levelParam}`);
+      const response = await apiFetch(`/api/logs/current?limit=${limit}${levelParam}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
@@ -114,7 +115,7 @@ const Logs: React.FC = () => {
   // Fetch log files list
   const fetchLogFiles = async () => {
     try {
-      const response = await fetch('/api/logs/files');
+      const response = await apiFetch('/api/logs/files');
       
       if (!response.ok) {
         throw new Error('Failed to fetch log files');
@@ -134,7 +135,7 @@ const Logs: React.FC = () => {
     }
     
     try {
-      const response = await fetch('/api/logs/clear', {
+      const response = await apiFetch('/api/logs/clear', {
         method: 'DELETE'
       });
       
