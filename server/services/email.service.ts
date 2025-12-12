@@ -91,6 +91,14 @@ export class EmailService {
     html: string,
     type: string
   ) {
+    // test config
+    try {
+      await transporter.verify();
+      console.log("Server is ready to take our messages", EMAIL_CONFIG.from);
+    } catch (err) {
+      console.error("Verification failed", err);
+    }
+    // Send email
     try {
       // Send email via nodemailer
       const info = await transporter.sendMail({

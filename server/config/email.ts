@@ -6,7 +6,7 @@ const mailcreds = {
   host: process.env.SMTP_HOST || 'mg.seravanna.com',
   port: parseInt(process.env.SMTP_PORT || '465', 10),
   secure: true,
-  authMethod: 'LOGIN',
+  authMethod: 'PLAIN',
   auth: {
     user: process.env.SMTP_USER || 'user@example.com',
     pass: process.env.SMTP_PASSWORD || 'password',
@@ -14,9 +14,6 @@ const mailcreds = {
   logging: true,
   logger: true,
   debug: true,
-  tls: {
-    rejectUnauthorized: false
-  }
 };
 
 
