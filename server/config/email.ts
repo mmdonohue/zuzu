@@ -4,18 +4,19 @@ import nodemailer from 'nodemailer';
 
 const mailcreds = {
   host: process.env.SMTP_HOST || 'mg.seravanna.com',
-  port: process.env.SMTP_PORT || 465,
+  port: parseInt(process.env.SMTP_PORT || '465', 10),
   secure: true,
-  authMethod: process.env.SMTP_AUTH_METHOD || 'LOGIN',
+  authMethod: 'LOGIN',
   auth: {
     user: process.env.SMTP_USER || 'user@example.com',
     pass: process.env.SMTP_PASSWORD || 'password',
   },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
+  logging: true,
   logger: true,
-  debug: false
+  debug: true,
+  tls: {
+    rejectUnauthorized: false
+  }
 };
 
 
