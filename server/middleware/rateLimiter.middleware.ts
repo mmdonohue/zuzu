@@ -50,6 +50,11 @@ export const codeLimiter = rateLimit({
   message: 'Too many verification codes requested',
   standardHeaders: true,
   legacyHeaders: false,
+  validate: {
+    ip: false,
+    trustProxy: false,
+    forwardedHeader: false
+  },
   handler: (req, res) => {
     res.status(429).json({
       success: false,
@@ -65,6 +70,11 @@ export const passwordResetLimiter = rateLimit({
   message: 'Too many password reset requests',
   standardHeaders: true,
   legacyHeaders: false,
+  validate: {
+    ip: false,
+    trustProxy: false,
+    forwardedHeader: false
+  },
   handler: (req, res) => {
     res.status(429).json({
       success: false,
