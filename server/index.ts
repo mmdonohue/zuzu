@@ -62,7 +62,7 @@ app.use(morgan(
   {
     skip: (req, res) => {
       // Skip logging for specific routes
-      if(['/files', '/current', '/hello', '/me', '/refresh-token' , '/health', '/favicon.ico'].some(pathPart => req.path.includes(pathPart))) {
+      if(['/login', '/files', '/current', '/hello', '/me', '/refresh-token' , '/health', '/favicon.ico'].some(pathPart => req.path.includes(pathPart))) {
         // console.log('Skipping logging for path:', req.path);
         return true;
       }
@@ -115,7 +115,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   if(req.method === 'POST') {
-    if(Object.keys(req.body).length > 0) {
+    if(Object.keys(req.body).length > 0 && ['/api/auth/login', '/api/auth/signup', '/api/auth/refresh-token'].indexOf(req.path) < 0) {
       logger.info(`POST ${req.path} - Body: [[[${JSON.stringify(req.body)}]]]`);
     }
     else {
