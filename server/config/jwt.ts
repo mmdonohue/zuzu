@@ -11,7 +11,7 @@ export const JWT_CONFIG = {
 export const COOKIE_CONFIG = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-  sameSite: process.env.NODE_ENV === 'production' ? 'strict' as const : 'lax' as const,
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' as const : 'lax' as const, // 'none' for cross-origin in production
   maxAge: 24 * 60 * 60 * 1000, // 1 day
   path: '/'
 };
