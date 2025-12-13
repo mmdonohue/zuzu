@@ -34,8 +34,8 @@ async function refreshToken(): Promise<boolean> {
     } catch (error) {
       console.error('[refreshToken] Error during refresh:', error);
       // Refresh failed, redirect to login
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      // localStorage.removeItem('user');
+      // window.location.href = '/login';
       return false;
     } finally {
       isRefreshing = false;
