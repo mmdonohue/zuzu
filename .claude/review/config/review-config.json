@@ -1,0 +1,61 @@
+{
+  "version": "1.0.0",
+  "project_root": "/Users/mattdonohue/projects/zuzu",
+  "enabled_checkers": [
+    "documentation",
+    "architecture",
+    "security",
+    "quality",
+    "dependencies",
+    "testing"
+  ],
+  "thresholds": {
+    "complexity_max": 10,
+    "file_lines_max": 500,
+    "function_lines_max": 50,
+    "min_test_coverage": 60
+  },
+  "exclusions": {
+    "paths": [
+      "node_modules",
+      "dist",
+      "server/dist",
+      "logs",
+      ".git",
+      "cypress/downloads",
+      "cypress/screenshots",
+      ".claude/plans"
+    ],
+    "files": [
+      "*.min.js",
+      "*.map",
+      "*.d.ts"
+    ]
+  },
+  "security": {
+    "secret_patterns": [
+      "(?i)(api[_-]?key|apikey)\\s*[:=]\\s*['\"][^'\"]{20,}['\"]",
+      "(?i)(secret|password)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+      "-----BEGIN (RSA )?PRIVATE KEY-----"
+    ],
+    "allowed_default_secrets": [
+      "your-access-secret-change-in-production",
+      "your-refresh-secret-change-in-production"
+    ]
+  },
+  "documentation_files": [
+    ".claude/CLAUDE.md",
+    ".claude/AUTH_IMPLEMENTATION.md",
+    "README.md"
+  ],
+  "git_integration": {
+    "enabled": true,
+    "check_uncommitted_changes": true,
+    "recent_commits_count": 20
+  },
+  "smart_trigger": {
+    "enabled": true,
+    "min_files_changed": 5,
+    "min_commits_since_last": 10
+  }
+}
