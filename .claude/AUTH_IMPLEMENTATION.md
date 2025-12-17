@@ -11,7 +11,7 @@ A complete, production-ready authentication system with email verification, pass
 ### Backend
 - ✅ User registration with email verification (6-digit code)
 - ✅ Login with email/password + 2FA verification code
-- ✅ JWT access tokens (15 min) and refresh tokens (7 days)
+- ✅ JWT access tokens (15 min) and refresh tokens (1 day)
 - ✅ Password reset via email link
 - ✅ Account lockout after failed login attempts (5 attempts = 15 min lock)
 - ✅ Rate limiting on auth endpoints
@@ -163,7 +163,7 @@ server/migrations/001_add_auth_columns.sql
 
 ### Session Management
 - Access token: 15 minutes (stored in httpOnly cookie)
-- Refresh token: 7 days (stored in httpOnly cookie)
+- Refresh token: 1 day (stored in httpOnly cookie)
 - Frontend auto-refreshes tokens via interceptor
 - User object cached in localStorage (non-sensitive data only)
 

@@ -93,6 +93,14 @@ const parseLogEntry = (entry: string): LogEntry | null => {
 
     // Extract JSON data from markers
     const jsonData = extractJsonData(entry);
+    // replace any password fields in jsonData with ****
+    jsonData.forEach((obj, index) => {
+      if (obj.password) {
+        // console.log('Redacting password for log entry:', obj);
+        jsonData[index] = { ...obj, password: '****' };
+        // console.log('Redacted log entry data:', jsonData[index]);
+      }
+    });
 
     // Remove JSON markers from message to get clean text
     let message = entry
@@ -101,6 +109,9 @@ const parseLogEntry = (entry: string): LogEntry | null => {
       .replace(/^\s*\S+\s*-\s*/, '') // Remove category
       .replace(/\[\[\[[\s\S]*?\]\]\]/g, '[JSON]') // Replace JSON blocks with placeholder
       .trim();
+
+    // find and replace any occurrence of password: "somevalue" in the message with password: "****"
+    message = message.replace(/(password:\s*')[^']*(')/gi, '$1****$2');
 
     // Extract IP from data if available
     let ip = '-';

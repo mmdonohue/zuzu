@@ -190,18 +190,135 @@ def print_summary(report_data: Dict[str, Any], file=sys.stdout):
 def main():
     """Main entry point for review agent."""
     parser = argparse.ArgumentParser(
-        description='ZuZu Codebase Review Agent',
+        description='''
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        ZuZu Codebase Review Agent                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Automatically verifies that documentation matches actual code implementation.
+Runs via Claude Code Stop hook or manually via command line.
+
+WHAT IT CHECKS:
+  Documentation Sync:
+    • .claude/CLAUDE.md - Architecture documentation accuracy
+    • .claude/AUTH_IMPLEMENTATION.md - Auth system documentation
+    • README.md - Tech stack and scripts documentation
+    • src/pages/Home.tsx - Displayed tech stack matches dependencies
+    • src/pages/About.tsx - Mentioned technologies are installed
+
+  Security (when enabled):
+    • Hardcoded secrets and credentials
+    • JWT configuration security
+    • Cookie security settings
+    • CORS configuration
+
+  Code Quality (when enabled):
+    • Cyclomatic complexity
+    • Error handling patterns
+    • Logging practices
+    • Code consistency
+
+  Architecture (when enabled):
+    • Design pattern adherence
+    • Circular dependencies
+    • Configuration consistency
+    • Orphaned files
+
+  Dependencies (when enabled):
+    • Unused dependencies
+    • Version consistency
+    • License analysis
+
+  Testing (when enabled):
+    • Test coverage estimation
+    • Critical untested modules
+
+SEVERITY LEVELS:
+  🔴 CRITICAL - Must fix (blocks successful exit code)
+  ⚠️  WARNING  - Should fix (documentation drift, missing info)
+  ℹ️  INFO     - Nice to have (suggestions for improvement)
+
+OUTPUT:
+  Generates a markdown report at .claude/CODEBASE_REVIEW.md with:
+    • Executive summary with health score
+    • Findings organized by category and severity
+    • Specific file locations and line numbers
+    • Actionable recommendations
+''',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
-Examples:
-  %(prog)s                                    # Full review with smart triggering
-  %(prog)s --focus docs                       # Documentation sync only
-  %(prog)s --output /tmp/review.md            # Custom output path
-  %(prog)s --silent                           # Only output if issues found
-  %(prog)s --verbose                          # Show detailed progress
+BASIC USAGE:
+  %(prog)s                           # Run full review (auto-triggers on changes)
+  %(prog)s --focus docs              # Documentation sync only
+  %(prog)s --verbose                 # Show detailed progress
 
-Environment Variables:
-  CLAUDE_REVIEW=true    Force review to run
+FIXING FINDINGS:
+  %(prog)s --fix                     # Interactive mode - prompts for each fix
+  %(prog)s --auto-fix                # Automatic mode - fixes critical/warning only
+  %(prog)s --auto-fix --fix-all      # Fix everything including info-level
+
+OUTPUT CONTROL:
+  %(prog)s --silent                  # Only output when issues found
+  %(prog)s --output /tmp/review.md   # Custom output location
+
+FOCUS AREAS:
+  --focus docs           Documentation sync verification
+  --focus security       Security scanning
+  --focus quality        Code quality analysis
+  --focus architecture   Architecture validation
+  --focus dependencies   Dependency analysis
+  --focus testing        Test coverage assessment
+  --focus all            Everything (default)
+
+COMMON WORKFLOWS:
+
+  1. Quick doc check before committing:
+     %(prog)s --focus docs --silent
+
+  2. Fix all documentation issues automatically:
+     %(prog)s --focus docs --auto-fix --fix-all
+
+  3. Full review with interactive fixes:
+     %(prog)s --fix
+
+  4. Security audit only:
+     %(prog)s --focus security --verbose
+
+  5. Check specific finding types:
+     %(prog)s --focus docs --fix          # Fix only warnings/critical
+     %(prog)s --focus docs --fix --fix-all # Fix warnings/critical/info
+
+TRIGGERING:
+  Automatic:
+    • Runs on Claude Code Stop hook (if configured)
+    • Smart detection: runs when 5+ files changed in last 10 commits
+
+  Manual:
+    • Run directly: python3 .claude/hooks/review-agent.py
+    • Set env var: export CLAUDE_REVIEW=true
+    • Touch trigger: touch /tmp/.claude-review-trigger
+
+CONFIGURATION:
+  Edit .claude/review/config/review-config.json to customize:
+    • Enabled checkers
+    • Severity thresholds
+    • Exclusion patterns
+    • Smart trigger settings
+
+EXIT CODES:
+  0 - Success (no critical issues)
+  1 - Critical issues found
+
+REPORTS:
+  View the generated report at:
+    .claude/CODEBASE_REVIEW.md
+
+  Contains:
+    • Overall health score (0-100)
+    • Findings by severity and category
+    • File locations with line numbers
+    • Specific recommendations
+    • Metrics and statistics
 '''
     )
 
@@ -240,6 +357,24 @@ Environment Variables:
         '--no-git',
         action='store_true',
         help='Skip git-based checks'
+    )
+
+    parser.add_argument(
+        '--fix',
+        action='store_true',
+        help='Interactively fix findings by updating documentation'
+    )
+
+    parser.add_argument(
+        '--auto-fix',
+        action='store_true',
+        help='Automatically fix all fixable findings without prompting'
+    )
+
+    parser.add_argument(
+        '--fix-all',
+        action='store_true',
+        help='Fix all severity levels including info (default: only critical and warning)'
     )
 
     args = parser.parse_args()
@@ -297,6 +432,18 @@ Environment Variables:
     # Print summary (unless silent mode with no findings)
     if not (args.silent and report_data['total_findings'] == 0):
         print_summary(report_data, file=sys.stderr)
+
+    # Fix mode
+    if (args.fix or args.auto_fix) and report_data['total_findings'] > 0:
+        if args.auto_fix:
+            print("\n[review-agent] Auto-fixing findings...", file=sys.stderr)
+        else:
+            print("\n[review-agent] Entering interactive fix mode...", file=sys.stderr)
+
+        from review.utils.fixer import InteractiveFixer
+        fixer = InteractiveFixer(config['project_root'], auto_mode=args.auto_fix, fix_all=args.fix_all)
+        fixed_count = fixer.fix_findings(report_data['all_findings'])
+        print(f"[review-agent] Fixed {fixed_count} finding(s)", file=sys.stderr)
 
     # Exit with appropriate code
     exit_code = 0 if report_data['critical_count'] == 0 else 1

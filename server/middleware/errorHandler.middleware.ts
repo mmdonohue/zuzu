@@ -16,11 +16,13 @@ export const errorHandler = (
 
   // Log error (skip auth errors)
   if (!isAuthError) {
+    // replace any password fields in req.body with ****
+    const sanitizedBody = { ...req.body, password: '****' };
     logger.error(`Error: ${err.message}`, {
       stack: err.stack,
       path: req.path,
       method: req.method,
-      body: req.body
+      body: sanitizedBody
     });
   }
 

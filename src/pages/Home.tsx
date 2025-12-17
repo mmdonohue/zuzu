@@ -65,6 +65,8 @@ const Home: React.FC<appProps> = ({message}) => {
   { name: 'Redux', description: 'A predictable state container for JavaScript apps' },
   { name: 'Tailwind CSS', description: 'A utility-first CSS framework' },
   { name: 'TanStack Query', description: 'Powerful asynchronous state management for React' },
+    { name: 'React Router', description: 'Declarative routing for React applications' },
+    { name: 'Axios', description: 'Promise-based HTTP client for the browser and Node.js' },
 ];
 
 const backendTech = [
@@ -73,6 +75,8 @@ const backendTech = [
   { name: 'Morgan', description: 'HTTP request logger middleware for Node.js' },
   { name: 'Supabase', description: 'The open source Firebase alternative' },
    { name: 'OpenRouter', description: 'Unified API for accessing multiple AI models with streaming support' },
+    { name: 'bcrypt', description: 'Library for hashing and salting passwords' },
+    { name: 'JWT', description: 'JSON Web Tokens for secure authentication' },
 ];
 
 const devTools = [

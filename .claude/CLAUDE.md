@@ -50,6 +50,9 @@ npm run test:open
   3. React Router BrowserRouter (routing)
   4. MUI ThemeProvider (Material UI theming)
   5. CssBaseline (CSS reset)
+  6. AuthProvider (authentication context)
+  6. AuthProvider (authentication context)
+  6. AuthProvider (authentication context)
 
 - **Routing**: React Router v6 in `src/App.tsx` with routes for Home, About, Dashboard, OpenRouter, and Logs pages
 
@@ -69,7 +72,7 @@ npm run test:open
 - **Entry Point**: `server/index.ts` - Express server with:
   - CORS configured for localhost:3000 and production frontend
   - Morgan HTTP logger integrated with log4js
-  - Routes mounted at `/api`, `/api/openrouter`, `/api/logs`
+  - Routes mounted at `/api`, `/api/auth`, `/api/openrouter`, `/api/logs`
   - Health check endpoint at `/health`
 
 - **Logging**:
@@ -131,6 +134,8 @@ Required environment variables are defined in `.env.example` and `server/.env.ex
 - `PORT` - Server port (defaults to 5000)
 - `PRODUCTION_FRONTEND_URL` - Production frontend URL (automatically added to CORS allowed origins)
 - `ALLOWED_ORIGINS` - Additional allowed CORS origins (optional, comma-separated)
+- `JWT_ACCESS_SECRET` - JWT secret for access tokens
+- `JWT_REFRESH_SECRET` - JWT secret for refresh tokens
 
 ## Key Development Notes
 

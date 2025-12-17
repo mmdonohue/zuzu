@@ -115,10 +115,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   if(req.method === 'POST') {
+    // replace any password fields in the body with ****
     if(Object.keys(req.body).length > 0 && ['/api/auth/login', '/api/auth/signup', '/api/auth/refresh-token'].indexOf(req.path) < 0) {
-      logger.info(`POST ${req.path} - Body: [[[${JSON.stringify(req.body)}]]]`);
+      const sanitizedBody = JSON.parse(JSON.stringify(req.body), (key, value) => {
+        if (key === 'password') return '****';
+        return value;
+      });
+      logger.info(`POST ${req.path} - Body: [[[${JSON.stringify(sanitizedBody)}]]]`);
     }
-    else {
+    else if (['/api/auth/refresh-token'].indexOf(req.path) < 0) {
       logger.info(`POST ${req.path}`);
     }
   }
