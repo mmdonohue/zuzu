@@ -187,6 +187,89 @@ def print_summary(report_data: Dict[str, Any], file=sys.stdout):
         print(f"\nDetailed report generated.", file=file)
 
 
+def update_executive_summary(project_root: str, focus: str, report_data: Dict[str, Any]):
+    """Update the executive summary with results from a focused review."""
+    from datetime import datetime, timezone
+
+    summary_path = Path(project_root) / '.claude' / 'CODEBASE_REVIEW.md'
+    focus_display = focus.title()
+    focus_upper = focus.upper()
+
+    # Calculate health score
+    base_score = 100
+    critical_penalty = report_data['critical_count'] * 10
+    warning_penalty = report_data['warning_count'] * 3
+    info_penalty = report_data['info_count'] * 1
+    health_score = max(0, base_score - critical_penalty - warning_penalty - info_penalty)
+
+    # Determine status emoji
+    if report_data['critical_count'] > 0:
+        status = '🔴 CRITICAL'
+    elif report_data['warning_count'] > 0:
+        status = '⚠️ WARNING'
+    else:
+        status = '✅ PASS'
+
+    # Create section for this focus area
+    timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
+    section = f"""
+## {focus_display} Review
+
+**Last Updated**: {timestamp}
+**Status**: {status}
+**Health Score**: {health_score}/100
+
+| Metric | Count |
+|--------|-------|
+| Critical Issues | {report_data['critical_count']} |
+| Warnings | {report_data['warning_count']} |
+| Info | {report_data['info_count']} |
+| **Total Findings** | **{report_data['total_findings']}** |
+
+**Detailed Report**: [CODEBASE_REVIEW_{focus_upper}.md](./CODEBASE_REVIEW_{focus_upper}.md)
+
+---
+"""
+
+    # Read or create executive summary
+    if summary_path.exists():
+        with open(summary_path, 'r') as f:
+            content = f.read()
+
+        # Check if section for this focus exists
+        section_marker = f"## {focus_display} Review"
+        if section_marker in content:
+            # Replace existing section
+            import re
+            # Match from section header to the next ## or end of file
+            pattern = rf'{re.escape(section_marker)}.*?(?=\n## |\Z)'
+            content = re.sub(pattern, section.strip(), content, flags=re.DOTALL)
+        else:
+            # Append new section before the final marker (if exists) or at end
+            if '---\n\n_Last updated:' in content:
+                content = content.replace('---\n\n_Last updated:', section + '\n---\n\n_Last updated:')
+            else:
+                content += '\n' + section
+    else:
+        # Create new executive summary
+        content = f"""# Codebase Review - Executive Summary
+
+This dashboard provides a high-level overview of all review findings. Each focus area maintains its own detailed report.
+
+---
+
+{section}
+
+---
+
+_Last updated: {timestamp}_
+"""
+
+    # Write updated summary
+    with open(summary_path, 'w') as f:
+        f.write(content)
+
+
 def main():
     """Main entry point for review agent."""
     parser = argparse.ArgumentParser(
@@ -419,8 +502,20 @@ REPORTS:
     generator = MarkdownReportGenerator(config, not args.no_git)
     report = generator.generate(report_data)
 
-    # Write report
-    output_path = Path(config['project_root']) / args.output
+    # Determine output path based on focus
+    if args.output == '.claude/CODEBASE_REVIEW.md':  # Using default output
+        if args.focus != 'all':
+            # Use focus-specific filename
+            focus_name = args.focus.upper()
+            output_filename = f'.claude/CODEBASE_REVIEW_{focus_name}.md'
+            output_path = Path(config['project_root']) / output_filename
+        else:
+            # Use default for 'all' focus
+            output_path = Path(config['project_root']) / args.output
+    else:
+        # User specified custom output path
+        output_path = Path(config['project_root']) / args.output
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(output_path, 'w') as f:
@@ -428,6 +523,12 @@ REPORTS:
 
     if args.verbose:
         print(f"[review-agent] Report written to: {output_path}", file=sys.stderr)
+
+    # Update executive summary if this is a focused review
+    if args.focus != 'all':
+        update_executive_summary(config['project_root'], args.focus, report_data)
+        if args.verbose:
+            print(f"[review-agent] Executive summary updated", file=sys.stderr)
 
     # Print summary (unless silent mode with no findings)
     if not (args.silent and report_data['total_findings'] == 0):

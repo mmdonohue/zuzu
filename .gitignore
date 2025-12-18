@@ -1,6 +1,11 @@
 /docs
 /sql
 /server/migrations
+/archive
+
+# python cache
+__pycache__/
+*.pyc
 
 # dependencies
 /server/node_modules
@@ -47,6 +52,6 @@ yarn-error.log*
 
 # Claude Code - Personal Settings & Generated Files
 .claude/settings.local.json
-.claude/CODEBASE_REVIEW.md
+.claude/CODEBASE_REVIEW_*.md
 .claude/plans/
 /tmp/.claude-review-trigger
