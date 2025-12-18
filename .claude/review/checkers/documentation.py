@@ -53,6 +53,7 @@ class DocumentationChecker:
         # Check README.md accuracy
         self._check_readme_scripts()
         self._check_readme_tech_stack()
+        self._check_readme_claude_consistency()
 
         # Check About.tsx and Home.tsx tech stack
         self._check_page_tech_stacks()
@@ -439,6 +440,108 @@ class DocumentationChecker:
 
         except Exception as e:
             print(f"[documentation] Error checking README tech stack: {e}")
+
+    def _check_readme_claude_consistency(self):
+        """Check if README.md is consistent with CLAUDE.md."""
+        try:
+            # Read both files
+            readme = self.project_root / 'README.md'
+            claude_md = self.project_root / '.claude' / 'CLAUDE.md'
+
+            if not readme.exists() or not claude_md.exists():
+                return
+
+            with open(readme, 'r') as f:
+                readme_content = f.read()
+
+            with open(claude_md, 'r') as f:
+                claude_content = f.read()
+
+            # Extract tech stacks from CLAUDE.md
+            # Look for key technologies mentioned in CLAUDE.md that should be in README
+            claude_techs = {
+                'React Router': ['react-router', 'router'],
+                'Redux Toolkit': ['redux toolkit', '@reduxjs/toolkit'],
+                'TanStack Query': ['tanstack query', 'react-query'],
+                'Material-UI': ['mui', 'material-ui', '@mui'],
+                'OpenRouter': ['openrouter'],
+                'log4js': ['log4js', 'logging'],
+                'bcrypt': ['bcrypt'],
+                'JWT': ['jwt', 'json web token'],
+            }
+
+            missing_from_readme = []
+            for tech_name, patterns in claude_techs.items():
+                # Check if mentioned in CLAUDE.md
+                claude_mentions = any(pattern in claude_content.lower() for pattern in patterns)
+
+                if claude_mentions:
+                    # Check if also mentioned in README
+                    readme_mentions = any(pattern in readme_content.lower() for pattern in patterns)
+
+                    if not readme_mentions:
+                        missing_from_readme.append(tech_name)
+
+            if missing_from_readme:
+                self.findings.append({
+                    'severity': 'warning',
+                    'issue': 'README.md missing technologies documented in CLAUDE.md',
+                    'file': 'README.md',
+                    'description': 'Technologies mentioned in CLAUDE.md are not documented in README.md.',
+                    'actual': f'CLAUDE.md documents: {", ".join(missing_from_readme)}',
+                    'documented': 'Missing from README.md',
+                    'recommendation': f'Add to README.md tech stack section: {", ".join(missing_from_readme)}'
+                })
+
+            # Check development commands consistency
+            # Extract commands from CLAUDE.md
+            import re
+            claude_commands = set(re.findall(r'npm (?:run )?(\w+)', claude_content))
+            readme_commands = set(re.findall(r'npm (?:run )?(\w+)', readme_content))
+
+            # Commands in CLAUDE.md but not in README
+            missing_commands = claude_commands - readme_commands
+            if missing_commands:
+                # Filter to only important commands
+                important_commands = {'start', 'build', 'test', 'dev', 'server', 'serve'}
+                missing_important = missing_commands & important_commands
+
+                if missing_important:
+                    self.findings.append({
+                        'severity': 'info',
+                        'issue': 'README.md missing npm scripts from CLAUDE.md',
+                        'file': 'README.md',
+                        'description': 'Some npm commands documented in CLAUDE.md are not in README.md.',
+                        'actual': f'CLAUDE.md documents: npm {", npm ".join(sorted(missing_important))}',
+                        'documented': 'Missing from README.md',
+                        'recommendation': f'Add command documentation to README.md: {", ".join(sorted(missing_important))}'
+                    })
+
+            # Check environment variables consistency
+            # Extract env vars from both files
+            claude_env_vars = set(re.findall(r'`([A-Z_]+(?:_[A-Z_]+)*)`', claude_content))
+            readme_env_vars = set(re.findall(r'`([A-Z_]+(?:_[A-Z_]+)*)`', readme_content))
+
+            # Filter to actual env vars (start with common prefixes)
+            env_prefixes = ['REACT_APP_', 'SUPABASE_', 'ZUZU_', 'PORT', 'PRODUCTION_', 'ALLOWED_', 'JWT_']
+            claude_env_vars = {v for v in claude_env_vars if any(v.startswith(p) for p in env_prefixes)}
+            readme_env_vars = {v for v in readme_env_vars if any(v.startswith(p) for p in env_prefixes)}
+
+            # Important vars in CLAUDE.md but not README
+            missing_env_vars = claude_env_vars - readme_env_vars
+            if missing_env_vars:
+                self.findings.append({
+                    'severity': 'info',
+                    'issue': 'README.md missing environment variables from CLAUDE.md',
+                    'file': 'README.md',
+                    'description': 'Some environment variables in CLAUDE.md are not documented in README.md.',
+                    'actual': f'CLAUDE.md documents: {", ".join(sorted(missing_env_vars))}',
+                    'documented': 'Missing from README.md',
+                    'recommendation': f'Consider adding to README.md: {", ".join(sorted(missing_env_vars))}'
+                })
+
+        except Exception as e:
+            print(f"[documentation] Error checking README/CLAUDE consistency: {e}")
 
     def _check_page_tech_stacks(self):
         """Check if tech stacks displayed in About.tsx and Home.tsx match package.json."""

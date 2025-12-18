@@ -7,16 +7,62 @@
       "Bash(git commit:*)",
       "Bash(find:*)",
       "Bash(chmod:*)",
+      "Bash(/usr/bin/say:*)",
+      "Bash(say:*)",
       "Bash(python3 .claude/hooks/review-agent.py:*)"
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is online and ready for your command' -v Zarvox"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is going offline, goodbye' -v Zarvox"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is requesting additional permissions' -v Zarvox"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/say 'Zuzu is ready for your command' -v Zarvox"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/review-agent.py --silent --focus docs"
+            "command": "/usr/bin/say 'Zuzu is finished' -v Zarvox"
+          },
+          {
+            "type": "command",
+            "command": "/opt/homebrew/bin/python3 .claude/hooks/review-agent.py --silent --focus docs"
           }
         ]
       }
