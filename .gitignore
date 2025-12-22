@@ -17,6 +17,9 @@ __pycache__/
 /coverage
 /cypress/videos
 /cypress/screenshots
+/cypress/results
+/cypress/fixtures
+/cypress/support
 
 # production
 /dist

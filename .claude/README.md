@@ -35,6 +35,84 @@ The review agent automatically verifies documentation accuracy when Claude Code 
 4. `src/pages/Home.tsx` - Displayed tech stack matches package.json
 5. `src/pages/About.tsx` - Mentioned technologies are installed
 
+## Review Checkers
+
+The review agent includes multiple specialized checkers:
+
+### Documentation Checker
+Verifies documentation accuracy across 5 key files:
+- `.claude/CLAUDE.md` - Architecture matches code
+- `.claude/AUTH_IMPLEMENTATION.md` - Auth implementation is accurate
+- `README.md` - Tech stack and scripts are current
+- `src/pages/Home.tsx` - Displayed tech stack matches package.json
+- `src/pages/About.tsx` - Technologies mentioned are installed
+
+### Security Checker
+Scans for security vulnerabilities and configuration issues:
+- Secrets exposure (hardcoded API keys, passwords)
+- CSRF protection (validates requirements based on auth method)
+- SQL injection patterns
+- XSS vulnerabilities
+- Insecure randomness
+- Dependency vulnerabilities
+- Missing rate limiting
+- Input validation issues
+
+**Configuration**: `.claude/review/config/security.json`
+**Suppressions**: `.claude/review/config/suppressions.json`
+
+### Architecture Checker
+Validates architectural patterns and consistency:
+- Module structure
+- Separation of concerns
+- Import patterns
+- Code organization
+
+### Dependencies Checker
+Analyzes dependency health:
+- Outdated packages
+- Unused dependencies
+- Security vulnerabilities via `npm audit`
+
+## Security Documentation
+
+Security implementation is documented in:
+- **SECURITY.md** - Complete security guide (CSRF, auth, best practices)
+- **.claude/AUTH_IMPLEMENTATION.md** - Authentication system details
+- **.claude/review/config/security.json** - Security checker configuration
+- **.claude/review/config/suppressions.json** - False positive suppressions
+
+### Running Security Reviews
+
+```bash
+# Security checks only
+python3 .claude/hooks/review-agent.py --focus security
+
+# Full review (all checkers)
+python3 .claude/hooks/review-agent.py
+```
+
+### Security Configuration
+
+Edit `.claude/review/config/security.json` to:
+- Define authentication method (affects CSRF requirements)
+- Enable/disable specific security checks
+- Set severity levels (critical, warning, info)
+- Configure check-specific behavior
+
+### Managing False Positives
+
+Use `.claude/review/config/suppressions.json` to suppress:
+- Test files with mock credentials
+- Public endpoints that don't need CSRF
+- Non-cryptographic uses of `Math.random()`
+- Accepted security risks (document the reason!)
+
+**Suppression Types**:
+1. **Specific** - Exact file and line number
+2. **Pattern** - Regex matching multiple files
+3. **Inline** - Code comments (`// SECURITY-IGNORE: <reason>`)
+
 ### Manual Usage
 
 ```bash

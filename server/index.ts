@@ -10,9 +10,12 @@ import apiRoutes from './routes/api.js';
 import openRouterRoutes from './routes/openrouter.js';
 import logRoutes from './routes/logs.js';
 import authRoutes from './routes/auth.routes.js';
+import reviewRoutes from './routes/review.js';
+import csrfRoutes from './routes/csrf.js';
 import { logger, httpLogger } from './config/logger.js';
 import { errorHandler } from './middleware/errorHandler.middleware.js';
 import { apiLimiter } from './middleware/rateLimiter.middleware.js';
+import { csrfProtection, csrfErrorHandler } from './middleware/csrf.middleware.js';
 
 const currDir = path.resolve();
 
@@ -105,12 +108,19 @@ app.use(cors({
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'CSRF-Token'],
   credentials: true
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect('https://' + req.headers.host + req.url);
+  }
+  next();
+});
 
 
 app.use((req, res, next) => {
@@ -133,11 +143,19 @@ app.use((req, res, next) => {
 // API rate limiting
 app.use('/api', apiLimiter);
 
+// CSRF token endpoint (must be before CSRF protection)
+app.use('/api', csrfRoutes);
+
+// Apply CSRF protection to all routes except GET/HEAD/OPTIONS
+// Note: The CSRF middleware automatically skips GET, HEAD, OPTIONS methods
+app.use('/api', csrfProtection);
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/openrouter', openRouterRoutes);
 app.use('/api/logs', logRoutes);
+app.use('/api/review', reviewRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -150,6 +168,9 @@ app.use((req, res) => {
   logger.warn(`404 - Route not found: ${req.method} ${req.path}`);
   res.status(404).json({ message: 'Route not found' });
 });
+
+// CSRF error handler (before general error handler)
+app.use(csrfErrorHandler);
 
 // Centralized error handler (must be last)
 app.use(errorHandler);

@@ -70,10 +70,19 @@ npm run test:open
 
 ### Backend Stack
 - **Entry Point**: `server/index.ts` - Express server with:
-  - CORS configured for localhost:3000 and production frontend
+  - CORS configured for localhost:3000 and production frontend (credentials enabled)
   - Morgan HTTP logger integrated with log4js
-  - Routes mounted at `/api`, `/api/auth`, `/api/openrouter`, `/api/logs`
+  - Routes mounted at `/api`, `/api/auth`, `/api/openrouter`, `/api/logs`, `/api/review`, `/api/csrf-token`
+  - CSRF protection applied to all state-changing routes (POST, PUT, DELETE, PATCH)
   - Health check endpoint at `/health`
+
+- **Security**:
+  - CSRF protection via `csrf-csrf` library (Double Submit Cookie pattern)
+  - CSRF middleware in `server/middleware/csrf.middleware.ts`
+  - Token endpoint at `/api/csrf-token`
+  - Protection applied to POST, PUT, DELETE, PATCH routes
+  - Cookie-based authentication requires CSRF due to `sameSite: 'none'`
+  - bcrypt password hashing in `server/services/auth.service.ts`
 
 - **Logging**:
   - log4js configured to write to `logs/` directory at project root
@@ -134,8 +143,58 @@ Required environment variables are defined in `.env.example` and `server/.env.ex
 - `PORT` - Server port (defaults to 5000)
 - `PRODUCTION_FRONTEND_URL` - Production frontend URL (automatically added to CORS allowed origins)
 - `ALLOWED_ORIGINS` - Additional allowed CORS origins (optional, comma-separated)
-- `JWT_ACCESS_SECRET` - JWT secret for access tokens
-- `JWT_REFRESH_SECRET` - JWT secret for refresh tokens
+- `JWT_ACCESS_SECRET` - JWT secret for access tokens (generate with `openssl rand -base64 48`)
+- `JWT_REFRESH_SECRET` - JWT secret for refresh tokens (generate with `openssl rand -base64 48`)
+- `CSRF_SECRET` - CSRF token signing key **REQUIRED** (generate with `openssl rand -base64 48`)
+
+## Security Implementation
+
+### CSRF Protection
+
+**Why Required**: Cookie-based auth with `sameSite: 'none'` allows cross-origin cookie transmission, creating CSRF vulnerability.
+
+**Implementation**: Double Submit Cookie pattern
+1. Server generates token, sends in cookie + response body
+2. Client stores token, includes in `x-csrf-token` header
+3. Server validates cookie matches header (attacker can't read response body due to Same-Origin Policy)
+
+**Files**:
+- `server/middleware/csrf.middleware.ts` - CSRF middleware, error handling
+- `src/services/csrf.service.ts` - Frontend token management
+- `src/services/api.ts` - `fetchWithCsrf` helper for automatic token inclusion
+- `server/routes/csrf.ts` - Token endpoint (`/api/csrf-token`)
+
+**Environment**: `CSRF_SECRET` required in `server/.env` (generate: `openssl rand -base64 48`)
+
+**Protected Routes**: Apply `csrfProtection` middleware to all state-changing endpoints (POST, PUT, DELETE, PATCH)
+
+**Error Handling**: Frontend automatically refreshes token on `CSRF_VALIDATION_FAILED` (403) response
+
+### Security Configuration
+
+Review agent uses `.claude/review/config/security.json` to:
+- Define authentication method (`cookie`, `header`, `both`)
+- Configure CSRF requirements
+- Enable/disable security checks
+- Set severity levels
+
+**CSRF Check Behavior**: Automatically skipped when:
+- Authentication method is `header` (no cookies = no CSRF risk)
+- `sameSite` is `strict` or `lax` (browser blocks cross-origin cookies)
+- Suppressed via `.claude/review/config/suppressions.json`
+
+### Suppression System
+
+False positives can be suppressed in `.claude/review/config/suppressions.json`:
+
+**Types**:
+1. **Specific**: Suppress exact file + line number
+2. **Pattern**: Suppress regex-matched paths (e.g., test files)
+3. **Inline**: Code comments (`// SECURITY-IGNORE: <reason>`)
+
+**Best Practice**: Always include expiration dates and clear reasons for suppressions
+
+See `SECURITY.md` for complete security documentation and best practices.
 
 ## Key Development Notes
 

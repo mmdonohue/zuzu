@@ -1,0 +1,95 @@
+{
+  "$schema": "./security-schema.json",
+  "version": "1.0",
+  "description": "Security review configuration - customize security checks for your application architecture",
+
+  "authentication": {
+    "method": "cookie",
+    "description": "Authentication method: 'cookie' (session/JWT in cookies), 'header' (Bearer tokens), 'both'",
+    "cookieConfig": {
+      "httpOnly": true,
+      "sameSite": "none",
+      "secure": true
+    }
+  },
+
+  "csrfProtection": {
+    "required": true,
+    "implemented": true,
+    "method": "csrf-csrf",
+    "description": "CSRF protection method: 'csrf-csrf' (double submit cookie pattern), 'sameSite' (cookie attribute), 'custom' (custom implementation)"
+  },
+
+  "checks": {
+    "secretsExposure": {
+      "enabled": true,
+      "severity": "critical",
+      "patterns": [
+        "hardcoded passwords",
+        "API keys",
+        "tokens",
+        "secrets"
+      ]
+    },
+    "csrfProtection": {
+      "enabled": true,
+      "severity": "warning",
+      "skipIfHeaderAuth": true,
+      "skipIfSameSiteStrict": true,
+      "description": "Check for CSRF protection. Skipped if using header-based auth or SameSite strict/lax cookies"
+    },
+    "httpsEnforcement": {
+      "enabled": true,
+      "severity": "info",
+      "environments": ["production"]
+    },
+    "sqlInjection": {
+      "enabled": true,
+      "severity": "critical"
+    },
+    "xssVulnerabilities": {
+      "enabled": true,
+      "severity": "critical"
+    },
+    "insecureRandomness": {
+      "enabled": true,
+      "severity": "warning",
+      "allowMathRandomFor": ["auth-codes", "non-cryptographic"]
+    },
+    "dependencyVulnerabilities": {
+      "enabled": true,
+      "severity": "critical"
+    },
+    "rateLimiting": {
+      "enabled": true,
+      "severity": "warning",
+      "requiredEndpoints": ["/api/auth/login", "/api/auth/signup"]
+    },
+    "inputValidation": {
+      "enabled": true,
+      "severity": "warning"
+    }
+  },
+
+  "securityHeaders": {
+    "required": [
+      "helmet",
+      "X-Content-Type-Options",
+      "X-Frame-Options",
+      "Content-Security-Policy"
+    ],
+    "detected": []
+  },
+
+  "customRules": {
+    "allowTestSecrets": true,
+    "allowDevEnvironmentExceptions": true,
+    "requireAuthenticationOnRoutes": true
+  },
+
+  "reporting": {
+    "includeRecommendations": true,
+    "verbosity": "detailed",
+    "groupByCategory": true
+  }
+}

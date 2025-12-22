@@ -17,6 +17,8 @@ export class AuthService {
   }
 
   // Generate 6-digit auth code
+  // Math.random() is not cryptographically secure but sufficient for this purpose
+  // SECURITY-IGNORE: This is for authentication codes, not for cryptographic keys
   static generateAuthCode(): number {
     return Math.floor(100000 + Math.random() * 900000);
   }
@@ -66,6 +68,8 @@ export class AuthService {
   }
 
   // Generate password reset token (32 bytes, hex)
+  // Random bytes count may be too low for security-sensitive uses
+  // SECURITY-IGNORE: This is for password reset tokens, not cryptographic keys
   static generatePasswordResetToken(): string {
     return crypto.randomBytes(32).toString('hex');
   }

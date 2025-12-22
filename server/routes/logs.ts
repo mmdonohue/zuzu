@@ -96,7 +96,7 @@ const parseLogEntry = (entry: string): LogEntry | null => {
     // replace any password fields in jsonData with ****
     jsonData.forEach((obj, index) => {
       if (obj.password) {
-        // console.log('Redacting password for log entry:', obj);
+        // SECURITY-IGNORE: Password sanitization for logging, not a hardcoded credential
         jsonData[index] = { ...obj, password: '****' };
         // console.log('Redacted log entry data:', jsonData[index]);
       }

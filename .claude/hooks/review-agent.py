@@ -270,6 +270,169 @@ _Last updated: {timestamp}_
         f.write(content)
 
 
+def export_json_summary(project_root: str, focus: str = None, report_data: Dict[str, Any] = None):
+    """Export executive summary as JSON for frontend consumption."""
+    from datetime import datetime, timezone
+    import re
+
+    summary_path = Path(project_root) / '.claude' / 'CODEBASE_REVIEW.md'
+    json_path = Path(project_root) / '.claude' / 'CODEBASE_REVIEW.json'
+
+    if not summary_path.exists():
+        return
+
+    with open(summary_path, 'r') as f:
+        content = f.read()
+
+    # Parse the markdown to extract review data
+    reviews = []
+
+    # Pattern to match review sections
+    section_pattern = r'## (.+?) Review\s*\n\s*\n\*\*Last Updated\*\*:\s*(.+?)\s*\n\*\*Status\*\*:\s*(.+?)\s*\n\*\*Health Score\*\*:\s*(\d+)/100\s*\n\s*\n\| Metric \| Count \|\s*\n\|[^|]+\|[^|]+\|\s*\n\| Critical Issues \| (\d+) \|\s*\n\| Warnings \| (\d+) \|\s*\n\| Info \| (\d+) \|\s*\n\| \*\*Total Findings\*\* \| \*\*(\d+)\*\* \|'
+
+    matches = re.finditer(section_pattern, content, re.MULTILINE)
+
+    for match in matches:
+        category = match.group(1)
+        last_updated = match.group(2)
+        status_raw = match.group(3)
+        health_score = int(match.group(4))
+        critical = int(match.group(5))
+        warnings = int(match.group(6))
+        info = int(match.group(7))
+        total = int(match.group(8))
+
+        # Parse status emoji and text
+        status_map = {
+            '🔴 CRITICAL': 'critical',
+            '⚠️ WARNING': 'warning',
+            '✅ PASS': 'pass'
+        }
+        status = status_map.get(status_raw, 'unknown')
+
+        reviews.append({
+            'category': category.lower(),
+            'displayName': category,
+            'lastUpdated': last_updated,
+            'status': status,
+            'statusDisplay': status_raw,
+            'healthScore': health_score,
+            'metrics': {
+                'critical': critical,
+                'warnings': warnings,
+                'info': info,
+                'total': total
+            }
+        })
+
+    # Calculate overall metrics
+    overall_health = sum(r['healthScore'] for r in reviews) // len(reviews) if reviews else 0
+    overall_critical = sum(r['metrics']['critical'] for r in reviews)
+    overall_warnings = sum(r['metrics']['warnings'] for r in reviews)
+    overall_info = sum(r['metrics']['info'] for r in reviews)
+    overall_total = sum(r['metrics']['total'] for r in reviews)
+
+    # Determine overall status
+    if overall_critical > 0:
+        overall_status = 'critical'
+        overall_status_display = '🔴 CRITICAL'
+    elif overall_warnings > 0:
+        overall_status = 'warning'
+        overall_status_display = '⚠️ WARNING'
+    else:
+        overall_status = 'pass'
+        overall_status_display = '✅ PASS'
+
+    # Collect all findings from detailed reports
+    all_findings = []
+    for review in reviews:
+        category_upper = review['category'].upper()
+        detail_path = Path(project_root) / '.claude' / f'CODEBASE_REVIEW_{category_upper}.md'
+
+        if detail_path.exists():
+            with open(detail_path, 'r') as f:
+                detail_content = f.read()
+
+            # Parse findings from markdown
+            findings = _parse_findings_from_markdown(detail_content, review['category'], review['displayName'])
+            all_findings.extend(findings)
+
+    # Build JSON structure
+    json_data = {
+        'lastUpdated': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
+        'overallStatus': overall_status,
+        'overallStatusDisplay': overall_status_display,
+        'overallHealthScore': overall_health,
+        'overallMetrics': {
+            'critical': overall_critical,
+            'warnings': overall_warnings,
+            'info': overall_info,
+            'total': overall_total
+        },
+        'reviews': reviews,
+        'findings': all_findings
+    }
+
+    # Write JSON file
+    with open(json_path, 'w') as f:
+        json.dump(json_data, f, indent=2)
+
+
+def _parse_findings_from_markdown(content: str, category: str, category_display: str) -> List[Dict[str, Any]]:
+    """Parse individual findings from detailed markdown report."""
+    import re
+
+    findings = []
+
+    # Pattern to match finding sections
+    # Matches: #### Issue Title\n**Location**: `file:line`\nDescription\n**Recommendation**: recommendation
+    finding_pattern = r'####\s+(.+?)\n\n(?:\*\*Location\*\*:\s*`(.+?)`\n\n)?(.+?)(?:\n\n\*\*Recommendation\*\*:\s*(.+?))?(?=\n\n####|\n\n###|\Z)'
+
+    # Find severity sections
+    severity_sections = {
+        'critical': re.search(r'### (?:⚠️|🔴) (?:Critical Issues?|CRITICAL)(.*?)(?=\n### |\Z)', content, re.DOTALL),
+        'warning': re.search(r'### (?:⚠️|WARNING) Warnings?(.*?)(?=\n### |\Z)', content, re.DOTALL),
+        'info': re.search(r'### (?:ℹ️|INFO) Information(.*?)(?=\n### |\Z)', content, re.DOTALL)
+    }
+
+    for severity, section_match in severity_sections.items():
+        if section_match:
+            section_content = section_match.group(1)
+            matches = re.finditer(finding_pattern, section_content, re.DOTALL)
+
+            for match in matches:
+                issue = match.group(1).strip()
+                location = match.group(2).strip() if match.group(2) else ''
+                description = match.group(3).strip()
+                recommendation = match.group(4).strip() if match.group(4) else ''
+
+                # Parse file and line from location
+                file_path = ''
+                line_number = None
+                if location and ':' in location:
+                    parts = location.rsplit(':', 1)
+                    file_path = parts[0]
+                    try:
+                        line_number = int(parts[1])
+                    except (ValueError, IndexError):
+                        file_path = location
+                elif location:
+                    file_path = location
+
+                findings.append({
+                    'category': category,
+                    'categoryDisplay': category_display,
+                    'severity': severity,
+                    'issue': issue,
+                    'file': file_path,
+                    'line': line_number,
+                    'description': description,
+                    'recommendation': recommendation
+                })
+
+    return findings
+
+
 def main():
     """Main entry point for review agent."""
     parser = argparse.ArgumentParser(
@@ -527,8 +690,10 @@ REPORTS:
     # Update executive summary if this is a focused review
     if args.focus != 'all':
         update_executive_summary(config['project_root'], args.focus, report_data)
+        export_json_summary(config['project_root'])
         if args.verbose:
             print(f"[review-agent] Executive summary updated", file=sys.stderr)
+            print(f"[review-agent] JSON summary exported", file=sys.stderr)
 
     # Print summary (unless silent mode with no findings)
     if not (args.silent and report_data['total_findings'] == 0):

@@ -1,0 +1,36 @@
+{
+  "$schema": "./suppressions-schema.json",
+  "version": "1.0",
+  "description": "Code review finding suppressions - use to suppress false positives",
+  "suppressions": [
+    {
+      "id": "error-handler-password-sanitization",
+      "file": "server/middleware/errorHandler.middleware.ts",
+      "line": 21,
+      "checker": "security",
+      "pattern": "Hardcoded password",
+      "justification": "This is password sanitization code (replacing with ****), not a hardcoded password credential",
+      "added_by": "developer",
+      "added_date": "2025-12-21",
+      "expires": null,
+      "reviewed": false
+    }
+  ],
+  "patterns": [
+    {
+      "id": "test-mock-passwords",
+      "pattern": "password.*=.*['\"].*test.*['\"]",
+      "paths": ["**/*test.ts", "**/*spec.ts", "**/__tests__/**"],
+      "checker": "security",
+      "justification": "Test files contain mock passwords for testing purposes",
+      "added_by": "developer",
+      "added_date": "2025-12-21"
+    }
+  ],
+  "inline_markers": [
+    "SECURITY-IGNORE",
+    "SEC-IGNORE",
+    "NOSEC",
+    "security:ignore"
+  ]
+}

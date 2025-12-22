@@ -72,6 +72,9 @@ This project integrates the following technologies:
    - `PORT`: Server port (default: 5000)
    - `PRODUCTION_FRONTEND_URL`: Your production frontend URL (automatically added to CORS allowed origins)
    - `ALLOWED_ORIGINS`: Additional allowed CORS origins (optional, comma-separated)
+   - `JWT_ACCESS_SECRET`: JWT secret for access tokens (generate with `openssl rand -base64 48`)
+   - `JWT_REFRESH_SECRET`: JWT secret for refresh tokens (generate with `openssl rand -base64 48`)
+   - `CSRF_SECRET`: CSRF token signing key (generate with `openssl rand -base64 48`)
 
 ### Running the Application
 
@@ -111,6 +114,52 @@ npm test
 # Open Cypress Test Runner
 npm run test:open
 ```
+
+## Security
+
+ZuZu implements multiple security layers to protect against common web vulnerabilities.
+
+### CSRF Protection
+
+The application uses cookie-based authentication with `sameSite: 'none'`, which requires CSRF protection:
+
+- **Implementation**: Double Submit Cookie pattern using `csrf-csrf` library
+- **Protected Routes**: All POST, PUT, DELETE, PATCH endpoints
+- **Frontend**: CSRF tokens automatically included via `fetchWithCsrf` helper
+
+**Quick Start:**
+```bash
+# Generate CSRF secret (add to server/.env)
+openssl rand -base64 48
+```
+
+See [SECURITY.md](./SECURITY.md) for complete security documentation.
+
+### Authentication
+
+- **JWT Storage**: httpOnly, secure cookies (protected from XSS)
+- **Token Types**: Short-lived access tokens (15min) + refresh tokens (7 days)
+- **Password Security**: bcrypt hashing with salt rounds = 12
+
+### Environment Security
+
+**Required secrets** in `server/.env`:
+- `CSRF_SECRET` - CSRF token signing key (generate with `openssl rand -base64 48`)
+- `JWT_ACCESS_SECRET` - Access token signing key
+- `JWT_REFRESH_SECRET` - Refresh token signing key
+
+**Never commit** `.env` or `server/.env` files to version control.
+
+### Security Review
+
+Run automated security checks:
+```bash
+python3 .claude/hooks/review-agent.py --focus security
+```
+
+For detailed security guidance, see:
+- [SECURITY.md](./SECURITY.md) - Complete security documentation
+- [.claude/AUTH_IMPLEMENTATION.md](./.claude/AUTH_IMPLEMENTATION.md) - Authentication implementation details
 
 ## Project Structure
 

@@ -16,6 +16,7 @@ export const errorHandler = (
 
   // Log error (skip auth errors)
   if (!isAuthError) {
+    // SECURITY-IGNORE: Password sanitization for logging, not a hardcoded credential
     // replace any password fields in req.body with ****
     const sanitizedBody = { ...req.body, password: '****' };
     logger.error(`Error: ${err.message}`, {
