@@ -133,7 +133,7 @@ The application uses cookie-based authentication with `sameSite: 'none'`, which 
 openssl rand -base64 48
 ```
 
-See [SECURITY.md](./SECURITY.md) for complete security documentation.
+See [.claude/SECURITY.md](./.claude/SECURITY.md) for complete security documentation.
 
 ### Authentication
 
@@ -158,31 +158,133 @@ python3 .claude/hooks/review-agent.py --focus security
 ```
 
 For detailed security guidance, see:
-- [SECURITY.md](./SECURITY.md) - Complete security documentation
+- [.claude/SECURITY.md](./.claude/SECURITY.md) - Complete security documentation
 - [.claude/AUTH_IMPLEMENTATION.md](./.claude/AUTH_IMPLEMENTATION.md) - Authentication implementation details
 
 ## Project Structure
 
 ```
 ZuZu/
-├── src/                  # Frontend source files
-│   ├── components/       # Reusable UI components
-│   ├── pages/            # Application pages
-│   ├── services/         # API and external services
-│   ├── store/            # Redux store, slices, and middleware
-│   ├── hooks/            # Custom React hooks
-│   ├── types/            # TypeScript type definitions
-│   └── styles/           # Global styles
-├── server/               # Backend Express server
-│   ├── routes/           # API route definitions
-│   └── controllers/      # Route controllers
-├── public/               # Static assets
-├── cypress/              # Cypress tests
-│   ├── e2e/              # End-to-end tests
-│   ├── fixtures/         # Test data
-│   └── support/          # Support files and commands
-└── config files          # Configuration files for various tools
+├── .claude/                    # Claude Code integration & automated review
+│   ├── agents/                 # AI agent configurations (reviewers, architects)
+│   ├── hooks/                  # Pre-commit review automation
+│   ├── review/                 # Code review checkers & utilities
+│   │   ├── checkers/           # Security, quality, architecture, testing validators
+│   │   ├── config/             # Review configuration & suppressions
+│   │   └── utils/              # Markdown generation, file parsing, fixes
+│   ├── SECURITY.md             # Complete security documentation
+│   ├── AUTH_IMPLEMENTATION.md  # Authentication implementation guide
+│   ├── CLAUDE.md               # Project instructions for Claude
+│   └── CODEBASE_REVIEW*.md     # Automated review reports
+│
+├── src/                        # Frontend React/TypeScript application
+│   ├── assets/                 # Static assets (images, fonts)
+│   ├── components/             # Reusable UI components
+│   │   ├── Header.tsx
+│   │   ├── Footer.tsx
+│   │   ├── Modal.tsx
+│   │   └── ProtectedRoute.tsx
+│   ├── pages/                  # Page components (routing targets)
+│   │   ├── Home.tsx
+│   │   ├── About.tsx
+│   │   ├── Dashboard.tsx
+│   │   ├── Login.tsx
+│   │   ├── Signup.tsx
+│   │   ├── Account.tsx
+│   │   ├── Logs.tsx
+│   │   └── OpenRouter.tsx
+│   ├── services/               # API clients & external integrations
+│   │   ├── api.ts              # API fetch utilities
+│   │   ├── auth.service.ts     # Authentication service
+│   │   ├── csrf.service.ts     # CSRF token management
+│   │   └── supabase.ts         # Supabase client
+│   ├── store/                  # Redux state management
+│   │   ├── index.ts            # Store configuration
+│   │   └── slices/             # Redux slices (auth, UI)
+│   ├── context/                # React Context providers
+│   │   └── AuthContext.tsx
+│   ├── hooks/                  # Custom React hooks
+│   │   └── useQuery.ts
+│   ├── types/                  # TypeScript type definitions
+│   ├── utils/                  # Utility functions
+│   ├── config/                 # Configuration files
+│   ├── styles/                 # Global styles & CSS
+│   ├── App.tsx                 # Main app component with routing
+│   └── index.tsx               # Application entry point
+│
+├── server/                     # Express backend server
+│   ├── routes/                 # API route definitions
+│   │   ├── api.ts              # Main API routes
+│   │   ├── auth.routes.ts      # Authentication endpoints
+│   │   ├── csrf.ts             # CSRF token endpoints
+│   │   ├── logs.ts             # Log access endpoints
+│   │   ├── openrouter.ts       # OpenRouter proxy
+│   │   └── review.ts           # Code review endpoints
+│   ├── controllers/            # Request handlers
+│   │   └── auth.controller.ts
+│   ├── middleware/             # Express middleware
+│   │   ├── auth.middleware.ts        # JWT verification
+│   │   ├── csrf.middleware.ts        # CSRF protection
+│   │   ├── errorHandler.middleware.ts
+│   │   ├── rateLimiter.middleware.ts
+│   │   └── validation.middleware.ts
+│   ├── services/               # Business logic layer
+│   │   ├── auth.service.ts     # Authentication logic
+│   │   ├── user.service.ts     # User management
+│   │   ├── email.service.ts    # Email operations
+│   │   └── supabase.ts         # Supabase integration
+│   ├── migrations/             # Database migrations
+│   ├── utils/                  # Utility functions
+│   │   ├── errors.ts
+│   │   └── responses.ts
+│   ├── config/                 # Server configuration
+│   │   └── logger.ts           # log4js configuration
+│   ├── index.ts                # Server entry point
+│   ├── .env.example            # Backend environment template
+│   └── tsconfig.json           # TypeScript config (CommonJS)
+│
+├── cypress/                    # End-to-end testing
+│   ├── e2e/                    # Test specifications
+│   ├── fixtures/               # Test data
+│   └── support/                # Commands & configuration
+│
+├── public/                     # Static public assets
+├── dist/                       # Production build output
+├── logs/                       # Application logs (auto-created)
+│
+├── webpack.config.cjs          # Webpack bundler configuration
+├── tailwind.config.js          # Tailwind CSS configuration
+├── tsconfig.json               # TypeScript config (frontend)
+├── cypress.config.ts           # Cypress testing configuration
+├── package.json                # Project dependencies & scripts
+├── .env.example                # Frontend environment template
+└── README.md                   # Project documentation
 ```
+
+### Key Directories Explained
+
+**Frontend (`src/`)**
+- Path aliases configured: `@/*` maps to `src/*`
+- Provider hierarchy: Redux → TanStack Query → Router → MUI Theme → Auth
+- State management: Redux Toolkit + TanStack Query for server state
+
+**Backend (`server/`)**
+- RESTful API with Express
+- JWT authentication with httpOnly cookies
+- CSRF protection on all mutation endpoints
+- Rate limiting and request validation
+- Structured logging with log4js
+
+**Development Tools (`.claude/`)**
+- Automated code review on commits
+- Security, quality, architecture, and testing validators
+- AI-powered documentation review
+- Suppression management for false positives
+
+**Testing (`cypress/`)**
+- E2E tests with Cypress
+- Configured for component and integration testing
+- Test data fixtures and custom commands
 
 ## License
 
