@@ -56,5 +56,6 @@ yarn-error.log*
 # Claude Code - Personal Settings & Generated Files
 .claude/settings.local.json
 .claude/CODEBASE_REVIEW_*.md
+.claude/CODEBASE_REVIEW.json
 .claude/plans/
 /tmp/.claude-review-trigger

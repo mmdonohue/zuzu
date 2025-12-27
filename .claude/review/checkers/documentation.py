@@ -95,9 +95,9 @@ class DocumentationChecker:
                     with open(claude_md, 'r') as f:
                         content = f.read()
 
-                    # Check lines 47-52 for provider list
+                    # Check lines 47-54 for provider list
                     lines = content.split('\n')
-                    provider_section = '\n'.join(lines[46:52])  # Lines 47-52 (0-indexed)
+                    provider_section = '\n'.join(lines[46:54])  # Lines 47-54 (0-indexed)
 
                     if 'AuthProvider' not in provider_section and 'AuthContext' not in provider_section:
                         self.findings.append({
@@ -125,32 +125,55 @@ class DocumentationChecker:
                 actual_routes = [r['element'] for r in routes]
                 actual_count = len(actual_routes)
 
-                # Check CLAUDE.md line 54
+                # Check CLAUDE.md routing section (lines 54-60, handles multi-line format)
                 claude_md = self.project_root / '.claude' / 'CLAUDE.md'
                 with open(claude_md, 'r') as f:
                     lines = f.readlines()
 
                 if len(lines) > 53:
-                    routing_line = lines[53].strip()  # Line 54 (0-indexed)
+                    # Read routing section (may span multiple lines)
+                    routing_section = '\n'.join([l.strip() for l in lines[53:60]])
 
                     # Extract mentioned routes from documentation
-                    # Line says: "React Router v6 in `src/App.tsx` with routes for Home, About, Dashboard, OpenRouter, and Logs pages"
+                    # Handles both single-line and multi-line formats
                     documented_routes = []
-                    if 'Home' in routing_line:
+                    if 'Home' in routing_section:
                         documented_routes.append('Home')
-                    if 'About' in routing_line:
+                    if 'About' in routing_section:
                         documented_routes.append('About')
-                    if 'Dashboard' in routing_line:
+                    if 'Dashboard' in routing_section:
                         documented_routes.append('Dashboard')
-                    if 'OpenRouter' in routing_line:
+                    if 'OpenRouter' in routing_section:
                         documented_routes.append('OpenRouter')
-                    if 'Logs' in routing_line:
+                    if 'Logs' in routing_section:
                         documented_routes.append('Logs')
+                    if 'Login' in routing_section:
+                        documented_routes.append('Login')
+                    if 'Signup' in routing_section:
+                        documented_routes.append('Signup')
+                    if 'VerifyCode' in routing_section or 'verify' in routing_section.lower():
+                        documented_routes.append('VerifyCode')
+                    if 'Account' in routing_section:
+                        documented_routes.append('Account')
 
                     documented_count = len(documented_routes)
 
-                    # Check for missing routes
-                    missing_routes = [r for r in actual_routes if r not in documented_routes]
+                    # Normalize route names for comparison (remove common suffixes)
+                    def normalize_route_name(name):
+                        """Remove common suffixes like Component, Page, etc."""
+                        suffixes = ['Component', 'Page', 'Screen', 'View']
+                        for suffix in suffixes:
+                            if name.endswith(suffix):
+                                return name[:-len(suffix)]
+                        return name
+
+                    # Normalize both lists for comparison
+                    normalized_actual = [normalize_route_name(r) for r in actual_routes]
+                    normalized_documented = [normalize_route_name(r) for r in documented_routes]
+
+                    # Check for missing routes (using normalized names)
+                    missing_routes = [actual_routes[i] for i, norm in enumerate(normalized_actual)
+                                     if norm not in normalized_documented]
 
                     if missing_routes or actual_count != documented_count:
                         self.findings.append({

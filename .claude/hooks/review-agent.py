@@ -271,9 +271,15 @@ _Last updated: {timestamp}_
 
 
 def export_json_summary(project_root: str, focus: str = None, report_data: Dict[str, Any] = None):
-    """Export executive summary as JSON for frontend consumption."""
+    """
+    Export executive summary as JSON for frontend consumption.
+
+    This function is ADDITIVE - it only updates the sections that were just reviewed,
+    keeping other sections intact. Each section maintains its own timestamp.
+    """
     from datetime import datetime, timezone
     import re
+    import json
 
     summary_path = Path(project_root) / '.claude' / 'CODEBASE_REVIEW.md'
     json_path = Path(project_root) / '.claude' / 'CODEBASE_REVIEW.json'
@@ -281,17 +287,35 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
     if not summary_path.exists():
         return
 
+    # Load existing JSON data if it exists
+    existing_data = {}
+    if json_path.exists():
+        try:
+            with open(json_path, 'r') as f:
+                existing_data = json.load(f)
+        except (json.JSONDecodeError, IOError):
+            existing_data = {}
+
+    # Get existing reviews as a dictionary for easy updates
+    existing_reviews = {r['category']: r for r in existing_data.get('reviews', [])}
+    existing_findings = {f.get('category'): [] for f in existing_data.get('findings', [])}
+    for finding in existing_data.get('findings', []):
+        category = finding.get('category')
+        if category:
+            if category not in existing_findings:
+                existing_findings[category] = []
+            existing_findings[category].append(finding)
+
+    # Read current markdown summary
     with open(summary_path, 'r') as f:
         content = f.read()
-
-    # Parse the markdown to extract review data
-    reviews = []
 
     # Pattern to match review sections
     section_pattern = r'## (.+?) Review\s*\n\s*\n\*\*Last Updated\*\*:\s*(.+?)\s*\n\*\*Status\*\*:\s*(.+?)\s*\n\*\*Health Score\*\*:\s*(\d+)/100\s*\n\s*\n\| Metric \| Count \|\s*\n\|[^|]+\|[^|]+\|\s*\n\| Critical Issues \| (\d+) \|\s*\n\| Warnings \| (\d+) \|\s*\n\| Info \| (\d+) \|\s*\n\| \*\*Total Findings\*\* \| \*\*(\d+)\*\* \|'
 
     matches = re.finditer(section_pattern, content, re.MULTILINE)
 
+    # Parse newly reviewed sections from markdown
     for match in matches:
         category = match.group(1)
         last_updated = match.group(2)
@@ -306,11 +330,13 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
         status_map = {
             '🔴 CRITICAL': 'critical',
             '⚠️ WARNING': 'warning',
-            '✅ PASS': 'pass'
+            '✅ PASS': 'pass',
+            'ℹ️ INFO': 'pass'
         }
         status = status_map.get(status_raw, 'unknown')
 
-        reviews.append({
+        # Build review data for this category
+        review_data = {
             'category': category.lower(),
             'displayName': category,
             'lastUpdated': last_updated,
@@ -323,14 +349,48 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
                 'info': info,
                 'total': total
             }
-        })
+        }
 
-    # Calculate overall metrics
-    overall_health = sum(r['healthScore'] for r in reviews) // len(reviews) if reviews else 0
-    overall_critical = sum(r['metrics']['critical'] for r in reviews)
-    overall_warnings = sum(r['metrics']['warnings'] for r in reviews)
-    overall_info = sum(r['metrics']['info'] for r in reviews)
-    overall_total = sum(r['metrics']['total'] for r in reviews)
+        # Update or add this category's review data
+        category_key = category.lower()
+
+        # Only update if this category was actually reviewed (based on focus or if no focus specified)
+        should_update = (focus is None) or (focus == category_key) or (focus == 'all')
+
+        if should_update:
+            existing_reviews[category_key] = review_data
+
+            # Parse and update findings for this category
+            category_upper = category.upper()
+            detail_path = Path(project_root) / '.claude' / f'CODEBASE_REVIEW_{category_upper}.md'
+
+            if detail_path.exists():
+                with open(detail_path, 'r') as f:
+                    detail_content = f.read()
+
+                # Parse findings from markdown
+                findings = _parse_findings_from_markdown(detail_content, category_key, category)
+                existing_findings[category_key] = findings
+
+    # Convert back to lists
+    all_reviews = list(existing_reviews.values())
+    all_findings = []
+    for category_findings in existing_findings.values():
+        all_findings.extend(category_findings)
+
+    # Calculate overall metrics from all reviews
+    if all_reviews:
+        overall_health = sum(r['healthScore'] for r in all_reviews) // len(all_reviews)
+        overall_critical = sum(r['metrics']['critical'] for r in all_reviews)
+        overall_warnings = sum(r['metrics']['warnings'] for r in all_reviews)
+        overall_info = sum(r['metrics']['info'] for r in all_reviews)
+        overall_total = sum(r['metrics']['total'] for r in all_reviews)
+    else:
+        overall_health = 0
+        overall_critical = 0
+        overall_warnings = 0
+        overall_info = 0
+        overall_total = 0
 
     # Determine overall status
     if overall_critical > 0:
@@ -343,21 +403,7 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
         overall_status = 'pass'
         overall_status_display = '✅ PASS'
 
-    # Collect all findings from detailed reports
-    all_findings = []
-    for review in reviews:
-        category_upper = review['category'].upper()
-        detail_path = Path(project_root) / '.claude' / f'CODEBASE_REVIEW_{category_upper}.md'
-
-        if detail_path.exists():
-            with open(detail_path, 'r') as f:
-                detail_content = f.read()
-
-            # Parse findings from markdown
-            findings = _parse_findings_from_markdown(detail_content, review['category'], review['displayName'])
-            all_findings.extend(findings)
-
-    # Build JSON structure
+    # Build JSON structure (preserving existing reviews and only updating what changed)
     json_data = {
         'lastUpdated': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
         'overallStatus': overall_status,
@@ -369,7 +415,7 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
             'info': overall_info,
             'total': overall_total
         },
-        'reviews': reviews,
+        'reviews': sorted(all_reviews, key=lambda x: x['category']),  # Sort for consistency
         'findings': all_findings
     }
 

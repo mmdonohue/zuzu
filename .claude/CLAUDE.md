@@ -51,10 +51,11 @@ npm run test:open
   4. MUI ThemeProvider (Material UI theming)
   5. CssBaseline (CSS reset)
   6. AuthProvider (authentication context)
-  6. AuthProvider (authentication context)
-  6. AuthProvider (authentication context)
 
-- **Routing**: React Router v6 in `src/App.tsx` with routes for Home, About, Dashboard, OpenRouter, and Logs pages
+- **Routing**: React Router v6 in `src/App.tsx` with the following route structure:
+  - **Public Routes**: `/` (Home), `/about` (About)
+  - **Auth Routes**: `/login` (Login), `/signup` (Signup), `/auth/verify` (VerifyCode) - redirect to dashboard if authenticated
+  - **Protected Routes**: `/dashboard` (Dashboard), `/openrouter` (OpenRouter), `/logs` (Logs), `/account` (Account) - require authentication via ProtectedRoute wrapper
 
 - **State Management**:
   - Redux Toolkit with slices in `src/store/slices/` (authSlice, uiSlice)
@@ -194,7 +195,7 @@ False positives can be suppressed in `.claude/review/config/suppressions.json`:
 
 **Best Practice**: Always include expiration dates and clear reasons for suppressions
 
-See `SECURITY.md` for complete security documentation and best practices.
+See `.claude/SECURITY.md` for complete security documentation and best practices.
 
 ## Key Development Notes
 

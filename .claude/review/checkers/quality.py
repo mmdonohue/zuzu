@@ -119,6 +119,51 @@ class QualityChecker:
             # Path is not relative to project_root
             return True
 
+    def _is_inside_sx_block(self, lines: List[str], current_line_idx: int) -> bool:
+        """
+        Check if the current line is inside a MUI sx={{ ... }} block.
+
+        Args:
+            lines: All lines of the file
+            current_line_idx: Index of the current line (0-based)
+
+        Returns:
+            True if the line is inside an sx block
+        """
+        # Look backwards to find if we're inside an sx block
+        brace_depth = 0
+        in_sx_block = False
+
+        # Check from the beginning up to current line
+        for i in range(current_line_idx + 1):
+            line = lines[i]
+
+            # Check if we're entering an sx block
+            if 'sx=' in line or 'sx =' in line:
+                # Found sx=, start tracking
+                in_sx_block = True
+                # Count opening braces after sx=
+                sx_pos = line.find('sx=')
+                if sx_pos == -1:
+                    sx_pos = line.find('sx =')
+                if sx_pos >= 0:
+                    after_sx = line[sx_pos + 3:]
+                    brace_depth += after_sx.count('{') - after_sx.count('}')
+            elif in_sx_block:
+                # We're tracking an sx block, count braces
+                brace_depth += line.count('{') - line.count('}')
+
+            # If we're at the current line, check if we're still inside
+            if i == current_line_idx:
+                return in_sx_block and brace_depth > 0
+
+            # If brace depth reaches 0, we've exited the sx block
+            if in_sx_block and brace_depth <= 0:
+                in_sx_block = False
+                brace_depth = 0
+
+        return False
+
     def _check_typescript_files(self):
         """Check TypeScript files for quality issues."""
         try:
@@ -237,10 +282,27 @@ class QualityChecker:
                     if line.strip().startswith('//') or line.strip().startswith('*'):
                         continue
 
+                    # Skip lines inside MUI sx blocks
+                    if self._is_inside_sx_block(lines, i - 1):  # i-1 because enumerate starts at 1
+                        continue
+
                     matches = re.finditer(magic_number_pattern, line)
                     for match in matches:
                         number = match.group(1)
                         if number not in excluded_numbers:
+                            # Check if this number is part of a hex color code (e.g., #001133)
+                            match_start = match.start()
+                            if match_start > 0 and line[match_start - 1] == '#':
+                                # Skip hex color codes
+                                continue
+
+                            # Check if this number is a CSS dimension property value
+                            # (e.g., width: 100, height: 200, maxWidth: 300, etc.)
+                            dimension_props = r'\b(width|height|maxWidth|minWidth|maxHeight|minHeight)\s*:\s*'
+                            if re.search(dimension_props + re.escape(number) + r'\s*[,}]', line):
+                                # Skip CSS dimension property values
+                                continue
+
                             # Check if it's already a const
                             if 'const' not in line and '=' not in line.split(number)[0]:
                                 self.findings.append({
@@ -289,7 +351,10 @@ class QualityChecker:
                         brace_depth = line.count('{') - line.count('}')
 
                     if current_function:
-                        brace_depth += line.count('{') - line.count('}')
+                        # Only update brace depth if we're not on the function declaration line
+                        # (to avoid double-counting braces)
+                        if i != current_function_line:
+                            brace_depth += line.count('{') - line.count('}')
 
                         # Count complexity indicators
                         complexity += line.count('if ')
@@ -332,7 +397,9 @@ class QualityChecker:
                     lines = content.split('\n')
 
                 # Check for unused variables with underscore prefix
-                unused_pattern = r'_\w+\s*[,=:]'
+                # Use negative lookbehind to ensure _ is at the start of an identifier
+                # Excludes object properties (e.g., object._property)
+                unused_pattern = r'(?<![a-zA-Z0-9_\.])_\w+\s*[,=:]'
                 for i, line in enumerate(lines, 1):
                     if re.search(unused_pattern, line):
                         self.findings.append({
@@ -347,7 +414,8 @@ class QualityChecker:
 
                 # Check for console.log in non-dev files
                 if 'console.log(' in content and '/src/' in str(file_path):
-                    log_lines = [i+1 for i, line in enumerate(lines) if 'console.log(' in line]
+                    log_lines = [i+1 for i, line in enumerate(lines)
+                                if 'console.log(' in line and not line.strip().startswith('//')]
                     if log_lines:
                         self.findings.append({
                             'severity': 'info',

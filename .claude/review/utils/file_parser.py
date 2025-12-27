@@ -78,6 +78,8 @@ class FileParser:
         """
         Extract route definitions from React Router.
 
+        Handles both single-line and multi-line route definitions.
+
         Args:
             file_path: Path to file containing routes
 
@@ -87,17 +89,59 @@ class FileParser:
         routes = []
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+                lines = f.readlines()
 
-            # Match <Route path="..." element={...} />
-            route_pattern = r'<Route\s+path=["\']([^"\']+)["\']\s+element=\{<(\w+)'
-            matches = re.findall(route_pattern, content)
+            i = 0
+            while i < len(lines):
+                line = lines[i]
 
-            for path, element in matches:
-                routes.append({
-                    'path': path,
-                    'element': element
-                })
+                # Check if this line starts a Route definition (not Routes)
+                if '<Route ' in line or '<Route\n' in line:
+                    # Collect the full route definition (may span multiple lines)
+                    route_block = line
+                    brace_depth = line.count('{') - line.count('}')
+                    j = i
+
+                    # If route is not complete on first line, collect more lines
+                    if not (brace_depth == 0 and '/>' in line):
+                        j = i + 1
+                        while j < len(lines):
+                            next_line = lines[j]
+                            route_block += next_line
+                            brace_depth += next_line.count('{') - next_line.count('}')
+
+                            # Check if we've reached the closing /> (when braces are balanced)
+                            if brace_depth == 0 and '/>' in next_line:
+                                break
+
+                            j += 1
+
+                    # Extract path from route_block
+                    path_match = re.search(r'path=["\']([^"\']+)["\']', route_block)
+                    if path_match:
+                        path = path_match.group(1)
+
+                        # Extract component name
+                        # Try to find the component in element prop (handles newlines with re.DOTALL)
+                        element_match = re.search(r'element=\{\s*<(\w+)', route_block, re.DOTALL)
+
+                        if element_match:
+                            element = element_match.group(1)
+
+                            # If it's ProtectedRoute, extract the wrapped component
+                            if element == 'ProtectedRoute':
+                                wrapped_match = re.search(r'<ProtectedRoute[^>]*>\s*<(\w+)', route_block, re.DOTALL)
+                                if wrapped_match:
+                                    element = wrapped_match.group(1)
+
+                            routes.append({
+                                'path': path,
+                                'element': element
+                            })
+
+                    i = j
+
+                i += 1
 
         except Exception as e:
             print(f"[file_parser] Error extracting routes from {file_path}: {e}")

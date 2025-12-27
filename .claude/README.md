@@ -77,7 +77,7 @@ Analyzes dependency health:
 ## Security Documentation
 
 Security implementation is documented in:
-- **SECURITY.md** - Complete security guide (CSRF, auth, best practices)
+- **.claude/SECURITY.md** - Complete security guide (CSRF, auth, best practices)
 - **.claude/AUTH_IMPLEMENTATION.md** - Authentication system details
 - **.claude/review/config/security.json** - Security checker configuration
 - **.claude/review/config/suppressions.json** - False positive suppressions
