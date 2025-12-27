@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import authService, { User } from '@/services/auth.service';
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
   loading: boolean;
   login: (user: User) => void;
@@ -21,7 +21,7 @@ export const useAuth = () => {
   return context;
 };
 
-interface AuthProviderProps {
+type AuthProviderProps = {
   children: ReactNode;
 }
 

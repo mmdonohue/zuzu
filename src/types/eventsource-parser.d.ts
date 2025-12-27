@@ -12,8 +12,8 @@ declare module 'eventsource-parser' {
     }
   
     export type EventSourceParserEvent = ParsedEvent | ReconnectInterval;
-  
-    interface ParserCallbacks {
+
+    type ParserCallbacks = {
       onEvent: (event: EventSourceParserEvent) => void;
       onError?: (error: Error) => void;
     }

@@ -35,17 +35,19 @@ import {
 import { format, parseISO } from 'date-fns';
 import { apiFetch } from '@/utils/api';
 
-interface LogEntry {
+type LogEntry = {
   id?: number;
   timestamp: string;
   level: string;
   category: string;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   ip?: string;
 }
 
-interface LogFile {
+const logs_mb = 1024;
+
+type LogFile = {
   name: string;
   size: number;
   modified: string;
@@ -296,11 +298,12 @@ const Logs: React.FC = () => {
     fetchLogFiles();
   }, [selectedLevel, limit]);
   
+  const logs_refresh_interval = 90000;
   // Auto-refresh every 90 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       fetchLogs();
-    }, 90000);
+    }, logs_refresh_interval);
     
     return () => clearInterval(interval);
   }, [selectedLevel, limit]);
@@ -480,7 +483,7 @@ const Logs: React.FC = () => {
                       {file.name}
                     </Typography>
                     <Typography variant="caption" color="text.secondary" display="block">
-                      Size: {(file.size / 1024).toFixed(2)} KB
+                      Size: {(file.size / logs_mb).toFixed(2)} KB
                     </Typography>
                     <Typography variant="caption" color="text.secondary" display="block">
                       Modified: {format(new Date(file.modified), 'MMM d, yyyy HH:mm')}

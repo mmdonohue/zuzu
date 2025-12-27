@@ -53,11 +53,14 @@ const Dashboard: React.FC = () => {
   const [orderBy, setOrderBy] = useState<keyof ReviewFinding>('severity');
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
 
+  const max_descrfiption_length = 150;
+
+  const reset_interval = 30000;
   // Fetch code review data
   const { data, isLoading, error, refetch } = useQuery<CodeReviewSummary>({
     queryKey: ['codeReview'],
     queryFn: fetchCodeReviewSummary,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: reset_interval, // Refetch every 30 seconds
   });
 
   // Filter and sort findings
@@ -146,7 +149,12 @@ const Dashboard: React.FC = () => {
           </Typography>
         </Box>
         <Tooltip title="Refresh data">
-          <IconButton onClick={() => refetch()} aria-label="refresh" color="primary">
+          <IconButton aria-label="refresh" color="primary" onClick={() => {
+            try{
+            refetch()} catch (error) {
+              console.error('Error refreshing data:', error);
+            }
+          }}>
             <RefreshIcon />
           </IconButton>
         </Tooltip>
@@ -420,13 +428,13 @@ const Dashboard: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400 }}>
-                            {finding.description.substring(0, 150)}
-                            {finding.description.length > 150 && '...'}
+                            {finding.description.substring(0, max_descrfiption_length)}
+                            {finding.description.length > max_descrfiption_length && '...'}
                           </Typography>
                           {finding.recommendation && (
                             <Typography variant="caption" color="primary" sx={{ display: 'block', mt: 0.5 }}>
-                              💡 {finding.recommendation.substring(0, 100)}
-                              {finding.recommendation.length > 100 && '...'}
+                              💡 {finding.recommendation.substring(0, max_descrfiption_length)}
+                              {finding.recommendation.length > max_descrfiption_length && '...'}
                             </Typography>
                           )}
                         </TableCell>

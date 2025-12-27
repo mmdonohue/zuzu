@@ -15,24 +15,24 @@ async function refreshToken(): Promise<boolean> {
   isRefreshing = true;
   refreshPromise = (async () => {
     try {
-      console.log('[refreshToken] Attempting to refresh token at:', `${API_URL}/auth/refresh-token`);
+      // console.log('[refreshToken] Attempting to refresh token at:', `${API_URL}/auth/refresh-token`);
       const response = await fetch(`${API_URL}/auth/refresh-token`, {
         method: 'POST',
         credentials: 'include',
       });
 
-      console.log('[refreshToken] Refresh response status:', response.status);
+      // console.log('[refreshToken] Refresh response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('[refreshToken] Refresh failed with status:', response.status, 'Response:', errorText);
+       // console.error('[refreshToken] Refresh failed with status:', response.status, 'Response:', errorText);
         throw new Error(`Refresh failed: ${response.status}`);
       }
 
-      console.log('[refreshToken] Token refresh successful');
+      // console.log('[refreshToken] Token refresh successful');
       return true;
     } catch (error) {
-      console.error('[refreshToken] Error during refresh:', error);
+      // console.error('[refreshToken] Error during refresh:', error);
       // Refresh failed, clear user and redirect to login
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -79,16 +79,17 @@ export async function apiFetch(
   let response = await fetch(fullUrl, fetchOptions);
 
   // If 401 and not already a refresh request, try to refresh token
-  if (response.status === 401 && !url.includes('/auth/')) {
-    console.log('[apiFetch] Got 401, attempting token refresh for:', fullUrl);
+  const not_authorized_status = 401
+  if (response.status === not_authorized_status && !url.includes('/auth/')) {
+    // console.log(`[apiFetch] Got ${not_authorized_status}, attempting token refresh for:`, fullUrl);
     const refreshed = await refreshToken();
 
     if (refreshed) {
-      console.log('[apiFetch] Token refresh successful, retrying request');
+      // console.log('[apiFetch] Token refresh successful, retrying request');
       // Retry the original request
       response = await fetch(fullUrl, fetchOptions);
     } else {
-      console.error('[apiFetch] Token refresh failed, redirecting to login');
+      // console.error('[apiFetch] Token refresh failed, redirecting to login');
     }
   }
 

@@ -34,9 +34,10 @@ type appProps = {
 
 const Modal = lazy(() => delayForDemo(import('../components/Modal')))
 
-function delayForDemo(promise: any){
-  return new Promise((resolve) => {
-    setTimeout(resolve, 2000)
+const demo_delay = 2000;
+function delayForDemo<T>(promise: Promise<T>): Promise<T> {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, demo_delay)
   }).then(() => promise)
 }
 
@@ -51,7 +52,7 @@ const Home: React.FC<appProps> = ({message}) => {
 
   const openModal = () => {
     setShowModal(true);
-    console.log('opening modal');
+    // console.log('opening modal');
   }
 
   const closeModal = () => {

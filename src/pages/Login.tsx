@@ -10,6 +10,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
+import axios from 'axios';
 import authService from '@/services/auth.service';
 
 const Login: React.FC = () => {
@@ -43,18 +44,20 @@ const Login: React.FC = () => {
     try {
       const response = await authService.login(formData);
 
-      if (response.success) {
+      if (response && response.success) {
         // Navigate to verify code page
         navigate('/auth/verify', {
           state: {
-            userId: response.data.userId,
+            userId: response.data ? response.data.userId : '',
             email: formData.email,
             fromLogin: true,
           },
         });
       }
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
+    } catch (err) {
+      const errorMessage = axios.isAxiosError(err) && err.response?.data?.message
+        ? err.response.data.message
+        : 'Login failed. Please try again.';
       setError(errorMessage);
     } finally {
       setLoading(false);

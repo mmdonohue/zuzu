@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-interface ModalProps {
+type ModalProps = {
   onClose: () => void;
   message: string;
 }

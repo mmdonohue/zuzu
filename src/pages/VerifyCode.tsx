@@ -10,6 +10,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
+import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
 import authService from '@/services/auth.service';
 
@@ -45,7 +46,7 @@ const VerifyCode: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const timeout = 1500; 
     if (code.length !== 6) {
       setError('Please enter a 6-digit code');
       return;
@@ -65,10 +66,12 @@ const VerifyCode: React.FC = () => {
         setSuccess('Verification successful! Redirecting...');
         setTimeout(() => {
           navigate('/dashboard');
-        }, 1500);
+        }, timeout);
       }
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Invalid or expired code';
+    } catch (err) {
+      const errorMessage = axios.isAxiosError(err) && err.response?.data?.message
+        ? err.response.data.message
+        : 'Invalid or expired code';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -85,7 +88,7 @@ const VerifyCode: React.FC = () => {
       if (response.success) {
         setSuccess('A new verification code has been sent to your email');
       }
-    } catch (err: any) {
+    } catch (err) {
       setError('Failed to resend code. Please try again.');
     } finally {
       setResending(false);

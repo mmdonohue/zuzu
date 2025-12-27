@@ -1,5 +1,6 @@
 // src/services/auth.service.ts
 import axios from 'axios';
+import { csrfService } from './csrf.service';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -31,7 +32,11 @@ export interface User {
 export interface AuthResponse {
   success: boolean;
   message: string;
-  data?: any;
+  data?: {
+    user?: User;
+    requiresVerification?: boolean;
+    userId?: string;
+  };
 }
 
 // Create axios instance with default config
@@ -43,11 +48,47 @@ const api = axios.create({
   },
 });
 
+// Add request interceptor to include CSRF token
+api.interceptors.request.use(
+  async (config) => {
+    // For state-changing requests, include CSRF token
+    const method = config.method?.toUpperCase();
+    if (method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+      try {
+        const csrfToken = await csrfService.getToken();
+        config.headers['X-CSRF-Token'] = csrfToken;
+      } catch (error) {
+        console.error('Failed to get CSRF token:', error);
+        // Continue without CSRF token (request will likely fail, but that's expected)
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Add response interceptor to handle auth errors
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Handle CSRF token validation failures
+    if (error.response?.status === 403 &&
+        error.response?.data?.code === 'CSRF_VALIDATION_FAILED' &&
+        !originalRequest._csrfRetry) {
+      originalRequest._csrfRetry = true;
+
+      console.warn('CSRF token invalid, refreshing...');
+      try {
+        // Refresh CSRF token and retry the request
+        await csrfService.refreshToken();
+        return api(originalRequest);
+      } catch (csrfError) {
+        console.error('Failed to refresh CSRF token:', csrfError);
+        return Promise.reject(error);
+      }
+    }
 
     // Allow refresh for /me endpoint, but not for login/signup/refresh itself
     const isLoginOrSignup = originalRequest?.url?.includes('/auth/login') ||
@@ -113,10 +154,10 @@ class AuthService {
         return user;
       }
       return null;
-    } catch (error: any) {
+    } catch (error) {
       // Only clear localStorage if we get a 401 (unauthorized)
       // Don't clear on network errors or server restarts
-      if (error.response?.status === 401) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
         localStorage.removeItem('user');
       }
       return null;

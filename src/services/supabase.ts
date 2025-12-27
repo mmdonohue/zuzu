@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 // set env vars
-console.log('process.env.REACT_APP_SUPABASE_URL:', process.env.REACT_APP_SUPABASE_URL ? 'Loaded' : 'Not Loaded');
-console.log('process.env.REACT_APP_SUPABASE_KEY:', process.env.REACT_APP_SUPABASE_KEY ? 'Loaded' : 'Not Loaded');
+// console.log('process.env.REACT_APP_SUPABASE_URL:', process.env.REACT_APP_SUPABASE_URL ? 'Loaded' : 'Not Loaded');
+// console.log('process.env.REACT_APP_SUPABASE_KEY:', process.env.REACT_APP_SUPABASE_KEY ? 'Loaded' : 'Not Loaded');
 // Initialize Supabase client (replace these with your actual Supabase credentials)
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "";
 const supabaseKey = process.env.REACT_APP_SUPABASE_KEY || "";
@@ -60,7 +60,7 @@ export const insertData = async <T>(
   const { data: result, error } = await supabase.from(tableName).insert(data).select();
 
   if (error) {
-    console.error(`Error inserting data into ${tableName}:`, error);
+   // console.error(`Error inserting data into ${tableName}:`, error);
     throw error;
   }
 
@@ -80,7 +80,7 @@ export const updateData = async <T>(
     .select();
 
   if (error) {
-    console.error(`Error updating data in ${tableName}:`, error);
+    // console.error(`Error updating data in ${tableName}:`, error);
     throw error;
   }
 
@@ -92,7 +92,7 @@ export const deleteData = async (tableName: string, id: number | string) => {
   const { error } = await supabase.from(tableName).delete().eq('id', id);
 
   if (error) {
-    console.error(`Error deleting data from ${tableName}:`, error);
+    // console.error(`Error deleting data from ${tableName}:`, error);
     throw error;
   }
 

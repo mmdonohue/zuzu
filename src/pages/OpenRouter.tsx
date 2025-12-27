@@ -40,7 +40,7 @@ import { useAuth } from '@/context/AuthContext';
 import { apiFetch } from '@/utils/api';
 
 // Define types
-interface Conversation {
+type Conversation = {
   id: string;
   created: string;
   model: string;
@@ -54,7 +54,7 @@ interface Conversation {
 }
 
 // Updated types for OpenRouter API models response
-interface ModelPricing {
+type ModelPricing = {
     prompt: string;
     completion: string;
     image: string;
@@ -64,22 +64,22 @@ interface ModelPricing {
     web_search: string;
     internal_reasoning: string;
   }
-  
-  interface ModelArchitecture {
+
+  type ModelArchitecture = {
     input_modalities: string[];
     output_modalities: string[];
     tokenizer: string;
   }
-  
-  interface ModelProvider {
+
+  type ModelProvider = {
     is_moderated: boolean;
   }
-  
-  interface ModelLimits {
+
+  type ModelLimits = {
     [key: string]: string;
   }
-  
-  interface OpenRouterModel {
+
+  type OpenRouterModel = {
     id: string;
     name: string;
     created: number;
@@ -91,11 +91,24 @@ interface ModelPricing {
     per_request_limits: ModelLimits;
   }
 
+  const model_temp_min = 0.0;
+  const model_temp_max = 1.0;
+  const model_temp_step = 0.1;
+  const model_step_marks = 0.5
+  const model_encoding_default = 'cl100k_base';
+  const max_context_length = 2000000;
+  const min_context_length = 1000;
+  const context_adjust = 1.2;
+  const token_adjust = 1.2;
+  const max_token_display = 1000000;
+  const min_token_display = 1000;
+  const token_step = 10000;
+
   function displayTokenCost(tokens: number): string {
-    if(tokens < 1000000) {
-      return `${(tokens / 1000).toFixed(0)}K`;
+    if(tokens < max_token_display) {
+      return `${(tokens / min_token_display).toFixed(0)}K`;
     } else {
-      return `${(tokens / 1000000).toFixed(1)}M`;
+      return `${(tokens / max_token_display).toFixed(1)}M`;
     }
   }
 
@@ -130,9 +143,10 @@ const OpenRouterComponent = () => {
         return parseFloat(model.pricing.prompt) === 0 && parseFloat(model.pricing.completion) === 0;
     };
 
+    const convert_milli = 1000
     // Format creation date from timestamp
     const formatCreationDate = (timestamp: number): string => {
-        const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
+        const date = new Date(timestamp * convert_milli); // Convert seconds to milliseconds
         return date.toLocaleDateString(undefined, { 
         year: 'numeric', 
         month: 'short', 
@@ -210,7 +224,7 @@ const OpenRouterComponent = () => {
       field: 'created',
       headerName: 'Date',
       width: 170,
-      valueFormatter: (value: any) => {
+      valueFormatter: (value: string | Date | number | undefined) => {
         if (!value) return 'N/A';
         try {
           return format(new Date(value), 'MMM d, yyyy h:mm a');
@@ -284,7 +298,7 @@ const OpenRouterComponent = () => {
       field: 'response_time',
       headerName: 'Time',
       width: 60,
-      valueFormatter: (value: any) => {
+      valueFormatter: (value: number | undefined) => {
         return value ? value.toFixed(2) : 'N/A';
       }
     },
@@ -406,7 +420,7 @@ const OpenRouterComponent = () => {
     } else {
       // Log only a portion of the key for debugging (first 4 chars)
       const keyPreview = apiKey.substring(0, 4) + "..." + apiKey.substring(apiKey.length - 4);
-      console.log(`API key loaded: ${keyPreview}`);
+      // console.log(`API key loaded: ${keyPreview}`);
       setApiKeyError(null);
     }
   }, [apiKey]);
@@ -462,7 +476,7 @@ const OpenRouterComponent = () => {
     addMessage('user', prompt);
     
     try {
-      console.log(`Sending request to OpenRouter with model: ${model}`, 'Prompt:', prompt);
+      // console.log(`Sending request to OpenRouter with model: ${model}`, 'Prompt:', prompt);
       
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -476,7 +490,7 @@ const OpenRouterComponent = () => {
           messages: conversationMessages,
           stream: true,
           temperature: temperature,
-          max_tokens: currTokens - Math.floor(promptTokens * 1.2), // Adjust max tokens based on prompt size
+          max_tokens: currTokens - Math.floor(promptTokens * token_adjust), // Adjust max tokens based on prompt size
         }),
         signal: abortController.signal // For cancellation
       });
@@ -488,18 +502,18 @@ const OpenRouterComponent = () => {
     
       const parser = createParser({
         onEvent: (event: EventSourceParserEvent) => {
-            console.log('Received event:', event);
+            // console.log('Received event:', event);
             // More permissive check - just make sure we have data to parse
             if(event.type === 'event' && 'data' in event){
               try {
                 // Handle [DONE] marker if it exists
                 if (event.data === '[DONE]') {
-                  console.log('Stream completed with [DONE] marker');
+                  // console.log('Stream completed with [DONE] marker');
                   return;
                 }
                 
                 const json = JSON.parse(event.data);
-                console.log('Parsed JSON:', json);
+                // console.log('Parsed JSON:', json);
                 
                 // Try different possible formats
                 const content = 
@@ -510,7 +524,7 @@ const OpenRouterComponent = () => {
                   '';
                   
                 if (content) {
-                  console.log('Content received:', content);
+                  // console.log('Content received:', content);
                   setResults(prev => prev + content);
                 }
               } catch (e) {
@@ -531,13 +545,13 @@ const OpenRouterComponent = () => {
           while (true) {
             const { done, value } = await reader.read();
             if (done) {
-              console.log('Stream reading complete');
+             // console.log('Stream reading complete');
               break;
             }
             
             // Decode the chunk
             const chunk = decoder.decode(value, { stream: true });
-            console.log('Received chunk:', chunk);
+            // console.log('Received chunk:', chunk);
             
             // Add to buffer and process
             buffer += chunk;
@@ -551,9 +565,9 @@ const OpenRouterComponent = () => {
                 // Handle each event
                 const eventData = part.replace(/^data: /, '').trim();
                 if (eventData) {
-                  console.log('Processing event data:', eventData);
+                  // console.log('Processing event data:', eventData);
                   if (eventData === '[DONE]') {
-                    console.log('Stream completed with [DONE] marker');
+                    // console.log('Stream completed with [DONE] marker');
                     continue;
                   }
                   try {
@@ -572,7 +586,7 @@ const OpenRouterComponent = () => {
           }
           
           // Calculate response time
-          const responseTime = (Date.now() - startTime) / 1000;
+          const responseTime = (Date.now() - startTime) / convert_milli;
           
           // Add assistant message to conversation history
           addMessage('assistant', fullResponse);
@@ -585,7 +599,7 @@ const OpenRouterComponent = () => {
           
         } catch (error) {
           if ((error as Error).name === 'AbortError') {
-            console.log('Stream reading aborted by user');
+            // console.log('Stream reading aborted by user');
           } else {
           console.error('Error reading stream:', error);
             throw error;
@@ -699,14 +713,14 @@ const OpenRouterComponent = () => {
                   <Slider
                     value={temperature}
                     onChange={(_, value) => setTemperature(value as number)}
-                    min={0}
-                    max={1}
-                    step={0.1}
+                    min={model_temp_min}
+                    max={model_temp_max}
+                    step={model_temp_step}
                     valueLabelDisplay="auto"
                     marks={[
-                      { value: 0, label: '0' },
-                      { value: 0.5, label: '0.5' },
-                      { value: 1, label: '1' }
+                      { value: model_temp_min, label: model_temp_min.toString() },
+                      { value: model_temp_max / 2, label: (model_temp_max / 2).toString() },
+                      { value: model_temp_max, label: model_temp_max.toString() }
                     ]}
                   />
                   <Typography variant="caption" color="text.secondary">
@@ -719,12 +733,12 @@ const OpenRouterComponent = () => {
                     sx={{ mb: 2 }}
                     value={currTokens ? currTokens : Math.floor(maxTokens * 0.8)}
                     onChange={(_, value) => setCurrTokens(value as number)}
-                    min={maxTokens / 1000}
+                    min={maxTokens / token_step}
                     max={maxTokens}
-                    step={maxTokens / 1000}
+                    step={maxTokens / token_step}
                     valueLabelDisplay="auto"
                     marks={[
-                      { value: maxTokens/1000, label: displayTokenCost(maxTokens/1000) },
+                      { value: maxTokens/token_step, label: displayTokenCost(maxTokens/token_step) },
                       { value: maxTokens/2, label: displayTokenCost(maxTokens/2) },
                       { value: maxTokens, label: displayTokenCost(maxTokens) }
                     ]}
@@ -742,7 +756,7 @@ const OpenRouterComponent = () => {
         rows={5}
         value={prompt}
         onChange={(e) => {
-          const encoding = get_encoding("cl100k_base");
+          const encoding = get_encoding(model_encoding_default);
           setPrompt(e.target.value);
           setPromptTokens(encoding.encode(e.target.value).length);
           encoding.free();
@@ -752,7 +766,7 @@ const OpenRouterComponent = () => {
         inputRef={promptRef}
     />
     <div>Prompt Tokens: <b>{promptTokens.toString()}</b></div>
-    <div>API Tokens: <b>{(currTokens - Math.floor(promptTokens * 1.2)).toString()}</b></div>
+    <div>API Tokens: <b>{(currTokens - Math.floor(promptTokens * context_adjust)).toString()}</b></div>
     <FormControl fullWidth>
       <InputLabel id="model-select-label">Model</InputLabel>
       <Select
@@ -762,15 +776,16 @@ const OpenRouterComponent = () => {
         label="Model"
         renderValue={(selected) => {
          // if(selected !== model){
-            console.log('Rendering selected model:', selected);
+           // console.log('Rendering selected model:', selected);
             const selectedModel = availableModels.find(m => m.id === selected);
             return selectedModel ? selectedModel.name : selected;
           // }
         }}
-        onClose={() => { console.log('Model select closed'); 
+        onClose={() => { 
+          // console.log('Model select closed'); 
             handleMenuClose(); }}
         onOpen={(event) => { 
-            console.log('Model select opened'); 
+           // console.log('Model select opened'); 
             handleMenuOpen(event);
         }}
       >
@@ -791,10 +806,10 @@ const OpenRouterComponent = () => {
                   key={modelOption.id}
                   value={modelOption.id}
                   onClick={(event) => {
-                    console.log('Menu - selected free model:', modelOption.id);
+                   // console.log('Menu - selected free model:', modelOption.id);
                     let modelSelectedModel = availableModels.find(m => m.id === modelOption.id);
-                    setMaxTokens(modelSelectedModel ? modelSelectedModel.context_length : 2000000);
-                    setCurrTokens(modelSelectedModel ? Math.floor(modelSelectedModel.context_length * .8) : 2000000);
+                    setMaxTokens(modelSelectedModel ? modelSelectedModel.context_length : max_context_length);
+                    setCurrTokens(modelSelectedModel ? Math.floor(modelSelectedModel.context_length * .8) : max_context_length);
                     setModel(modelOption.id);
                     setModelObject(modelSelectedModel || null);
                     handleMenuClose();

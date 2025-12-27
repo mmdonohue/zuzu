@@ -1,7 +1,7 @@
 # ZuZu
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/a7fc82ea-07df-4ad1-9eac-4a13fd57291c" />
 
-ZuZu is a scaffold application for practicing integration of different tech stacks with a React JavaScript demo site.
+ZuZu is a production-ready full-stack application scaffold featuring React/TypeScript frontend, Express backend, JWT authentication, comprehensive security implementation, and automated code review with best practices enforcement.
 
 ## Tech Stack
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Box, Container, Typography, Paper, Grid, Divider } from '@mui/material';
 
-
+const frontend_url = 'http://localhost:3000';
+const backend_url = 'http://localhost:5000/api';  
 
 const About: React.FC = () => {
   return (
@@ -76,8 +77,8 @@ npm run dev
 npm test`}
             </Box>
             <Typography variant="body1" paragraph sx={{ mt: 2 }}>
-              The application will be available at <code>http://localhost:3000</code> and the API endpoints 
-              will be accessible at <code>http://localhost:5000/api</code>.
+              The application will be available at <code>{frontend_url}</code> and the API endpoints 
+              will be accessible at <code>{backend_url}</code>.
             </Typography>
           </Paper>
         </Grid>

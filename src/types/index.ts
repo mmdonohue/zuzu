@@ -56,14 +56,14 @@ export interface Notification {
 }
 
 // Query hook types
-export interface QueryConfig {
+export interface QueryConfig<TData = unknown, TError = Error> {
   enabled?: boolean;
   refetchOnWindowFocus?: boolean;
   retry?: boolean | number;
   staleTime?: number;
   cacheTime?: number;
-  onSuccess?: (data: any) => void;
-  onError?: (error: any) => void;
+  onSuccess?: (data: TData) => void;
+  onError?: (error: TError) => void;
 }
 
 // Redux state types

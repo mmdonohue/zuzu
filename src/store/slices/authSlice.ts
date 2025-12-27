@@ -1,15 +1,15 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { supabase } from '../../services/supabase';
 
-// Define the User interface
-interface User {
+// Define the User type
+type User = {
   id: string;
   email: string;
   name?: string;
   avatar_url?: string;
 }
 
-interface AuthState {
+type AuthState = {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
@@ -37,8 +37,9 @@ export const loginUser = createAsyncThunk(
 
       if (error) throw error;
       return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'An error occurred during login';
+      return rejectWithValue(message);
     }
   }
 );
@@ -57,8 +58,9 @@ export const registerUser = createAsyncThunk(
 
       if (error) throw error;
       return data;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'An error occurred during registration';
+      return rejectWithValue(message);
     }
   }
 );
@@ -70,8 +72,9 @@ export const logoutUser = createAsyncThunk(
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       return null;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'An error occurred during logout';
+      return rejectWithValue(message);
     }
   }
 );

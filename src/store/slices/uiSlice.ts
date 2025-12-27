@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Notification {
+type Notification = {
   id: string;
   message: string;
   type: 'success' | 'error' | 'info' | 'warning';
 }
 
-interface UiState {
+type UiState = {
   isDarkMode: boolean;
   sidebarOpen: boolean;
   notifications: Notification[];
