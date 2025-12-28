@@ -372,6 +372,52 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
                 findings = _parse_findings_from_markdown(detail_content, category_key, category)
                 existing_findings[category_key] = findings
 
+    # Ensure all enabled checkers are included, even if not reviewed yet
+    config_path = Path(project_root) / '.claude' / 'review' / 'config' / 'review-config.json'
+    if config_path.exists():
+        try:
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+            enabled_checkers = config.get('enabled_checkers', [])
+
+            # Map checker names to display names
+            checker_display_names = {
+                'documentation': 'Documentation',
+                'docs': 'Docs',
+                'architecture': 'Architecture',
+                'security': 'Security',
+                'quality': 'Quality',
+                'dependencies': 'Dependencies',
+                'testing': 'Testing'
+            }
+
+            # Add default entries for any missing enabled checkers
+            added_count = 0
+            for checker in enabled_checkers:
+                checker_key = 'docs' if checker == 'documentation' else checker
+                if checker_key not in existing_reviews:
+                    # Create default "passing" entry for this checker
+                    existing_reviews[checker_key] = {
+                        'category': checker_key,
+                        'displayName': checker_display_names.get(checker_key, checker_key.title()),
+                        'lastUpdated': 'Not yet reviewed',
+                        'status': 'pass',
+                        'statusDisplay': '✅ PASS',
+                        'healthScore': 100,
+                        'metrics': {
+                            'critical': 0,
+                            'warnings': 0,
+                            'info': 0,
+                            'total': 0
+                        }
+                    }
+                    added_count += 1
+
+            if added_count > 0:
+                print(f"[review-agent] Added {added_count} default entries for enabled checkers not yet reviewed")
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"[review-agent] Warning: Could not load config to check enabled checkers: {e}")
+
     # Convert back to lists
     all_reviews = list(existing_reviews.values())
     all_findings = []
@@ -733,13 +779,17 @@ REPORTS:
     if args.verbose:
         print(f"[review-agent] Report written to: {output_path}", file=sys.stderr)
 
-    # Update executive summary if this is a focused review
+    # Update executive summary and export JSON
     if args.focus != 'all':
+        # For focused reviews, update the executive summary section
         update_executive_summary(config['project_root'], args.focus, report_data)
-        export_json_summary(config['project_root'])
         if args.verbose:
             print(f"[review-agent] Executive summary updated", file=sys.stderr)
-            print(f"[review-agent] JSON summary exported", file=sys.stderr)
+
+    # Always export JSON summary (for all reviews and focused reviews)
+    export_json_summary(config['project_root'], args.focus, report_data)
+    if args.verbose:
+        print(f"[review-agent] JSON summary exported", file=sys.stderr)
 
     # Print summary (unless silent mode with no findings)
     if not (args.silent and report_data['total_findings'] == 0):

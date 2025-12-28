@@ -38,6 +38,8 @@ import { format, max, set } from 'date-fns';
 import { on } from 'events';
 import { useAuth } from '@/context/AuthContext';
 import { apiFetch } from '@/utils/api';
+import TemplateLibrary from '@/components/TemplateLibrary';
+import type { Template } from '@/store/slices/templatesSlice';
 
 // Define types
 type Conversation = {
@@ -51,6 +53,12 @@ type Conversation = {
   first_name?: string;
   last_name?: string;
   active: boolean;
+  template_id?: string | null;
+  tags?: string[];
+  prompt_templates?: {
+    name: string;
+    category: string;
+  };
 }
 
 // Updated types for OpenRouter API models response
@@ -95,7 +103,7 @@ type ModelPricing = {
   const model_temp_max = 1.0;
   const model_temp_step = 0.1;
   const model_step_marks = 0.5
-  const model_encoding_default = 'cl100k_base';
+  const model_encoding_default = 'o200k_base';
   const max_context_length = 2000000;
   const min_context_length = 1000;
   const context_adjust = 1.2;
@@ -214,9 +222,20 @@ const OpenRouterComponent = () => {
   const [historyTimeframe, setHistoryTimeframe] = useState<'day' | 'week'>('day');
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-    
-  // update tokens
-  // const tokens = encoding.encode(prompt);
+
+  // State for current template (for tracking usage)
+  const [currentTemplate, setCurrentTemplate] = useState<Template | null>(null);
+
+  // Update token count whenever prompt changes
+  useEffect(() => {
+    if (prompt) {
+      const encoding = get_encoding(model_encoding_default);
+      setPromptTokens(encoding.encode(prompt).length);
+      encoding.free();
+    } else {
+      setPromptTokens(0);
+    }
+  }, [prompt]);
 
   // Define columns for DataGrid
   const columns: GridColDef[] = [
@@ -268,9 +287,35 @@ const OpenRouterComponent = () => {
       }
     },
     {
+      field: 'template_id',
+      headerName: 'Template',
+      width: 150,
+      renderCell: (params: GridRenderCellParams) => {
+        const template = params.row.prompt_templates;
+        if (!template) return <Typography variant="caption" color="text.secondary">-</Typography>;
+
+        const categoryColors: Record<string, 'primary' | 'secondary' | 'success' | 'warning' | 'info'> = {
+          code: 'primary',
+          content: 'info',
+          analysis: 'secondary',
+          creative: 'warning',
+          custom: 'success',
+        };
+
+        return (
+          <Chip
+            size="small"
+            label={template.name}
+            color={categoryColors[template.category] || 'default'}
+            variant="outlined"
+          />
+        );
+      }
+    },
+    {
       field: 'prompt',
       headerName: 'Prompt',
-      width: 230,
+      width: 200,
       renderCell: (params: GridRenderCellParams) => {
         const text = params.value as string;
         return (
@@ -365,9 +410,13 @@ const OpenRouterComponent = () => {
           prompt,
           response,
           response_time: responseTime,
-          user_id: user?.id || null
+          user_id: user?.id || null,
+          template_id: currentTemplate?.id || null,
+          tags: currentTemplate?.tags || []
         }),
       });
+      // Clear current template after saving
+      setCurrentTemplate(null);
       // Reload history if we're on the history tab
       if (tabValue === 1) {
         loadHistory();
@@ -617,15 +666,27 @@ const OpenRouterComponent = () => {
     }
   }
 
+  // Handle template selection from library
+  const handleTemplateSelect = (template: Template) => {
+    // Store the template for tracking
+    setCurrentTemplate(template);
+    // Switch to chat tab and populate prompt with template content
+    setTabValue(0);
+    // For now, just set the template content as prompt
+    // TODO: Handle variable substitution in Phase 2
+    setPrompt(template.content);
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
-      <Tabs 
-        value={tabValue} 
+      <Tabs
+        value={tabValue}
         onChange={(_, newValue) => setTabValue(newValue)}
         sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab label="Chat" />
         <Tab label="History" />
+        <Tab label="Templates" />
       </Tabs>
       
       {/* Chat Tab */}
@@ -747,6 +808,44 @@ const OpenRouterComponent = () => {
                     Maximum length of the context (in tokens) the model can handle
                   </Typography>
                 </Grid>
+
+                {/* Token Counter */}
+                <Grid item xs={12}>
+                  <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Token Usage
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 4 }}>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Prompt Tokens
+                        </Typography>
+                        <Typography variant="h6" color="primary">
+                          {promptTokens.toLocaleString()}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Available Response Tokens
+                        </Typography>
+                        <Typography variant="h6" color="primary">
+                          {(currTokens - Math.floor(promptTokens * context_adjust)).toLocaleString()}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Total Context Window
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          {currTokens.toLocaleString()}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                      Response tokens = Context window - (Prompt tokens × {context_adjust})
+                    </Typography>
+                  </Box>
+                </Grid>
               </Grid>
             </Paper>
           )}
@@ -755,18 +854,11 @@ const OpenRouterComponent = () => {
         multiline
         rows={5}
         value={prompt}
-        onChange={(e) => {
-          const encoding = get_encoding(model_encoding_default);
-          setPrompt(e.target.value);
-          setPromptTokens(encoding.encode(e.target.value).length);
-          encoding.free();
-        }}
+        onChange={(e) => setPrompt(e.target.value)}
         placeholder="Enter your prompt here..."
         fullWidth
         inputRef={promptRef}
     />
-    <div>Prompt Tokens: <b>{promptTokens.toString()}</b></div>
-    <div>API Tokens: <b>{(currTokens - Math.floor(promptTokens * context_adjust)).toString()}</b></div>
     <FormControl fullWidth>
       <InputLabel id="model-select-label">Model</InputLabel>
       <Select
@@ -1000,6 +1092,13 @@ const OpenRouterComponent = () => {
               width: '100%'
             }}
           />
+        </Box>
+      )}
+
+      {/* Templates Tab */}
+      {tabValue === 2 && (
+        <Box>
+          <TemplateLibrary onSelectTemplate={handleTemplateSelect} />
         </Box>
       )}
     </Box>

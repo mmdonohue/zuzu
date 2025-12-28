@@ -12,6 +12,8 @@ import logRoutes from './routes/logs.js';
 import authRoutes from './routes/auth.routes.js';
 import reviewRoutes from './routes/review.js';
 import csrfRoutes from './routes/csrf.js';
+import templateRoutes from './routes/templates.js';
+import styleGuideRoutes from './routes/styleGuides.js';
 import { logger, httpLogger } from './config/logger.js';
 import { errorHandler } from './middleware/errorHandler.middleware.js';
 import { apiLimiter } from './middleware/rateLimiter.middleware.js';
@@ -156,6 +158,8 @@ app.use('/api', apiRoutes);
 app.use('/api/openrouter', openRouterRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/review', reviewRoutes);
+app.use('/api/templates', templateRoutes);
+app.use('/api/style-guides', styleGuideRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

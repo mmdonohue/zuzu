@@ -24,6 +24,7 @@ import {
   TableRow,
   TableSortLabel,
   TablePagination,
+  Button,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
@@ -32,6 +33,8 @@ import CodeIcon from '@mui/icons-material/Code';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import ExtensionIcon from '@mui/icons-material/Extension';
+import PreviewIcon from '@mui/icons-material/Preview';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 import { fetchCodeReviewSummary } from '../services/api';
 import { CodeReviewSummary, ReviewFinding, getStatusColor, getHealthScoreColor } from '../types/review';
@@ -52,14 +55,15 @@ const Dashboard: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [orderBy, setOrderBy] = useState<keyof ReviewFinding>('severity');
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+  const [showExample, setShowExample] = useState(false);
 
   const max_descrfiption_length = 150;
 
   const reset_interval = 30000;
   // Fetch code review data
   const { data, isLoading, error, refetch } = useQuery<CodeReviewSummary>({
-    queryKey: ['codeReview'],
-    queryFn: fetchCodeReviewSummary,
+    queryKey: ['codeReview', showExample],
+    queryFn: () => fetchCodeReviewSummary(showExample),
     refetchInterval: reset_interval, // Refetch every 30 seconds
   });
 
@@ -143,21 +147,42 @@ const Dashboard: React.FC = () => {
         <Box>
           <Typography variant="h4" component="h1" gutterBottom>
             Code Health Dashboard
+            {showExample && (
+              <Chip
+                label="EXAMPLE DATA"
+                color="warning"
+                size="small"
+                sx={{ ml: 2, fontWeight: 'bold' }}
+              />
+            )}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Last updated: {data.lastUpdated}
           </Typography>
         </Box>
-        <Tooltip title="Refresh data">
-          <IconButton aria-label="refresh" color="primary" onClick={() => {
-            try{
-            refetch()} catch (error) {
-              console.error('Error refreshing data:', error);
-            }
-          }}>
-            <RefreshIcon />
-          </IconButton>
-        </Tooltip>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Tooltip title={showExample ? "Switch to production data" : "View example data with findings"}>
+            <Button
+              variant={showExample ? "contained" : "outlined"}
+              color={showExample ? "warning" : "primary"}
+              startIcon={showExample ? <DashboardIcon /> : <PreviewIcon />}
+              onClick={() => setShowExample(!showExample)}
+              size="medium"
+            >
+              {showExample ? "Production" : "Example"}
+            </Button>
+          </Tooltip>
+          <Tooltip title="Refresh data">
+            <IconButton aria-label="refresh" color="primary" onClick={() => {
+              try{
+              refetch()} catch (error) {
+                console.error('Error refreshing data:', error);
+              }
+            }}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
 
       {/* Overall Health Score Card */}

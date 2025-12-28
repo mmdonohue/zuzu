@@ -8,13 +8,18 @@ const router = express.Router();
 // Get code review summary
 router.get('/summary', (req: Request, res: Response) => {
   try {
-    const reviewPath = path.join(process.cwd(), '.claude', 'CODEBASE_REVIEW.json');
+    // Check if example mode is requested
+    const useExample = req.query.example === 'true';
+    const filename = useExample ? 'CODEBASE_REVIEW_EXAMPLE.json' : 'CODEBASE_REVIEW.json';
+    const reviewPath = path.join(process.cwd(), '.claude', filename);
 
     // Check if file exists
     if (!fs.existsSync(reviewPath)) {
       return res.status(404).json({
         error: 'Code review data not found',
-        message: 'Run code review to generate data'
+        message: useExample
+          ? 'Example review data not found'
+          : 'Run code review to generate data'
       });
     }
 

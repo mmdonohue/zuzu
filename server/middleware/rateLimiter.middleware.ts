@@ -82,3 +82,23 @@ export const passwordResetLimiter = rateLimit({
     });
   }
 });
+
+// Rate limiter for prompt enhancement (5 requests per minute)
+export const enhancementLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5,
+  message: 'Too many prompt enhancement requests',
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: {
+    ip: false,
+    trustProxy: false,
+    forwardedHeader: false
+  },
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Too many enhancement requests. Please wait before trying again.'
+    });
+  }
+});

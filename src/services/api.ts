@@ -80,9 +80,12 @@ export const fetchHello = async () => {
 };
 
 // Code Review API functions
-export const fetchCodeReviewSummary = async () => {
+export const fetchCodeReviewSummary = async (useExample = false) => {
   try {
-    const response = await fetch(`${API_URL}/review/summary`);
+    const url = useExample
+      ? `${API_URL}/review/summary?example=true`
+      : `${API_URL}/review/summary`;
+    const response = await fetch(url);
     return handleResponse(response);
   } catch (error) {
     console.error('Error fetching code review summary:', error);
@@ -96,6 +99,176 @@ export const fetchCodeReviewDetails = async (category: string) => {
     return handleResponse(response);
   } catch (error) {
     console.error(`Error fetching code review details for ${category}:`, error);
+    throw error;
+  }
+};
+
+// Template API functions
+export const fetchTemplates = async (filters?: {
+  category?: string;
+  tag?: string;
+  search?: string;
+}) => {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.tag) params.append('tag', filters.tag);
+    if (filters?.search) params.append('search', filters.search);
+
+    const queryString = params.toString();
+    const url = queryString
+      ? `${API_URL}/templates?${queryString}`
+      : `${API_URL}/templates`;
+
+    const response = await fetch(url, {
+      credentials: 'include',
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching templates:', error);
+    throw error;
+  }
+};
+
+export const fetchTemplateById = async (id: string) => {
+  try {
+    const response = await fetch(`${API_URL}/templates/${id}`, {
+      credentials: 'include',
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Error fetching template ${id}:`, error);
+    throw error;
+  }
+};
+
+export const createTemplate = async (templateData: {
+  name: string;
+  description?: string;
+  category: string;
+  content: string;
+  variables?: any[];
+  style_guide_id?: string;
+  is_public?: boolean;
+  tags?: string[];
+}) => {
+  try {
+    const response = await fetchWithCsrf(`${API_URL}/templates`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(templateData),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Error creating template:', error);
+    throw error;
+  }
+};
+
+export const updateTemplate = async (
+  id: string,
+  updates: {
+    name?: string;
+    description?: string;
+    category?: string;
+    content?: string;
+    variables?: any[];
+    style_guide_id?: string;
+    is_public?: boolean;
+    tags?: string[];
+    active?: boolean;
+  }
+) => {
+  try {
+    const response = await fetchWithCsrf(`${API_URL}/templates/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Error updating template ${id}:`, error);
+    throw error;
+  }
+};
+
+export const deleteTemplate = async (id: string) => {
+  try {
+    const response = await fetchWithCsrf(`${API_URL}/templates/${id}`, {
+      method: 'DELETE',
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Error deleting template ${id}:`, error);
+    throw error;
+  }
+};
+
+export const trackTemplateUsage = async (templateId: string, modelUsed?: string) => {
+  try {
+    const response = await fetchWithCsrf(`${API_URL}/templates/usage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        template_id: templateId,
+        model_used: modelUsed,
+      }),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Error tracking template usage:', error);
+    throw error;
+  }
+};
+
+// Style Guide API functions
+export const fetchStyleGuides = async () => {
+  try {
+    const response = await fetch(`${API_URL}/style-guides`, {
+      credentials: 'include',
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Error fetching style guides:', error);
+    throw error;
+  }
+};
+
+export const fetchStyleGuideById = async (id: string) => {
+  try {
+    const response = await fetch(`${API_URL}/style-guides/${id}`, {
+      credentials: 'include',
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error(`Error fetching style guide ${id}:`, error);
+    throw error;
+  }
+};
+
+// Prompt Enhancement API functions
+export const enhancePrompt = async (data: {
+  prompt: string;
+  style_guide_id?: string;
+  context?: string;
+}) => {
+  try {
+    const response = await fetchWithCsrf(`${API_URL}/openrouter/enhance`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    console.error('Error enhancing prompt:', error);
     throw error;
   }
 };

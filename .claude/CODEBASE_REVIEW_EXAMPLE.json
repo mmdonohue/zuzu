@@ -1,0 +1,358 @@
+{
+  "lastUpdated": "2025-12-27 15:30 UTC",
+  "overallStatus": "critical",
+  "overallStatusDisplay": "❌ CRITICAL",
+  "overallHealthScore": 72,
+  "overallMetrics": {
+    "critical": 3,
+    "warnings": 24,
+    "info": 8,
+    "total": 35
+  },
+  "reviews": [
+    {
+      "category": "docs",
+      "displayName": "Docs",
+      "lastUpdated": "2025-12-27 15:30 UTC",
+      "status": "warning",
+      "statusDisplay": "⚠️ WARNING",
+      "healthScore": 85,
+      "metrics": {
+        "critical": 0,
+        "warnings": 4,
+        "info": 3,
+        "total": 7
+      }
+    },
+    {
+      "category": "quality",
+      "displayName": "Quality",
+      "lastUpdated": "2025-12-27 15:30 UTC",
+      "status": "critical",
+      "statusDisplay": "❌ CRITICAL",
+      "healthScore": 68,
+      "metrics": {
+        "critical": 2,
+        "warnings": 18,
+        "info": 4,
+        "total": 24
+      }
+    },
+    {
+      "category": "security",
+      "displayName": "Security",
+      "lastUpdated": "2025-12-27 15:30 UTC",
+      "status": "critical",
+      "statusDisplay": "❌ CRITICAL",
+      "healthScore": 65,
+      "metrics": {
+        "critical": 1,
+        "warnings": 2,
+        "info": 1,
+        "total": 4
+      }
+    }
+  ],
+  "findings": [
+    {
+      "category": "security",
+      "categoryDisplay": "Security",
+      "severity": "critical",
+      "issue": "Hardcoded API key detected",
+      "file": "src/config/api.ts",
+      "line": 12,
+      "description": "Hardcoded API key found in source code: 'sk-proj-...'",
+      "recommendation": "Move API key to environment variable and add to .env.example"
+    },
+    {
+      "category": "security",
+      "categoryDisplay": "Security",
+      "severity": "warning",
+      "issue": "Missing CSRF protection on state-changing endpoint",
+      "file": "server/routes/api.ts",
+      "line": 45,
+      "description": "POST endpoint /api/data does not implement CSRF protection",
+      "recommendation": "Add csrfProtection middleware to all POST, PUT, DELETE, PATCH endpoints"
+    },
+    {
+      "category": "security",
+      "categoryDisplay": "Security",
+      "severity": "warning",
+      "issue": "SQL injection vulnerability",
+      "file": "server/services/user.service.ts",
+      "line": 78,
+      "description": "Direct string interpolation in SQL query: `SELECT * FROM users WHERE id = ${userId}`",
+      "recommendation": "Use parameterized queries or ORM to prevent SQL injection"
+    },
+    {
+      "category": "security",
+      "categoryDisplay": "Security",
+      "severity": "info",
+      "issue": "Weak password requirements",
+      "file": "server/controllers/auth.controller.ts",
+      "line": 34,
+      "description": "Password validation only requires 6 characters with no complexity requirements",
+      "recommendation": "Implement stronger password policy (min 8 chars, uppercase, lowercase, number, special char)"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "critical",
+      "issue": "High cyclomatic complexity (28)",
+      "file": "src/pages/Dashboard.tsx",
+      "line": 145,
+      "description": "Function renderDataTable has complexity of 28, exceeding threshold of 10",
+      "recommendation": "Consider breaking this function into smaller, more focused functions"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "critical",
+      "issue": "High cyclomatic complexity (20)",
+      "file": "src/pages/Home.tsx",
+      "line": 58,
+      "description": "Function has complexity of 20, exceeding threshold of 10",
+      "recommendation": "Consider breaking this function into smaller, more focused functions"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/types/index.ts",
+      "line": 12,
+      "description": "Interface User should be a type alias",
+      "recommendation": "Convert interface to type: type User = { ... }"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/types/index.ts",
+      "line": 24,
+      "description": "Interface AuthState should be a type alias",
+      "recommendation": "Convert interface to type: type AuthState = { ... }"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/services/api.ts",
+      "line": 8,
+      "description": "Interface ApiResponse should be a type alias",
+      "recommendation": "Convert interface to type: type ApiResponse<T> = { ... }"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/Modal.tsx",
+      "line": 5,
+      "description": "Interface ModalProps should be a type alias",
+      "recommendation": "Convert interface to type: type ModalProps = { ... }"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Magic number should be a named constant",
+      "file": "src/pages/Home.tsx",
+      "line": 89,
+      "description": "Magic number 6F87BF should be defined as a const",
+      "recommendation": "Extract to named constant: const PRIMARY_COLOR = '#6F87BF'"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Magic number should be a named constant",
+      "file": "src/pages/Home.tsx",
+      "line": 94,
+      "description": "Magic number 001133 should be defined as a const",
+      "recommendation": "Extract to named constant: const SECONDARY_COLOR = '#001133'"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Magic number should be a named constant",
+      "file": "src/components/Header.tsx",
+      "line": 45,
+      "description": "Magic number 1200 should be defined as a const",
+      "recommendation": "Extract to named constant: const MAX_CONTAINER_WIDTH = 1200"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Avoid underscore prefix for unused variables",
+      "file": "src/services/api.ts",
+      "line": 67,
+      "description": "Variable _response appears to be unused and prefixed with underscore",
+      "recommendation": "Remove unused variable or use it in the code"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Avoid underscore prefix for unused variables",
+      "file": "server/middleware/auth.middleware.ts",
+      "line": 34,
+      "description": "Variable _user appears to be unused and prefixed with underscore",
+      "recommendation": "Remove unused variable or use it in the code"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Console.log statements in production code",
+      "file": "src/pages/Dashboard.tsx",
+      "line": 78,
+      "description": "Found 3 console.log statements",
+      "recommendation": "Remove console.log or replace with proper logging service"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Console.log statements in production code",
+      "file": "src/services/auth.service.ts",
+      "line": 45,
+      "description": "Found 2 console.log statements",
+      "recommendation": "Remove console.log or replace with proper logging service"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Console.log statements in production code",
+      "file": "server/routes/openrouter.ts",
+      "line": 112,
+      "description": "Found 4 console.log statements",
+      "recommendation": "Remove console.log or replace with proper logging service"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Duplicate code detected",
+      "file": "src/services/api.ts",
+      "line": 89,
+      "description": "Similar error handling code appears in 5 different functions",
+      "recommendation": "Extract common error handling logic into a shared utility function"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Long function exceeds recommended length",
+      "file": "src/pages/OpenRouter.tsx",
+      "line": 234,
+      "description": "Function handleStreamingResponse has 156 lines, exceeding threshold of 50",
+      "recommendation": "Break function into smaller, single-responsibility functions"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Missing error boundaries",
+      "file": "src/App.tsx",
+      "line": 1,
+      "description": "No React Error Boundary detected in application",
+      "recommendation": "Add Error Boundary components to catch and handle React errors gracefully"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Unused import detected",
+      "file": "src/pages/About.tsx",
+      "line": 3,
+      "description": "Import { Container } is declared but never used",
+      "recommendation": "Remove unused import to keep code clean"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Missing PropTypes validation",
+      "file": "src/components/Footer.tsx",
+      "line": 1,
+      "description": "Component lacks TypeScript prop type definitions",
+      "recommendation": "Add proper TypeScript types for all component props"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "warning",
+      "issue": "Incomplete routing documentation in .claude/CLAUDE.md",
+      "file": ".claude/CLAUDE.md",
+      "line": 55,
+      "description": "Documentation lists 0 routes but codebase has 9 routes.\n\n**Actual**: 9 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouter, Logs, Account\n\n**Documented**: 0 routes",
+      "recommendation": "Update CLAUDE.md to document all 9 application routes with their purposes"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "warning",
+      "issue": "README.md missing technologies documented in CLAUDE.md",
+      "file": "README.md",
+      "line": null,
+      "description": "Technologies mentioned in CLAUDE.md are not documented in README.md.\n\n**Actual**: CLAUDE.md documents: Redux Toolkit, log4js, bcrypt, JWT\n\n**Documented**: Missing from README.md",
+      "recommendation": "Add to README.md tech stack section: Redux Toolkit, log4js, bcrypt, JWT"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "warning",
+      "issue": "Duplicate provider entries in CLAUDE.md",
+      "file": ".claude/CLAUDE.md",
+      "line": 53,
+      "description": "AuthProvider is listed 3 times in the provider hierarchy section",
+      "recommendation": "Remove duplicate AuthProvider entries, keep only one"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "warning",
+      "issue": "Outdated authentication documentation",
+      "file": ".claude/AUTH_IMPLEMENTATION.md",
+      "line": 78,
+      "description": "Documentation mentions cookie sameSite: 'strict' but code uses 'none'",
+      "recommendation": "Update documentation to match actual implementation (sameSite: 'none')"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "info",
+      "issue": "Technology stack not fully documented in README.md",
+      "file": "README.md",
+      "line": null,
+      "description": "Some major dependencies are not mentioned in the README tech stack section.\n\n**Actual**: Technologies in use: Material-UI (MUI), Redux Toolkit, React Router, Axios\n\n**Documented**: Missing from README.md tech stack",
+      "recommendation": "Consider adding: Material-UI (MUI), Redux Toolkit, React Router, Axios"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "info",
+      "issue": "README.md missing npm scripts from CLAUDE.md",
+      "file": "README.md",
+      "line": null,
+      "description": "Some npm commands documented in CLAUDE.md are not in README.md.\n\n**Actual**: CLAUDE.md documents: npm serve, npm run dev:server\n\n**Documented**: Missing from README.md",
+      "recommendation": "Add command documentation to README.md: serve, dev:server"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "info",
+      "issue": "Missing API documentation",
+      "file": "server/routes/review.ts",
+      "line": 1,
+      "description": "New review API endpoints lack JSDoc comments and documentation",
+      "recommendation": "Add comprehensive JSDoc comments explaining endpoint purpose, parameters, and responses"
+    }
+  ]
+}
