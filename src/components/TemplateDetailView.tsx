@@ -30,6 +30,9 @@ import {
   ContentCopy as ContentCopyIcon,
   PlayArrow as PlayArrowIcon,
   Edit as EditIcon,
+  Delete as DeleteIcon,
+  Share as ShareIcon,
+  Download as DownloadIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import type { Template } from '../store/slices/templatesSlice';
@@ -40,6 +43,7 @@ interface TemplateDetailViewProps {
   onClose: () => void;
   onUseTemplate: (template: Template) => void;
   onEditTemplate?: (template: Template) => void;
+  onDeleteTemplate?: (template: Template) => void;
 }
 
 // Category icon mapping
@@ -66,6 +70,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
   onClose,
   onUseTemplate,
   onEditTemplate,
+  onDeleteTemplate,
 }) => {
   if (!template) return null;
 
@@ -86,6 +91,59 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
       onEditTemplate(template);
       onClose();
     }
+  };
+
+  const handleDeleteTemplate = () => {
+    if (onDeleteTemplate) {
+      onDeleteTemplate(template);
+      onClose();
+    }
+  };
+
+  const handleExportTemplate = () => {
+    // Create a clean export object (exclude runtime properties)
+    const exportData = {
+      name: template.name,
+      description: template.description,
+      category: template.category,
+      content: template.content,
+      variables: template.variables,
+      tags: template.tags,
+      style_guide_id: template.style_guide_id,
+    };
+
+    // Convert to JSON and copy to clipboard
+    const jsonString = JSON.stringify(exportData, null, 2);
+    navigator.clipboard.writeText(jsonString).then(() => {
+      alert('Template JSON copied to clipboard! You can share this with others.');
+    }).catch((err) => {
+      console.error('Failed to copy template:', err);
+    });
+  };
+
+  const handleDownloadTemplate = () => {
+    // Create a clean export object
+    const exportData = {
+      name: template.name,
+      description: template.description,
+      category: template.category,
+      content: template.content,
+      variables: template.variables,
+      tags: template.tags,
+      style_guide_id: template.style_guide_id,
+    };
+
+    // Create a blob and download
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${template.name.replace(/\s+/g, '_')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -348,7 +406,39 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
         <Button onClick={onClose} color="inherit">
           Close
         </Button>
+        <Tooltip title="Copy template JSON to clipboard">
+          <Button
+            variant="text"
+            size="small"
+            startIcon={<ShareIcon />}
+            onClick={handleExportTemplate}
+            color="inherit"
+          >
+            Share
+          </Button>
+        </Tooltip>
+        <Tooltip title="Download template as JSON file">
+          <Button
+            variant="text"
+            size="small"
+            startIcon={<DownloadIcon />}
+            onClick={handleDownloadTemplate}
+            color="inherit"
+          >
+            Download
+          </Button>
+        </Tooltip>
         <Box sx={{ flex: 1 }} />
+        {onDeleteTemplate && !template.is_system && (
+          <Button
+            variant="outlined"
+            startIcon={<DeleteIcon />}
+            onClick={handleDeleteTemplate}
+            color="error"
+          >
+            Delete
+          </Button>
+        )}
         {onEditTemplate && !template.is_system && (
           <Button
             variant="outlined"

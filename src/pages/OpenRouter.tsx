@@ -40,13 +40,16 @@ import { format, max, set } from 'date-fns';
 import { on } from 'events';
 import { useAuth } from '@/context/AuthContext';
 import { apiFetch } from '@/utils/api';
-import { fetchWithCsrf, createTemplate, updateTemplate } from '@/services/api';
+import { fetchWithCsrf } from '@/services/api';
+import { useCreateTemplate, useUpdateTemplate, useDeleteTemplate } from '@/hooks/useTemplates';
+import { useSnackbar } from '@/contexts/SnackbarContext';
 import TemplateLibrary from '@/components/TemplateLibrary';
 import TemplateForm, { TemplateFormData } from '@/components/TemplateForm';
 import TemplateDetailView from '@/components/TemplateDetailView';
 import PromptEnhancer from '@/components/PromptEnhancer';
+import TemplateVariableSubstitution from '@/components/TemplateVariableSubstitution';
 import type { Template } from '@/store/slices/templatesSlice';
-import { Dialog, DialogContent } from '@mui/material';
+import { Dialog, DialogContent, DialogActions, DialogTitle, DialogContentText } from '@mui/material';
 
 // Define types
 type Conversation = {
@@ -131,6 +134,14 @@ type ModelPricing = {
 const OpenRouterComponent = () => {
   // Get current user from auth context
   const { user } = useAuth();
+
+  // Snackbar for notifications
+  const { showSnackbar } = useSnackbar();
+
+  // Template mutations
+  const createTemplateMutation = useCreateTemplate();
+  const updateTemplateMutation = useUpdateTemplate();
+  const deleteTemplateMutation = useDeleteTemplate();
 
   // State for tabs
   const [tabValue, setTabValue] = useState(0);
@@ -239,6 +250,10 @@ const OpenRouterComponent = () => {
   const [enhancerOpen, setEnhancerOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const [isSubmittingTemplate, setIsSubmittingTemplate] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState<Template | null>(null);
+  const [variableSubOpen, setVariableSubOpen] = useState(false);
+  const [templateForSubstitution, setTemplateForSubstitution] = useState<Template | null>(null);
 
   // Update token count whenever prompt changes
   useEffect(() => {
@@ -688,11 +703,30 @@ const OpenRouterComponent = () => {
   const handleTemplateSelect = (template: Template) => {
     // Store the template for tracking
     setCurrentTemplate(template);
-    // Switch to chat tab and populate prompt with template content
+    // Switch to chat tab
     setTabValue(0);
-    // For now, just set the template content as prompt
-    // TODO: Handle variable substitution in Phase 2
-    setPrompt(template.content);
+
+    // Check if template has variables that need substitution
+    if (template.variables && template.variables.length > 0) {
+      // Open variable substitution dialog
+      setTemplateForSubstitution(template);
+      setVariableSubOpen(true);
+    } else {
+      // No variables, directly set the template content
+      setPrompt(template.content);
+    }
+  };
+
+  // Handle variable substitution completion
+  const handleVariableSubstitutionApply = (substitutedContent: string) => {
+    setPrompt(substitutedContent);
+    setVariableSubOpen(false);
+    setTemplateForSubstitution(null);
+  };
+
+  const handleVariableSubstitutionClose = () => {
+    setVariableSubOpen(false);
+    setTemplateForSubstitution(null);
   };
 
   // Template form handlers
@@ -711,16 +745,22 @@ const OpenRouterComponent = () => {
     try {
       if (editingTemplate) {
         // Update existing template
-        await updateTemplate(editingTemplate.id, formData);
+        await updateTemplateMutation.mutateAsync({
+          id: editingTemplate.id,
+          updates: formData
+        });
+        showSnackbar('Template updated successfully', 'success');
       } else {
         // Create new template
-        await createTemplate(formData);
+        await createTemplateMutation.mutateAsync(formData);
+        showSnackbar('Template created successfully', 'success');
       }
       setTemplateFormOpen(false);
       setEditingTemplate(null);
-      // Optionally refresh template list here
     } catch (error) {
       console.error('Error saving template:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save template';
+      showSnackbar(errorMessage, 'error');
       throw error;
     } finally {
       setIsSubmittingTemplate(false);
@@ -730,6 +770,32 @@ const OpenRouterComponent = () => {
   const handleTemplateFormCancel = () => {
     setTemplateFormOpen(false);
     setEditingTemplate(null);
+  };
+
+  // Delete confirmation handlers
+  const handleDeleteTemplate = (template: Template) => {
+    setTemplateToDelete(template);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!templateToDelete) return;
+
+    try {
+      await deleteTemplateMutation.mutateAsync(templateToDelete.id);
+      showSnackbar('Template deleted successfully', 'success');
+      setDeleteConfirmOpen(false);
+      setTemplateToDelete(null);
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete template';
+      showSnackbar(errorMessage, 'error');
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirmOpen(false);
+    setTemplateToDelete(null);
   };
 
   // Prompt enhancer handlers
@@ -1190,6 +1256,7 @@ const OpenRouterComponent = () => {
           <TemplateLibrary
             onSelectTemplate={handleTemplateSelect}
             onEditTemplate={handleEditTemplate}
+            onDeleteTemplate={handleDeleteTemplate}
           />
         </Box>
       )}
@@ -1225,6 +1292,41 @@ const OpenRouterComponent = () => {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={handleDeleteCancel}
+        maxWidth="sm"
+      >
+        <DialogTitle>Delete Template</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete "{templateToDelete?.name}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="inherit">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+            disabled={deleteTemplateMutation.isLoading}
+          >
+            {deleteTemplateMutation.isLoading ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Variable Substitution Dialog */}
+      <TemplateVariableSubstitution
+        template={templateForSubstitution}
+        open={variableSubOpen}
+        onClose={handleVariableSubstitutionClose}
+        onApply={handleVariableSubstitutionApply}
+      />
     </Box>
   );
 };
