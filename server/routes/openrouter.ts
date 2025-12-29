@@ -3,7 +3,6 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { supabase } from '../services/supabase.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
-import { csrfProtection } from '../middleware/csrf.middleware.js';
 import { enhancementLimiter } from '../middleware/rateLimiter.middleware.js';
 import { validatePromptEnhancement } from '../middleware/validation.middleware.js';
 import logger from '../config/logger.js';
@@ -124,7 +123,6 @@ router.patch('/status/:id', async (req: Request, res: Response) => {
 router.post(
   '/enhance',
   authenticateToken,
-  csrfProtection,
   enhancementLimiter,
   validatePromptEnhancement,
   async (req: Request, res: Response) => {

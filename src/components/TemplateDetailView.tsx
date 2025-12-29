@@ -29,6 +29,7 @@ import {
   TrendingUp as TrendingUpIcon,
   ContentCopy as ContentCopyIcon,
   PlayArrow as PlayArrowIcon,
+  Edit as EditIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import type { Template } from '../store/slices/templatesSlice';
@@ -38,6 +39,7 @@ interface TemplateDetailViewProps {
   open: boolean;
   onClose: () => void;
   onUseTemplate: (template: Template) => void;
+  onEditTemplate?: (template: Template) => void;
 }
 
 // Category icon mapping
@@ -63,6 +65,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
   open,
   onClose,
   onUseTemplate,
+  onEditTemplate,
 }) => {
   if (!template) return null;
 
@@ -76,6 +79,13 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
   const handleUseTemplate = () => {
     onUseTemplate(template);
     onClose();
+  };
+
+  const handleEditTemplate = () => {
+    if (onEditTemplate) {
+      onEditTemplate(template);
+      onClose();
+    }
   };
 
   return (
@@ -328,7 +338,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
           <Box sx={{ mt: 2 }}>
             <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <PersonIcon fontSize="small" />
-              Created by user {template.user_id.substring(0, 8)}...
+              Created by user {template.user_id}
             </Typography>
           </Box>
         )}
@@ -338,6 +348,17 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
         <Button onClick={onClose} color="inherit">
           Close
         </Button>
+        <Box sx={{ flex: 1 }} />
+        {onEditTemplate && !template.is_system && (
+          <Button
+            variant="outlined"
+            startIcon={<EditIcon />}
+            onClick={handleEditTemplate}
+            color="primary"
+          >
+            Edit
+          </Button>
+        )}
         <Button
           variant="contained"
           startIcon={<PlayArrowIcon />}

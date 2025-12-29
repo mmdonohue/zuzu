@@ -102,11 +102,11 @@ export class AuthController {
       // Generate tokens
       const userRole = (user.roles as any)?.role || 'USER';
       const accessToken = AuthService.generateAccessToken(
-        user.id,
+        user.id.toString(),
         user.email,
         userRole
       );
-      const refreshToken = AuthService.generateRefreshToken(user.id);
+      const refreshToken = AuthService.generateRefreshToken(user.id.toString());
 
       // Set httpOnly cookies
       res.cookie('accessToken', accessToken, COOKIE_CONFIG);
@@ -178,7 +178,7 @@ export class AuthController {
       // Generate new access token
       const userRole = (user.roles as any)?.role || 'USER';
       const newAccessToken = AuthService.generateAccessToken(
-        user.id,
+        user.id.toString(),
         user.email,
         userRole
       );

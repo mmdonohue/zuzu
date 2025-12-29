@@ -33,9 +33,9 @@ export const authenticateToken = async (
     // Verify token
     const decoded = AuthService.verifyAccessToken(token);
 
-    // Attach user to request
+    // Attach user to request (convert userId to string for consistency)
     req.user = {
-      userId: decoded.userId,
+      userId: typeof decoded.userId === 'number' ? decoded.userId.toString() : decoded.userId,
       email: decoded.email,
       role: decoded.role
     };
@@ -72,7 +72,7 @@ export const optionalAuth = async (
     if (token) {
       const decoded = AuthService.verifyAccessToken(token);
       req.user = {
-        userId: decoded.userId,
+        userId: typeof decoded.userId === 'number' ? decoded.userId.toString() : decoded.userId,
         email: decoded.email,
         role: decoded.role
       };

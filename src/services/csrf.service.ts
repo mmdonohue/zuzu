@@ -5,8 +5,6 @@
  * The token is required for all state-changing operations (POST, PUT, DELETE, PATCH).
  */
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
 class CsrfService {
   private csrfToken: string | null = null;
   private fetchPromise: Promise<string> | null = null;
@@ -16,7 +14,9 @@ class CsrfService {
    */
   private async fetchToken(): Promise<string> {
     try {
-      const response = await fetch(`${API_URL}/csrf-token`, {
+      // Use relative URL to go through webpack dev server proxy
+      // This ensures the CSRF cookie is set on the same domain as our requests
+      const response = await fetch('/api/csrf-token', {
         method: 'GET',
         credentials: 'include', // Important: include cookies
         headers: {

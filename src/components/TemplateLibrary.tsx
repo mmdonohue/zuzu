@@ -30,9 +30,10 @@ import type { Template } from '../store/slices/templatesSlice';
 
 interface TemplateLibraryProps {
   onSelectTemplate?: (template: Template) => void;
+  onEditTemplate?: (template: Template) => void;
 }
 
-const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate }) => {
+const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onEditTemplate }) => {
   const dispatch = useDispatch<AppDispatch>();
   const filters = useSelector((state: RootState) => state.templates.filters);
 
@@ -249,6 +250,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate }) =
         open={detailViewOpen}
         onClose={handleCloseDetailView}
         onUseTemplate={handleUseTemplate}
+        onEditTemplate={onEditTemplate}
       />
     </Box>
   );

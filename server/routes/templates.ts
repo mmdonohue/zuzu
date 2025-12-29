@@ -3,7 +3,6 @@ import express from 'express';
 import { Request, Response } from 'express';
 import { supabase } from '../services/supabase.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
-import { csrfProtection } from '../middleware/csrf.middleware.js';
 import {
   validateTemplateCreate,
   validateTemplateUpdate,
@@ -109,7 +108,6 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
 router.post(
   '/',
   authenticateToken,
-  csrfProtection,
   validateTemplateCreate,
   async (req: Request, res: Response) => {
     const {
@@ -124,6 +122,18 @@ router.post(
     } = req.body;
 
     try {
+      // Log the data being inserted for debugging
+      logger.info('Creating template with data:', {
+        user_id: req.user?.userId,
+        name,
+        category,
+        style_guide_id,
+        is_public,
+        tags,
+        tags_type: typeof tags,
+        tags_array: Array.isArray(tags)
+      });
+
       const { data, error } = await supabase
         .from('prompt_templates')
         .insert([
@@ -173,7 +183,6 @@ router.post(
 router.put(
   '/:id',
   authenticateToken,
-  csrfProtection,
   validateTemplateUpdate,
   async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -249,7 +258,6 @@ router.put(
 router.delete(
   '/:id',
   authenticateToken,
-  csrfProtection,
   async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -293,7 +301,6 @@ router.delete(
 router.post(
   '/usage',
   authenticateToken,
-  csrfProtection,
   validateTemplateUsage,
   async (req: Request, res: Response) => {
     const { template_id, model_used } = req.body;

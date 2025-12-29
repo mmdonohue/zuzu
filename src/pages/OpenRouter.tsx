@@ -26,20 +26,27 @@ import {
     Tooltip
   } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { 
-  RefreshRounded, 
-  DeleteOutlined, 
+import {
+  RefreshRounded,
+  DeleteOutlined,
   RestartAltOutlined,
   CancelOutlined,
   ContentCopyOutlined,
-  SettingsOutlined
+  SettingsOutlined,
+  Add as AddIcon,
+  AutoFixHigh as EnhanceIcon
 } from '@mui/icons-material';
 import { format, max, set } from 'date-fns';
 import { on } from 'events';
 import { useAuth } from '@/context/AuthContext';
 import { apiFetch } from '@/utils/api';
+import { fetchWithCsrf, createTemplate, updateTemplate } from '@/services/api';
 import TemplateLibrary from '@/components/TemplateLibrary';
+import TemplateForm, { TemplateFormData } from '@/components/TemplateForm';
+import TemplateDetailView from '@/components/TemplateDetailView';
+import PromptEnhancer from '@/components/PromptEnhancer';
 import type { Template } from '@/store/slices/templatesSlice';
+import { Dialog, DialogContent } from '@mui/material';
 
 // Define types
 type Conversation = {
@@ -99,6 +106,7 @@ type ModelPricing = {
     per_request_limits: ModelLimits;
   }
 
+  const model_default = "xiaomi/mimo-v2-flash:free"
   const model_temp_min = 0.0;
   const model_temp_max = 1.0;
   const model_temp_step = 0.1;
@@ -203,7 +211,7 @@ const OpenRouterComponent = () => {
   const apiKey = process.env.REACT_APP_ZUZU_OPENROUTER_KEY;
   const [prompt, setPrompt] = useState("");
   const [results, setResults] = useState("");
-  const [model, setModel] = useState("");
+  const [model, setModel] = useState(model_default);
   const [modelObject, setModelObject] = useState<OpenRouterModel | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [apiKeyError, setApiKeyError] = useState<string | null>(null);
@@ -225,6 +233,12 @@ const OpenRouterComponent = () => {
 
   // State for current template (for tracking usage)
   const [currentTemplate, setCurrentTemplate] = useState<Template | null>(null);
+
+  // Dialog states
+  const [templateFormOpen, setTemplateFormOpen] = useState(false);
+  const [enhancerOpen, setEnhancerOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+  const [isSubmittingTemplate, setIsSubmittingTemplate] = useState(false);
 
   // Update token count whenever prompt changes
   useEffect(() => {
@@ -402,7 +416,7 @@ const OpenRouterComponent = () => {
   // Save conversation to Supabase
   const saveConversation = async (model: string, prompt: string, response: string, responseTime: number) => {
     try {
-      await apiFetch('/api/openrouter/save', {
+      const saveResponse = await fetchWithCsrf('/api/openrouter/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -415,6 +429,10 @@ const OpenRouterComponent = () => {
           tags: currentTemplate?.tags || []
         }),
       });
+
+      if (!saveResponse.ok) {
+        throw new Error(`Failed to save conversation: ${saveResponse.statusText}`);
+      }
       // Clear current template after saving
       setCurrentTemplate(null);
       // Reload history if we're on the history tab
@@ -677,6 +695,57 @@ const OpenRouterComponent = () => {
     setPrompt(template.content);
   };
 
+  // Template form handlers
+  const handleCreateTemplate = () => {
+    setEditingTemplate(null);
+    setTemplateFormOpen(true);
+  };
+
+  const handleEditTemplate = (template: Template) => {
+    setEditingTemplate(template);
+    setTemplateFormOpen(true);
+  };
+
+  const handleTemplateFormSubmit = async (formData: TemplateFormData) => {
+    setIsSubmittingTemplate(true);
+    try {
+      if (editingTemplate) {
+        // Update existing template
+        await updateTemplate(editingTemplate.id, formData);
+      } else {
+        // Create new template
+        await createTemplate(formData);
+      }
+      setTemplateFormOpen(false);
+      setEditingTemplate(null);
+      // Optionally refresh template list here
+    } catch (error) {
+      console.error('Error saving template:', error);
+      throw error;
+    } finally {
+      setIsSubmittingTemplate(false);
+    }
+  };
+
+  const handleTemplateFormCancel = () => {
+    setTemplateFormOpen(false);
+    setEditingTemplate(null);
+  };
+
+  // Prompt enhancer handlers
+  const handleOpenEnhancer = () => {
+    setEnhancerOpen(true);
+  };
+
+  const handleCloseEnhancer = () => {
+    setEnhancerOpen(false);
+  };
+
+  const handleAcceptEnhancement = (enhancedPrompt: string) => {
+    setPrompt(enhancedPrompt);
+    setEnhancerOpen(false);
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       <Tabs
@@ -859,6 +928,17 @@ const OpenRouterComponent = () => {
         fullWidth
         inputRef={promptRef}
     />
+    <Box sx={{ mt: 1, mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+      <Button
+        variant="outlined"
+        size="small"
+        startIcon={<EnhanceIcon />}
+        onClick={handleOpenEnhancer}
+        disabled={!prompt.trim()}
+      >
+        Enhance Prompt
+      </Button>
+    </Box>
     <FormControl fullWidth>
       <InputLabel id="model-select-label">Model</InputLabel>
       <Select
@@ -1098,9 +1178,53 @@ const OpenRouterComponent = () => {
       {/* Templates Tab */}
       {tabValue === 2 && (
         <Box>
-          <TemplateLibrary onSelectTemplate={handleTemplateSelect} />
+          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleCreateTemplate}
+            >
+              Create Template
+            </Button>
+          </Box>
+          <TemplateLibrary
+            onSelectTemplate={handleTemplateSelect}
+            onEditTemplate={handleEditTemplate}
+          />
         </Box>
       )}
+
+      {/* Template Form Dialog */}
+      <Dialog
+        open={templateFormOpen}
+        onClose={handleTemplateFormCancel}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogContent>
+          <TemplateForm
+            template={editingTemplate}
+            onSubmit={handleTemplateFormSubmit}
+            onCancel={handleTemplateFormCancel}
+            isSubmitting={isSubmittingTemplate}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Prompt Enhancer Dialog */}
+      <Dialog
+        open={enhancerOpen}
+        onClose={handleCloseEnhancer}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogContent>
+          <PromptEnhancer
+            initialPrompt={prompt}
+            onAcceptEnhancement={handleAcceptEnhancement}
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
