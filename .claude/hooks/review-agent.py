@@ -377,6 +377,12 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
                 findings = _parse_findings_from_markdown(detail_content, category_key, category)
                 existing_findings[category_key] = findings
 
+    # Clean up legacy 'documentation' category in favor of 'docs'
+    if 'docs' in existing_reviews and 'documentation' in existing_reviews:
+        del existing_reviews['documentation']
+        if 'documentation' in existing_findings:
+            del existing_findings['documentation']
+
     # Ensure all enabled checkers are included, even if not reviewed yet
     config_path = Path(project_root) / '.claude' / 'review' / 'config' / 'review-config.json'
     if config_path.exists():
@@ -387,7 +393,7 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
 
             # Map checker names to display names
             checker_display_names = {
-                'documentation': 'Documentation',
+                'documentation': 'Docs',
                 'docs': 'Docs',
                 'architecture': 'Architecture',
                 'security': 'Security',

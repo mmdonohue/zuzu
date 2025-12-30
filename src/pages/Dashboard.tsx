@@ -56,6 +56,7 @@ const categoryIcons: Record<string, React.ReactElement> = {
 const getShortDisplayName = (displayName: string): string => {
   const shortNames: Record<string, string> = {
     'Dependencies': 'Deps',
+    'Architecture': 'Arch',
   };
   return shortNames[displayName] || displayName;
 };

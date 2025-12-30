@@ -70,7 +70,7 @@ class DocumentationChecker:
             status = 'pass'
 
         return {
-            'category': 'documentation',
+            'category': 'docs',
             'status': status,
             'findings': self.findings,
             'metrics': {
