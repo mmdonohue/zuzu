@@ -16,10 +16,14 @@ const router = express.Router();
  * 3. Client includes the token in X-CSRF-Token header for all state-changing requests
  */
 router.get('/csrf-token', generateCsrfMiddleware, (req: Request, res: Response) => {
-  res.json({
-    success: true,
-    csrfToken: res.locals.csrfToken
-  });
+  try {
+    res.json({
+      success: true,
+      csrfToken: res.locals.csrfToken
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 export default router;

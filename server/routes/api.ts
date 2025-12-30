@@ -4,8 +4,13 @@ import { Request, Response } from 'express';
 const router = express.Router();
 
 // Hello endpoint
+// add error handling
 router.get('/hello', (req: Request, res: Response) => {
-  res.json({ message: 'Hello from ZuZu API!' });
+  try {
+    res.json({ message: 'Hello from ZuZu API!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  } 
 });
 
 // Example endpoints for a RESTful API

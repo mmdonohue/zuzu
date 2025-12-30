@@ -361,8 +361,13 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
             existing_reviews[category_key] = review_data
 
             # Parse and update findings for this category
-            category_upper = category.upper()
-            detail_path = Path(project_root) / '.claude' / f'CODEBASE_REVIEW_{category_upper}.md'
+            # Map display names to actual file names
+            category_file_map = {
+                'documentation': 'DOCS',
+                'docs': 'DOCS'
+            }
+            file_category = category_file_map.get(category_key, category.upper())
+            detail_path = Path(project_root) / '.claude' / f'CODEBASE_REVIEW_{file_category}.md'
 
             if detail_path.exists():
                 with open(detail_path, 'r') as f:
@@ -418,10 +423,16 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
         except (json.JSONDecodeError, IOError) as e:
             print(f"[review-agent] Warning: Could not load config to check enabled checkers: {e}")
 
-    # Convert back to lists
-    all_reviews = list(existing_reviews.values())
-    all_findings = []
-    for category_findings in existing_findings.values():
+    # Convert back to lists and nest findings under each review
+    all_reviews = []
+    all_findings = []  # Keep flat list for backward compatibility
+
+    for category_key, review in existing_reviews.items():
+        # Add findings array to each review
+        category_findings = existing_findings.get(category_key, [])
+        review['findings'] = category_findings
+        all_reviews.append(review)
+        # Also keep flat list for backward compatibility
         all_findings.extend(category_findings)
 
     # Calculate overall metrics from all reviews
@@ -450,6 +461,7 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
         overall_status_display = '✅ PASS'
 
     # Build JSON structure (preserving existing reviews and only updating what changed)
+    # Each review now includes its findings nested within it
     json_data = {
         'lastUpdated': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
         'overallStatus': overall_status,
@@ -462,7 +474,7 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
             'total': overall_total
         },
         'reviews': sorted(all_reviews, key=lambda x: x['category']),  # Sort for consistency
-        'findings': all_findings
+        'findings': all_findings  # Keep for backward compatibility
     }
 
     # Write JSON file
@@ -784,7 +796,19 @@ REPORTS:
         # For focused reviews, update the executive summary section
         update_executive_summary(config['project_root'], args.focus, report_data)
         if args.verbose:
-            print(f"[review-agent] Executive summary updated", file=sys.stderr)
+            print(f"[review-agent] Executive summary updated for {args.focus}", file=sys.stderr)
+    else:
+        # For full reviews, update executive summary for all reviewed categories
+        for category, data in report_data['categories'].items():
+            category_report = {
+                'critical_count': data.get('critical', 0),
+                'warning_count': data.get('warning', 0),
+                'info_count': data.get('info', 0),
+                'total_findings': len(data.get('findings', []))
+            }
+            update_executive_summary(config['project_root'], category, category_report)
+        if args.verbose:
+            print(f"[review-agent] Executive summary updated for all categories", file=sys.stderr)
 
     # Always export JSON summary (for all reviews and focused reviews)
     export_json_summary(config['project_root'], args.focus, report_data)

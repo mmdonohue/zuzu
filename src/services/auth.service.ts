@@ -106,9 +106,17 @@ api.interceptors.response.use(
         // Retry original request
         return api(originalRequest);
       } catch (refreshError) {
-        // Refresh failed, clear auth state
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        // Only logout if refresh explicitly failed with 401
+        // Don't logout on network errors or other failures
+        if (axios.isAxiosError(refreshError) && refreshError.response?.status === 401) {
+          console.log('Refresh token expired, logging out');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        } else {
+          console.warn('Token refresh failed but not due to auth:', refreshError);
+          // Return the original error instead of redirecting
+          return Promise.reject(error);
+        }
       }
     }
     return Promise.reject(error);

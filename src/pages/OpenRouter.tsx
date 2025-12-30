@@ -23,7 +23,8 @@ import {
     Slider,
     Switch,
     FormControlLabel,
-    Tooltip
+    Tooltip,
+    Collapse
   } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import {
@@ -34,7 +35,9 @@ import {
   ContentCopyOutlined,
   SettingsOutlined,
   Add as AddIcon,
-  AutoFixHigh as EnhanceIcon
+  AutoFixHigh as EnhanceIcon,
+  KeyboardArrowDown,
+  KeyboardArrowUp
 } from '@mui/icons-material';
 import { format, max, set } from 'date-fns';
 import { on } from 'events';
@@ -48,6 +51,8 @@ import TemplateForm, { TemplateFormData } from '@/components/TemplateForm';
 import TemplateDetailView from '@/components/TemplateDetailView';
 import PromptEnhancer from '@/components/PromptEnhancer';
 import TemplateVariableSubstitution from '@/components/TemplateVariableSubstitution';
+import OpenRouterDashboard from '@/components/OpenRouterDashboard';
+import OpenRouterActivity from '@/components/OpenRouterActivity';
 import type { Template } from '@/store/slices/templatesSlice';
 import { Dialog, DialogContent, DialogActions, DialogTitle, DialogContentText } from '@mui/material';
 
@@ -185,27 +190,33 @@ const OpenRouterComponent = () => {
     const fetchModels = async () => {
         setIsLoadingModels(true);
         try {
-        const response = await fetch('https://openrouter.ai/api/v1/models');
-        if (!response.ok) {
-            throw new Error(`Failed to fetch models: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // Sort models: first by free status, then by creation date (newest first)
-        const sortedModels = [...(data.data || [])].sort((a, b) => {
-            const aFree = isModelFree(a);
-            const bFree = isModelFree(b);
-            
-            // First sort by free status
-            if (aFree && !bFree) return -1;
-            if (!aFree && bFree) return 1;
-            
-            // Then sort by creation date (newer first)
-            return b.created - a.created;
-        });
-        
-        setAvailableModels(sortedModels);
+          const response = await fetch('https://openrouter.ai/api/v1/models');
+          if (!response.ok) {
+              throw new Error(`Failed to fetch models: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          // Sort models: first by free status, then by creation date (newest first)
+          const sortedModels = [...(data.data || [])].sort((a, b) => {
+              const aFree = isModelFree(a);
+              const bFree = isModelFree(b);
+              
+              // First sort by free status
+              if (aFree && !bFree) return -1;
+              if (!aFree && bFree) return 1;
+              
+              // Then sort by creation date (newer first)
+              return b.created - a.created;
+          });
+          console.log('Fetched and sorted models:', sortedModels);
+          setAvailableModels(sortedModels);
+          if(model_default){
+            let modelSelectedModel = sortedModels.find(m => m.id === model_default);
+            console.log("Default model context length:", modelSelectedModel ? modelSelectedModel.context_length : "not found");
+            setMaxTokens(modelSelectedModel ? modelSelectedModel.context_length : max_context_length);
+            setCurrTokens(modelSelectedModel ? modelSelectedModel.context_length * 0.8 : max_context_length * 0.8);
+          }
         } catch (error) {
         console.error('Error fetching models:', error);
         } finally {
@@ -245,6 +256,9 @@ const OpenRouterComponent = () => {
   // State for current template (for tracking usage)
   const [currentTemplate, setCurrentTemplate] = useState<Template | null>(null);
 
+  // State for OpenRouter generation ID
+  const [generationId, setGenerationId] = useState<string | null>(null);
+
   // Dialog states
   const [templateFormOpen, setTemplateFormOpen] = useState(false);
   const [enhancerOpen, setEnhancerOpen] = useState(false);
@@ -254,6 +268,7 @@ const OpenRouterComponent = () => {
   const [templateToDelete, setTemplateToDelete] = useState<Template | null>(null);
   const [variableSubOpen, setVariableSubOpen] = useState(false);
   const [templateForSubstitution, setTemplateForSubstitution] = useState<Template | null>(null);
+  const [dashboardVisible, setDashboardVisible] = useState(false);
 
   // Update token count whenever prompt changes
   useEffect(() => {
@@ -429,23 +444,63 @@ const OpenRouterComponent = () => {
   };
   
   // Save conversation to Supabase
-  const saveConversation = async (model: string, prompt: string, response: string, responseTime: number) => {
+  const saveConversation = async (
+    model: string,
+    prompt: string,
+    response: string,
+    responseTime: number,
+    generationId: string | null = null,
+    generationData: any = null
+  ) => {
+    const requestBody = {
+      model,
+      prompt,
+      response,
+      response_time: responseTime,
+      user_id: user?.id || null,
+      template_id: currentTemplate?.id || null,
+      tags: currentTemplate?.tags || [],
+      generation_id: generationId,
+      // Extract generation data fields if available
+      latency: generationData?.data?.latency || null,
+      moderation_latency: generationData?.data?.moderation_latency || null,
+      generation_time: generationData?.data?.generation_time || null,
+      tokens_prompt: generationData?.data?.tokens_prompt || null,
+      tokens_completion: generationData?.data?.tokens_completion || null,
+      total_cost: generationData?.data?.total_cost || null,
+    };
+
     try {
       const saveResponse = await fetchWithCsrf('/api/openrouter/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model,
-          prompt,
-          response,
-          response_time: responseTime,
-          user_id: user?.id || null,
-          template_id: currentTemplate?.id || null,
-          tags: currentTemplate?.tags || []
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!saveResponse.ok) {
+        const errorData = await saveResponse.json().catch(() => null);
+
+        // If CSRF validation failed, retry once with a fresh token
+        if (saveResponse.status === 403 && errorData?.code === 'CSRF_VALIDATION_FAILED') {
+          console.log('CSRF token failed, retrying with fresh token...');
+
+          // Wait a moment for the token to be refreshed
+          await new Promise(resolve => setTimeout(resolve, 100));
+
+          // Retry the request
+          const retryResponse = await fetchWithCsrf('/api/openrouter/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody),
+          });
+
+          if (!retryResponse.ok) {
+            throw new Error(`Failed to save conversation after retry: ${retryResponse.statusText}`);
+          }
+
+          return; // Success on retry
+        }
+
         throw new Error(`Failed to save conversation: ${saveResponse.statusText}`);
       }
       // Clear current template after saving
@@ -521,8 +576,15 @@ const OpenRouterComponent = () => {
     setMessages(prev => [...prev, { role, content }]);
   };
   
-  // Clear conversation
+  // Clear conversation (all messages and results)
   const clearConversation = () => {
+    setMessages([]);
+    setResults("");
+    setPrompt("");
+  };
+
+  // Clear only the response, keep the prompt
+  const clearResponse = () => {
     setMessages([]);
     setResults("");
   };
@@ -623,25 +685,26 @@ const OpenRouterComponent = () => {
         try {
           let buffer = '';
           let fullResponse = '';
-          
+          let capturedGenerationId: string | null = null;
+
           while (true) {
             const { done, value } = await reader.read();
             if (done) {
              // console.log('Stream reading complete');
               break;
             }
-            
+
             // Decode the chunk
             const chunk = decoder.decode(value, { stream: true });
             // console.log('Received chunk:', chunk);
-            
+
             // Add to buffer and process
             buffer += chunk;
-            
+
             // Split on double newlines which typically separate SSE events
             const parts = buffer.split('\n\n');
             buffer = parts.pop() || '';
-            
+
             for (const part of parts) {
               if (part.trim()) {
                 // Handle each event
@@ -654,6 +717,13 @@ const OpenRouterComponent = () => {
                   }
                   try {
                     const json = JSON.parse(eventData);
+
+                    // Capture generation ID from the first chunk
+                    if (!capturedGenerationId && json.id) {
+                      capturedGenerationId = json.id;
+                      setGenerationId(json.id);
+                    }
+
                     const content = json.choices?.[0]?.delta?.content || '';
                     if (content) {
                       fullResponse += content;
@@ -669,13 +739,50 @@ const OpenRouterComponent = () => {
           
           // Calculate response time
           const responseTime = (Date.now() - startTime) / convert_milli;
-          
+
           // Add assistant message to conversation history
           addMessage('assistant', fullResponse);
-          
+
+          // Fetch detailed generation data if we have a generation ID
+          let generationData = null;
+          if (capturedGenerationId) {
+            try {
+              // Wait for OpenRouter to process the generation data
+              console.log('Waiting for generation data to be available...');
+              await new Promise(resolve => setTimeout(resolve, 1000));
+
+              const genResponse = await fetch(
+                `https://openrouter.ai/api/v1/generation?id=${capturedGenerationId}`,
+                {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                  },
+                }
+              );
+
+              if (genResponse.ok) {
+                generationData = await genResponse.json();
+                console.log('Generation data:', generationData);
+              } else {
+                console.warn('Generation data not available:', genResponse.status);
+              }
+            } catch (error) {
+              console.error('Error fetching generation data:', error);
+              // Continue even if this fails
+            }
+          }
+
           // Save the conversation to Supabase
-          await saveConversation(model, prompt, fullResponse, responseTime);
-          
+          await saveConversation(
+            model,
+            prompt,
+            fullResponse,
+            responseTime,
+            capturedGenerationId,
+            generationData
+          );
+
           // Clear the prompt for the next message
           setPrompt("");
           
@@ -814,6 +921,36 @@ const OpenRouterComponent = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
+      {/* OpenRouter API Dashboard with Toggle */}
+      <Box sx={{ mb: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: 2,
+            py: 1,
+            bgcolor: 'background.paper',
+            borderRadius: 1,
+            cursor: 'pointer',
+            '&:hover': {
+              bgcolor: 'action.hover'
+            }
+          }}
+          onClick={() => setDashboardVisible(!dashboardVisible)}
+        >
+          <Typography variant="subtitle1" fontWeight="medium">
+            API Dashboard
+          </Typography>
+          <IconButton size="small">
+            {dashboardVisible ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+          </IconButton>
+        </Box>
+        <Collapse in={dashboardVisible}>
+          <OpenRouterDashboard />
+        </Collapse>
+      </Box>
+
       <Tabs
         value={tabValue}
         onChange={(_, newValue) => setTabValue(newValue)}
@@ -822,6 +959,7 @@ const OpenRouterComponent = () => {
         <Tab label="Chat" />
         <Tab label="History" />
         <Tab label="Templates" />
+        <Tab label="Activity" />
       </Tabs>
       
       {/* Chat Tab */}
@@ -838,13 +976,25 @@ const OpenRouterComponent = () => {
             <Paper elevation={1} sx={{ p: 2, mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6">Conversation</Typography>
-                <Button 
-                  size="small" 
-                  startIcon={<RefreshRounded />}
-                  onClick={clearConversation}
-                >
-                  Clear
-                </Button>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<DeleteOutlined />}
+                    onClick={clearResponse}
+                  >
+                    Clear Response
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    startIcon={<RestartAltOutlined />}
+                    onClick={clearConversation}
+                  >
+                    Clear All
+                  </Button>
+                </Box>
               </Box>
               
               {messages.map((msg, index) => (
@@ -1040,10 +1190,10 @@ const OpenRouterComponent = () => {
             {availableModels
               .filter(model => isModelFree(model))
               .map((modelOption) => (
-                <MenuItem 
+                <MenuItem
                   key={modelOption.id}
                   value={modelOption.id}
-                  onClick={(event) => {
+                  onClick={() => {
                    // console.log('Menu - selected free model:', modelOption.id);
                     let modelSelectedModel = availableModels.find(m => m.id === modelOption.id);
                     setMaxTokens(modelSelectedModel ? modelSelectedModel.context_length : max_context_length);
@@ -1258,6 +1408,13 @@ const OpenRouterComponent = () => {
             onEditTemplate={handleEditTemplate}
             onDeleteTemplate={handleDeleteTemplate}
           />
+        </Box>
+      )}
+
+      {/* Activity Tab */}
+      {tabValue === 3 && (
+        <Box>
+          <OpenRouterActivity />
         </Box>
       )}
 

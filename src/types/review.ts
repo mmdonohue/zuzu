@@ -22,6 +22,7 @@ export interface ReviewCategory {
   statusDisplay: string;
   healthScore: number;
   metrics: ReviewMetrics;
+  findings?: ReviewFinding[];  // Nested findings for this category
 }
 
 export interface ReviewFinding {

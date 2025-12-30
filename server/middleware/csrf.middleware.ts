@@ -32,7 +32,8 @@ const {
     httpOnly: true,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     secure: process.env.NODE_ENV === 'production',
-    path: '/'
+    path: '/',
+    maxAge: 1800000 // 30 minutes in milliseconds
   },
   size: 64, // Token size in bytes
   ignoredMethods: ['GET', 'HEAD', 'OPTIONS'], // Methods that don't need CSRF protection

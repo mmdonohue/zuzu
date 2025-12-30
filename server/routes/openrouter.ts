@@ -68,7 +68,22 @@ router.get('/history', authenticateToken, async (req: Request, res: Response) =>
 
 // Save a new conversation
 router.post('/save', authenticateToken, async (req: Request, res: Response) => {
-  const { model, prompt, response, response_time, user_id, template_id, tags } = req.body;
+  const {
+    model,
+    prompt,
+    response,
+    response_time,
+    user_id,
+    template_id,
+    tags,
+    generation_id,
+    latency,
+    moderation_latency,
+    generation_time,
+    tokens_prompt,
+    tokens_completion,
+    total_cost
+  } = req.body;
 
   try {
     // Use user_id from request body if provided, otherwise use authenticated user's ID
@@ -84,7 +99,14 @@ router.post('/save', authenticateToken, async (req: Request, res: Response) => {
           response_time,
           user_id: finalUserId,
           template_id: template_id || null,
-          tags: tags || []
+          tags: tags || [],
+          generation_id: generation_id || null,
+          latency: latency || null,
+          moderation_latency: moderation_latency || null,
+          generation_time: generation_time || null,
+          tokens_prompt: tokens_prompt || null,
+          tokens_completion: tokens_completion || null,
+          total_cost: total_cost || null
         }
       ])
       .select();

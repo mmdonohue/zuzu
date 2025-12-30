@@ -69,6 +69,13 @@ npm run test:open
 
 - **Path Aliases**: `@/*` maps to `src/*` (configured in tsconfig.json and webpack)
 
+- **Environment Detection**: `src/utils/environment.ts` provides utilities to detect runtime environment:
+  - `isLocalEnvironment()` - Returns true if running on localhost or REACT_APP_ENVIRONMENT is 'local'/'development'
+  - `isProductionEnvironment()` - Returns true if not running locally
+  - `getEnvironment()` - Returns 'local' or 'production'
+  - **Usage**: Use to conditionally render features that only work locally (e.g., "Run Code Review" button)
+  - **Auto-detection**: Checks hostname (localhost, 127.0.0.1, [::1]) or REACT_APP_ENVIRONMENT variable
+
 ### Backend Stack
 - **Entry Point**: `server/index.ts` - Express server with:
   - CORS configured for localhost:3000 and production frontend (credentials enabled)
@@ -136,6 +143,7 @@ Required environment variables are defined in `.env.example` and `server/.env.ex
 - `REACT_APP_SUPABASE_KEY` - Supabase anon key
 - `REACT_APP_ZUZU_OPENROUTER_KEY` - OpenRouter API key
 - `REACT_APP_PRODUCTION` - Production frontend URL (optional)
+- `REACT_APP_ENVIRONMENT` - Environment type (optional) - Set to 'local' or 'development' to enable local-only features. Auto-detected from hostname if not set.
 
 **Backend** (`server/.env`):
 - `SUPABASE_URL` - Supabase project URL
@@ -196,6 +204,97 @@ False positives can be suppressed in `.claude/review/config/suppressions.json`:
 **Best Practice**: Always include expiration dates and clear reasons for suppressions
 
 See `.claude/SECURITY.md` for complete security documentation and best practices.
+
+## TypeScript Coding Standards
+
+**IMPORTANT**: Follow these TypeScript standards for all code written in this project:
+
+### Type Definitions
+
+1. **Prefer `type` over `interface`**
+   - Project standard is to use `type` for consistency
+   - **Good**: `type User = { id: string; name: string; }`
+   - **Avoid**: `interface User { id: string; name: string; }`
+   - Exception: Only use `interface` when you need declaration merging or extending complex class hierarchies
+
+2. **Never use `any` type**
+   - Always specify concrete types when the type is known
+   - **Good**: `value: string`, `count: number`, `data: User | null`
+   - **Bad**: `value: any`, `data: any`
+   - If the type is truly unknown or dynamic, use:
+     - `unknown` - for values that need type checking before use
+     - `Record<string, unknown>` - for objects with unknown properties
+     - Specific union types - `string | number | boolean`
+     - Generic types - `T extends SomeConstraint`
+
+3. **Type Safety Examples**
+   ```typescript
+   // BAD - Using any
+   const handleChange = (event: any) => {
+     setValue(event.target.value);
+   };
+
+   // GOOD - Specific type
+   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+     setValue(event.target.value);
+   };
+
+   // BAD - Any for API response
+   const fetchData = async (): Promise<any> => { ... };
+
+   // GOOD - Typed response
+   type ApiResponse = {
+     success: boolean;
+     data: User[];
+   };
+   const fetchData = async (): Promise<ApiResponse> => { ... };
+   ```
+
+4. **Function Parameters and Return Types**
+   - Always explicitly type function parameters
+   - Always explicitly type function return types
+   - Avoid implicit `any` from missing types
+
+5. **Avoid Magic Numbers - Use Named Constants**
+   - **Rule**: Never use hardcoded numbers directly in code (except 0, 1, -1 in obvious contexts)
+   - **Always** declare numbers as named constants with clear, descriptive names
+   - **Benefits**: Improves readability, maintainability, and prevents errors from typos
+
+   ```typescript
+   // BAD - Magic numbers
+   setTimeout(() => refetch(), 30000);
+   if (score >= 80) { ... }
+   const maxItems = items.slice(0, 50);
+
+   // GOOD - Named constants
+   const REFETCH_INTERVAL_MS = 30000; // 30 seconds
+   setTimeout(() => refetch(), REFETCH_INTERVAL_MS);
+
+   const PASSING_SCORE_THRESHOLD = 80;
+   if (score >= PASSING_SCORE_THRESHOLD) { ... }
+
+   const MAX_DISPLAY_ITEMS = 50;
+   const maxItems = items.slice(0, MAX_DISPLAY_ITEMS);
+   ```
+
+   **When to Use Constants**:
+   - Timeouts/intervals: `const POLLING_INTERVAL_MS = 5000;`
+   - Thresholds/limits: `const MAX_FILE_SIZE_MB = 10;`
+   - Retry counts: `const MAX_RETRY_ATTEMPTS = 3;`
+   - Percentages: `const DISCOUNT_PERCENTAGE = 15;`
+   - Array indices (beyond 0, 1): `const HEADER_ROW_INDEX = 2;`
+   - Status codes: `const HTTP_OK = 200;`
+   - Configuration values: `const DEFAULT_PAGE_SIZE = 20;`
+
+   **Naming Convention**:
+   - Use UPPER_SNAKE_CASE for constants: `MAX_RETRIES`, `API_TIMEOUT_MS`
+   - Include units in name when applicable: `_MS` (milliseconds), `_MB` (megabytes), `_PERCENT`
+   - Make the name self-documenting: reader should understand what it represents
+
+   **Acceptable Magic Numbers**:
+   - `0`, `1`, `-1` in obvious contexts (array indices, loop counters, boolean conversions)
+   - Mathematical constants already named: `Math.PI`, `Math.E`
+   - Percentages that are immediately clear: `progress / 100`
 
 ## Key Development Notes
 
