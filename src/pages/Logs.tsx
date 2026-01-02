@@ -26,10 +26,6 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import {
   RefreshRounded,
   DeleteOutlined,
-  FilterListOutlined,
-  DownloadOutlined,
-  ExpandMoreOutlined,
-  KeyboardArrowDownOutlined,
   KeyboardArrowRightOutlined
 } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
@@ -43,6 +39,7 @@ type LogEntry = {
   message: string;
   data?: Record<string, unknown>;
   ip?: string;
+  sess_id?: string;
 }
 
 const logs_mb = 1024;
@@ -208,6 +205,24 @@ const Logs: React.FC = () => {
             console.error('Error formatting timestamp:', error, value);
             return String(value);
         }
+        }
+    },
+    {
+        field: 'sess_id',
+        headerName: 'Session ID',
+        width: 100,
+        valueGetter: (value, row) => {
+            // Extract sess_id from either top-level or data object
+            const rawSessId = row.sess_id || row.data?.sess_id;
+            return (typeof rawSessId === 'string' && rawSessId.length > 0) ? rawSessId : '-';
+        },
+        renderCell: (params: GridRenderCellParams) => {
+            const sessId = params.value as string;
+            return (
+                <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace', color: sessId === '-' ? 'text.disabled' : 'primary.main' }}>
+                    {sessId}
+                </Typography>
+            );
         }
     },
     {
@@ -516,13 +531,22 @@ const Logs: React.FC = () => {
                     {selectedLog.timestamp}
                   </Typography>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
+                  <Typography variant="caption" color="text.secondary">Session ID</Typography>
+                  <Typography variant="body2" fontFamily="monospace" color="primary.main">
+                    {(() => {
+                      const sessId = selectedLog.sess_id || selectedLog.data?.sess_id;
+                      return (typeof sessId === 'string' && sessId.length > 0) ? sessId : '-';
+                    })()}
+                  </Typography>
+                </Grid>
+                <Grid item xs={2}>
                   <Typography variant="caption" color="text.secondary">IP Address</Typography>
                   <Typography variant="body2" fontFamily="monospace">
                     {selectedLog.ip === '::1' ? 'localhost' : selectedLog.ip}
                   </Typography>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                   <Typography variant="caption" color="text.secondary">Category</Typography>
                   <Typography variant="body2">{selectedLog.category}</Typography>
                 </Grid>

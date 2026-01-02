@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import apiRoutes from './routes/api.js';
@@ -53,14 +54,30 @@ if (!fs.existsSync(logsDir)) {
 /*
 morgan.token('real-ip', (req) => {
   // Check various headers for the real client IP
-  return req.headers['x-forwarded-for'] as string || 
-         req.headers['x-real-ip'] as string || 
-         req.socket.remoteAddress || 
+  return req.headers['x-forwarded-for'] as string ||
+         req.headers['x-real-ip'] as string ||
+         req.socket.remoteAddress ||
          'unknown';
 });
 */
 
-const jsonFormat = '[[[{"remote_addr": ":remote-addr", "remote_user": ":remote-user", "date": ":date[clf]", "method": ":method", "url": ":url", "http_version": ":http-version", "status": ":status", "result_length": ":res[content-length]", "referrer": ":referrer", "user_agent": ":user-agent", "response_time": ":response-time"}]]]';
+// Custom Morgan token for session ID tracking
+morgan.token('sess-id', (req: express.Request) => {
+  // Try to get session ID from accessToken cookie first, then refreshToken
+  const accessToken = req.cookies?.accessToken;
+  const refreshToken = req.cookies?.refreshToken;
+  const sessionSource = accessToken || refreshToken;
+
+  if (!sessionSource) {
+    return '-';
+  }
+
+  // Create MD5 hash and take first 8 characters for shorter session ID
+  const hash = crypto.createHash('md5').update(sessionSource).digest('hex');
+  return hash.substring(0, 8);
+});
+
+const jsonFormat = '[[[{"remote_addr": ":remote-addr", "remote_user": ":remote-user", "date": ":date[clf]", "method": ":method", "url": ":url", "http_version": ":http-version", "status": ":status", "result_length": ":res[content-length]", "referrer": ":referrer", "user_agent": ":user-agent", "response_time": ":response-time", "sess_id": ":sess-id"}]]]';
 const combinedFormat = ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time ms';
 app.use(morgan(
   jsonFormat,
@@ -127,16 +144,26 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   if(req.method === 'POST') {
+    // Generate session ID for logging (same logic as Morgan token)
+    const accessToken = req.cookies?.accessToken;
+    const refreshToken = req.cookies?.refreshToken;
+    const sessionSource = accessToken || refreshToken;
+    const sessId = sessionSource
+      ? crypto.createHash('md5').update(sessionSource).digest('hex').substring(0, 8)
+      : '-';
+
     // replace any password fields in the body with ****
     if(Object.keys(req.body).length > 0 && ['/api/auth/login', '/api/auth/signup', '/api/auth/refresh-token'].indexOf(req.path) < 0) {
       const sanitizedBody = JSON.parse(JSON.stringify(req.body), (key, value) => {
         if (key === 'password') return '****';
         return value;
       });
-      logger.info(`POST ${req.path} - Body: [[[${JSON.stringify(sanitizedBody)}]]]`);
+      // Add sess_id to sanitized body for log tracing
+      const bodyWithSession = { ...sanitizedBody, sess_id: sessId };
+      logger.info(`POST ${req.path} - Body: [[[${JSON.stringify(bodyWithSession)}]]]`);
     }
     else if (['/api/auth/refresh-token'].indexOf(req.path) < 0) {
-      logger.info(`POST ${req.path}`);
+      logger.info(`POST ${req.path} - sess_id: ${sessId}`);
     }
   }
   next();
@@ -162,7 +189,7 @@ app.use('/api/templates', templateRoutes);
 app.use('/api/style-guides', styleGuideRoutes);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   logger.info('Health check requested');
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });

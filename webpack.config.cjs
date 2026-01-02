@@ -70,7 +70,7 @@ module.exports = {
     hot: true,
     proxy: {
       '/api': {
-        target: process.env.REACT_APP_PRODUCTION || 'http://localhost:5000',
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false
       }
