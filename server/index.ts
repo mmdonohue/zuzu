@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 import apiRoutes from './routes/api.js';
@@ -77,7 +78,30 @@ morgan.token('sess-id', (req: express.Request) => {
   return hash.substring(0, 8);
 });
 
-const jsonFormat = '[[[{"remote_addr": ":remote-addr", "remote_user": ":remote-user", "date": ":date[clf]", "method": ":method", "url": ":url", "http_version": ":http-version", "status": ":status", "result_length": ":res[content-length]", "referrer": ":referrer", "user_agent": ":user-agent", "response_time": ":response-time", "sess_id": ":sess-id"}]]]';
+// Custom Morgan token for username from JWT
+morgan.token('username', (req: express.Request) => {
+  const accessToken = req.cookies?.accessToken;
+
+  if (!accessToken) {
+    return '-';
+  }
+
+  try {
+    // Decode JWT without verification (just for logging purposes)
+    const decoded = jwt.decode(accessToken) as { email?: string; userId?: string } | null;
+
+    if (decoded && decoded.email) {
+      return decoded.email;
+    }
+
+    return '-';
+  } catch (error) {
+    // If decode fails, return dash
+    return '-';
+  }
+});
+
+const jsonFormat = '[[[{"remote_addr": ":remote-addr", "remote_user": ":username", "date": ":date[clf]", "method": ":method", "url": ":url", "http_version": ":http-version", "status": ":status", "result_length": ":res[content-length]", "referrer": ":referrer", "user_agent": ":user-agent", "response_time": ":response-time", "sess_id": ":sess-id"}]]]';
 const combinedFormat = ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" :response-time ms';
 app.use(morgan(
   jsonFormat,
@@ -141,6 +165,25 @@ app.use((req, res, next) => {
   next();
 });
 
+// Add username to request headers for downstream middleware
+app.use((req, _res, next) => {
+  const accessToken = req.cookies?.accessToken;
+
+  if (accessToken) {
+    try {
+      const decoded = jwt.decode(accessToken) as { email?: string; userId?: string } | null;
+      if (decoded && decoded.email) {
+        // Add username to headers for downstream use
+        req.headers['x-user-email'] = decoded.email;
+      }
+    } catch (error) {
+      // If decode fails, skip setting header
+    }
+  }
+
+  next();
+});
+
 
 app.use((req, res, next) => {
   if(req.method === 'POST') {
@@ -152,18 +195,31 @@ app.use((req, res, next) => {
       ? crypto.createHash('md5').update(sessionSource).digest('hex').substring(0, 8)
       : '-';
 
+    // Extract username from JWT (same logic as Morgan token)
+    let username = '-';
+    if (accessToken) {
+      try {
+        const decoded = jwt.decode(accessToken) as { email?: string; userId?: string } | null;
+        if (decoded && decoded.email) {
+          username = decoded.email;
+        }
+      } catch (error) {
+        // If decode fails, keep default '-'
+      }
+    }
+
     // replace any password fields in the body with ****
     if(Object.keys(req.body).length > 0 && ['/api/auth/login', '/api/auth/signup', '/api/auth/refresh-token'].indexOf(req.path) < 0) {
       const sanitizedBody = JSON.parse(JSON.stringify(req.body), (key, value) => {
         if (key === 'password') return '****';
         return value;
       });
-      // Add sess_id to sanitized body for log tracing
-      const bodyWithSession = { ...sanitizedBody, sess_id: sessId };
-      logger.info(`POST ${req.path} - Body: [[[${JSON.stringify(bodyWithSession)}]]]`);
+      // Add sess_id and username to sanitized body for log tracing
+      const bodyWithMetadata = { ...sanitizedBody, sess_id: sessId, username: username };
+      logger.info(`POST ${req.path} - Body: [[[${JSON.stringify(bodyWithMetadata)}]]]`);
     }
     else if (['/api/auth/refresh-token'].indexOf(req.path) < 0) {
-      logger.info(`POST ${req.path} - sess_id: ${sessId}`);
+      logger.info(`POST ${req.path} - sess_id: ${sessId}, username: ${username}`);
     }
   }
   next();

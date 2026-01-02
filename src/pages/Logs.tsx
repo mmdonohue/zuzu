@@ -40,6 +40,7 @@ type LogEntry = {
   data?: Record<string, unknown>;
   ip?: string;
   sess_id?: string;
+  remote_user?: string;
 }
 
 const logs_mb = 1024;
@@ -186,7 +187,7 @@ const Logs: React.FC = () => {
     {
         field: 'timestamp',
         headerName: 'Timestamp',
-        width: 180,
+        width: 150,
         valueFormatter: (value) => {
         if (!value) {
             return 'N/A';
@@ -221,6 +222,24 @@ const Logs: React.FC = () => {
             return (
                 <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace', color: sessId === '-' ? 'text.disabled' : 'primary.main' }}>
                     {sessId}
+                </Typography>
+            );
+        }
+    },
+    {
+        field: 'remote_user',
+        headerName: 'User',
+        width: 200,
+        valueGetter: (value, row) => {
+            // Extract remote_user from either top-level or data object
+            const rawUser = row.remote_user || row.data?.remote_user;
+            return (typeof rawUser === 'string' && rawUser.length > 0) ? rawUser : '-';
+        },
+        renderCell: (params: GridRenderCellParams) => {
+            const user = params.value as string;
+            return (
+                <Typography sx={{ fontSize: '0.875rem', color: user === '-' ? 'text.disabled' : 'text.primary' }}>
+                    {user}
                 </Typography>
             );
         }
@@ -349,7 +368,19 @@ const Logs: React.FC = () => {
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={6} md={3}>
-          <Card>
+          <Card
+            onClick={() => setSelectedLevel('all')}
+            sx={{
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              border: selectedLevel === 'all' ? '2px solid' : '1px solid',
+              borderColor: selectedLevel === 'all' ? 'primary.main' : 'divider',
+              '&:hover': {
+                boxShadow: 4,
+                transform: 'translateY(-2px)'
+              }
+            }}
+          >
             <CardContent>
               <Typography color="text.secondary" gutterBottom>
                 Total Logs
@@ -361,7 +392,19 @@ const Logs: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Card>
+          <Card
+            onClick={() => setSelectedLevel('error')}
+            sx={{
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              border: selectedLevel === 'error' ? '2px solid' : '1px solid',
+              borderColor: selectedLevel === 'error' ? 'error.main' : 'divider',
+              '&:hover': {
+                boxShadow: 4,
+                transform: 'translateY(-2px)'
+              }
+            }}
+          >
             <CardContent>
               <Typography color="text.secondary" gutterBottom>
                 Errors
@@ -373,7 +416,19 @@ const Logs: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Card>
+          <Card
+            onClick={() => setSelectedLevel('warn')}
+            sx={{
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              border: selectedLevel === 'warn' ? '2px solid' : '1px solid',
+              borderColor: selectedLevel === 'warn' ? 'warning.main' : 'divider',
+              '&:hover': {
+                boxShadow: 4,
+                transform: 'translateY(-2px)'
+              }
+            }}
+          >
             <CardContent>
               <Typography color="text.secondary" gutterBottom>
                 Warnings
@@ -385,7 +440,19 @@ const Logs: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={6} md={3}>
-          <Card>
+          <Card
+            onClick={() => setSelectedLevel('info')}
+            sx={{
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              border: selectedLevel === 'info' ? '2px solid' : '1px solid',
+              borderColor: selectedLevel === 'info' ? 'info.main' : 'divider',
+              '&:hover': {
+                boxShadow: 4,
+                transform: 'translateY(-2px)'
+              }
+            }}
+          >
             <CardContent>
               <Typography color="text.secondary" gutterBottom>
                 Info
@@ -531,7 +598,20 @@ const Logs: React.FC = () => {
                     {selectedLog.timestamp}
                   </Typography>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={3}>
+                  <Typography variant="caption" color="text.secondary">User</Typography>
+                  <Typography variant="body2">
+                    {(() => {
+                      const user = selectedLog.remote_user || selectedLog.data?.remote_user;
+                      return (typeof user === 'string' && user.length > 0) ? user : '-';
+                    })()}
+                  </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Typography variant="caption" color="text.secondary">Category</Typography>
+                  <Typography variant="body2">{selectedLog.category}</Typography>
+                </Grid>
+                <Grid item xs={6}>
                   <Typography variant="caption" color="text.secondary">Session ID</Typography>
                   <Typography variant="body2" fontFamily="monospace" color="primary.main">
                     {(() => {
@@ -540,15 +620,11 @@ const Logs: React.FC = () => {
                     })()}
                   </Typography>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={6}>
                   <Typography variant="caption" color="text.secondary">IP Address</Typography>
                   <Typography variant="body2" fontFamily="monospace">
                     {selectedLog.ip === '::1' ? 'localhost' : selectedLog.ip}
                   </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography variant="caption" color="text.secondary">Category</Typography>
-                  <Typography variant="body2">{selectedLog.category}</Typography>
                 </Grid>
               </Grid>
 
