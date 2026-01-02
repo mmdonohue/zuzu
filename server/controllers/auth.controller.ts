@@ -268,4 +268,63 @@ export class AuthController {
       next(error);
     }
   }
+
+  // GET /api/auth/dev-login
+  // Auto-login for local development (only works on localhost with TEST_USER_EMAIL set)
+  static async devLogin(req: Request, res: Response, next: NextFunction) {
+    try {
+      // Security check: Only allow in local development
+      const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1' || req.hostname === '[::1]';
+
+      if (!isLocal) {
+        throw new AuthenticationError('Dev login only available in local development');
+      }
+
+      const testEmail = process.env.TEST_USER_EMAIL;
+
+      if (!testEmail) {
+        return sendSuccess(res, { enabled: false }, 'Dev login not configured');
+      }
+
+      // Find user by test email
+      const user = await UserService.findByEmail(testEmail);
+      if (!user) {
+        throw new AuthenticationError(`Test user not found: ${testEmail}`);
+      }
+
+      // Check if account is inactive
+      if (user.inactive) {
+        throw new AuthenticationError('Test account is disabled');
+      }
+
+      // Generate tokens (skip password and 2FA verification in dev mode)
+      const userRole = (user.roles as any)?.role || 'USER';
+      const accessToken = AuthService.generateAccessToken(
+        user.id.toString(),
+        user.email,
+        userRole
+      );
+      const refreshToken = AuthService.generateRefreshToken(user.id.toString());
+
+      // Set httpOnly cookies
+      res.cookie('accessToken', accessToken, COOKIE_CONFIG);
+      res.cookie('refreshToken', refreshToken, COOKIE_CONFIG);
+
+      // Update last sign in
+      await UserService.updateSignIn(user.id);
+
+      sendSuccess(res, {
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          role: userRole
+        },
+        accessToken // Also return in body
+      }, 'Dev login successful');
+    } catch (error) {
+      next(error);
+    }
+  }
 }

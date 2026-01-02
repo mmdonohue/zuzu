@@ -26,6 +26,9 @@ router.post('/resend-code', codeLimiter, validateResendCode, AuthController.rese
 router.post('/password-reset-request', passwordResetLimiter, validatePasswordResetRequest, AuthController.passwordResetRequest);
 router.post('/password-reset-confirm', validatePasswordResetConfirm, AuthController.passwordResetConfirm);
 
+// Development auto-login (only works on localhost with TEST_USER_EMAIL set)
+router.get('/dev-login', AuthController.devLogin);
+
 // Protected routes
 router.post('/logout', authenticateToken, AuthController.logout);
 router.post('/refresh-token', AuthController.refreshToken);

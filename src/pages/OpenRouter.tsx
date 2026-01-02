@@ -774,6 +774,7 @@ const OpenRouterComponent = () => {
           }
 
           // Save the conversation to Supabase
+          console.log('Saving conversation:', { model, prompt: prompt.substring(0, 50), responseLength: fullResponse.length });
           await saveConversation(
             model,
             prompt,
@@ -782,10 +783,11 @@ const OpenRouterComponent = () => {
             capturedGenerationId,
             generationData
           );
+          console.log('Conversation saved successfully');
 
-          // Clear the prompt for the next message
-          setPrompt("");
-          
+          // Keep the prompt so it can be reused with different models
+          // Users can manually clear it if needed with "Clear All" button
+
         } catch (error) {
           if ((error as Error).name === 'AbortError') {
             // console.log('Stream reading aborted by user');

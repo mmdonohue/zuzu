@@ -1,6 +1,7 @@
 // src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import authService, { User } from '@/services/auth.service';
+import { isLocalEnvironment } from '@/utils/environment';
 
 type AuthContextType = {
   user: User | null;
@@ -30,6 +31,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Try dev auto-login (only works in local environment with TEST_USER_EMAIL set)
+    const tryDevLogin = async (): Promise<User | null> => {
+      try {
+        const response = await fetch('/api/auth/dev-login');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data?.user) {
+            // Store user data
+            authService.setStoredUser(data.data.user);
+            console.log('Dev auto-login successful:', data.data.user.email);
+            return data.data.user;
+          }
+        }
+        return null;
+      } catch (error) {
+        // Silently fail - dev login is optional
+        return null;
+      }
+    };
+
     // Check for stored user on mount
     const initAuth = async () => {
       const storedUser = authService.getStoredUser();
@@ -54,6 +75,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // If server is down, keep the stored user
         }
       } else {
+        // No stored user - try dev auto-login if in local environment
+        if (isLocalEnvironment()) {
+          const devUser = await tryDevLogin();
+          if (devUser) {
+            setUser(devUser);
+          }
+        }
         setLoading(false);
       }
     };

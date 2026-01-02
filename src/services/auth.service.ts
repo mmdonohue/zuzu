@@ -194,6 +194,10 @@ class AuthService {
     return null;
   }
 
+  setStoredUser(user: User): void {
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
   isAuthenticated(): boolean {
     return this.getStoredUser() !== null;
   }

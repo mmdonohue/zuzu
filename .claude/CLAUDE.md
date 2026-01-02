@@ -155,6 +155,27 @@ Required environment variables are defined in `.env.example` and `server/.env.ex
 - `JWT_ACCESS_SECRET` - JWT secret for access tokens (generate with `openssl rand -base64 48`)
 - `JWT_REFRESH_SECRET` - JWT secret for refresh tokens (generate with `openssl rand -base64 48`)
 - `CSRF_SECRET` - CSRF token signing key **REQUIRED** (generate with `openssl rand -base64 48`)
+- `TEST_USER_EMAIL` - Email address for automatic dev login (optional) - When set, automatically logs in this user when running on localhost. **Only works in local development** - ignored in production for security.
+
+## Development Features
+
+### Auto-Login for Local Development
+
+When running locally, you can enable automatic login by setting `TEST_USER_EMAIL` in `server/.env`:
+
+```bash
+TEST_USER_EMAIL=your.test.user@example.com
+```
+
+**How it works**:
+1. Backend provides `/api/auth/dev-login` endpoint that only works on localhost
+2. Frontend automatically calls this endpoint on app load when no user is logged in
+3. User is logged in without password or 2FA verification
+
+**Security**:
+- Only works when `req.hostname` is `localhost`, `127.0.0.1`, or `[::1]`
+- Automatically disabled in production deployments
+- No credentials required - development convenience only
 
 ## Security Implementation
 
