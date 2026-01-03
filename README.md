@@ -1,23 +1,19 @@
 # ZuZu
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/a7fc82ea-07df-4ad1-9eac-4a13fd57291c" />
 
-###ZuZu is a production-ready full-stack application scaffold that codifies modern best practices for web development, security, and scalable team workflows. It is designed to be a realistic foundation for building, operating, and evolving secure systems in production.
+## ZuZu is a production-ready full-stack application scaffold that codifies modern best practices for web development, security, and scalable team workflows. It is designed to be a realistic foundation for building, operating, and evolving secure systems in production.
 
-###Highlights
+### Highlights
 
-- Modern Full-Stack Foundation
+- ### Modern Full-Stack Foundation ###
   React + TypeScript frontend (MUI, Redux Toolkit, TanStack Query) with a Node.js / Express backend.
-
-- Security Built In
+- ### Security Built In ###
   JWT authentication with httpOnly cookies, CSRF protection, rate limiting, and structured logging by default.
-
-- Production-Ready Tooling
+- ### Production-Ready Tooling ###
   Supabase for data persistence and Cypress for end-to-end testing to support confident iteration.
-
-- AI-Driven Workflow Automation
+- ### AI-Driven Workflow Automation ###
   Embedded AI agent hooks automate architecture review, security checks, and documentation validation directly in the code and commit workflow.
-
-- Scalable Team Patterns
+- ### Scalable Team Patterns ###
   Designed to reduce cognitive load and enable fast, consistent, and governed development across teams.
 
 ![alt text](dashboard.png)
