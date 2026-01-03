@@ -3,6 +3,8 @@
 
 ZuZu is a production-ready full-stack application scaffold featuring React/TypeScript frontend, Express backend, JWT authentication, comprehensive security implementation, and automated code review with best practices enforcement.
 
+![alt text](dashboard.png)
+
 ## Tech Stack
 
 This project integrates the following technologies:

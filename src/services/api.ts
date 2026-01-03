@@ -1,10 +1,11 @@
 // API service for making requests to the backend
 
-import { API_CONFIG } from '../config/api';
-import { csrfService } from './csrf.service';
+import { API_CONFIG } from "../config/api";
+import { csrfService } from "./csrf.service";
+import type { TemplateVariable } from "../store/slices/templatesSlice";
 
 // Base API URL
-const API_URL =  API_CONFIG.API_URL;
+const API_URL = API_CONFIG.API_URL;
 
 // Helper for handling response status
 const handleResponse = async (response: Response) => {
@@ -12,13 +13,17 @@ const handleResponse = async (response: Response) => {
     const errorData = await response.json().catch(() => null);
 
     // If CSRF token is invalid, refresh it and let the caller retry
-    if (response.status === 403 && errorData?.code === 'CSRF_VALIDATION_FAILED') {
-      console.warn('CSRF token invalid, refreshing...');
+    if (
+      response.status === 403 &&
+      errorData?.code === "CSRF_VALIDATION_FAILED"
+    ) {
+      console.warn("CSRF token invalid, refreshing...");
       await csrfService.refreshToken();
     }
 
     throw new Error(
-      errorData?.message || `API error: ${response.status} ${response.statusText}`
+      errorData?.message ||
+        `API error: ${response.status} ${response.statusText}`,
     );
   }
   return response.json();
@@ -39,31 +44,34 @@ const handleResponse = async (response: Response) => {
  *   body: JSON.stringify({ name: 'John' })
  * });
  */
-export const fetchWithCsrf = async (url: string, options: RequestInit = {}): Promise<Response> => {
-  const method = options.method?.toUpperCase() || 'GET';
+export const fetchWithCsrf = async (
+  url: string,
+  options: RequestInit = {},
+): Promise<Response> => {
+  const method = options.method?.toUpperCase() || "GET";
 
   // For state-changing requests, include CSRF token
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
     try {
       const csrfToken = await csrfService.getToken();
 
       options.headers = {
         ...options.headers,
-        'X-CSRF-Token': csrfToken
+        "X-CSRF-Token": csrfToken,
       };
     } catch (error) {
-      console.error('Failed to get CSRF token:', error);
+      console.error("Failed to get CSRF token:", error);
       // Continue without CSRF token (request will likely fail, but that's expected)
     }
   }
 
   // Always include credentials for cookie-based auth
-  options.credentials = options.credentials || 'include';
+  options.credentials = options.credentials || "include";
 
-  try{
+  try {
     return await fetch(url, options);
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return Promise.reject(error);
   }
 };
@@ -74,7 +82,7 @@ export const fetchHello = async () => {
     const response = await fetch(`${API_URL}/hello`);
     return handleResponse(response);
   } catch (error) {
-    console.error('Error fetching hello message:', error);
+    console.error("Error fetching hello message:", error);
     throw error;
   }
 };
@@ -88,7 +96,7 @@ export const fetchCodeReviewSummary = async (useExample = false) => {
     const response = await fetch(url);
     return handleResponse(response);
   } catch (error) {
-    console.error('Error fetching code review summary:', error);
+    console.error("Error fetching code review summary:", error);
     throw error;
   }
 };
@@ -111,9 +119,9 @@ export const fetchTemplates = async (filters?: {
 }) => {
   try {
     const params = new URLSearchParams();
-    if (filters?.category) params.append('category', filters.category);
-    if (filters?.tag) params.append('tag', filters.tag);
-    if (filters?.search) params.append('search', filters.search);
+    if (filters?.category) params.append("category", filters.category);
+    if (filters?.tag) params.append("tag", filters.tag);
+    if (filters?.search) params.append("search", filters.search);
 
     const queryString = params.toString();
     const url = queryString
@@ -121,11 +129,11 @@ export const fetchTemplates = async (filters?: {
       : `${API_URL}/templates`;
 
     const response = await fetch(url, {
-      credentials: 'include',
+      credentials: "include",
     });
     return handleResponse(response);
   } catch (error) {
-    console.error('Error fetching templates:', error);
+    console.error("Error fetching templates:", error);
     throw error;
   }
 };
@@ -133,7 +141,7 @@ export const fetchTemplates = async (filters?: {
 export const fetchTemplateById = async (id: string) => {
   try {
     const response = await fetch(`${API_URL}/templates/${id}`, {
-      credentials: 'include',
+      credentials: "include",
     });
     return handleResponse(response);
   } catch (error) {
@@ -147,22 +155,22 @@ export const createTemplate = async (templateData: {
   description?: string;
   category: string;
   content: string;
-  variables?: any[];
+  variables?: TemplateVariable[];
   style_guide_id?: string;
   is_public?: boolean;
   tags?: string[];
 }) => {
   try {
     const response = await fetchWithCsrf(`${API_URL}/templates`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(templateData),
     });
     return handleResponse(response);
   } catch (error) {
-    console.error('Error creating template:', error);
+    console.error("Error creating template:", error);
     throw error;
   }
 };
@@ -174,18 +182,18 @@ export const updateTemplate = async (
     description?: string;
     category?: string;
     content?: string;
-    variables?: any[];
+    variables?: TemplateVariable[];
     style_guide_id?: string;
     is_public?: boolean;
     tags?: string[];
     active?: boolean;
-  }
+  },
 ) => {
   try {
     const response = await fetchWithCsrf(`${API_URL}/templates/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(updates),
     });
@@ -199,7 +207,7 @@ export const updateTemplate = async (
 export const deleteTemplate = async (id: string) => {
   try {
     const response = await fetchWithCsrf(`${API_URL}/templates/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
     return handleResponse(response);
   } catch (error) {
@@ -208,12 +216,15 @@ export const deleteTemplate = async (id: string) => {
   }
 };
 
-export const trackTemplateUsage = async (templateId: string, modelUsed?: string) => {
+export const trackTemplateUsage = async (
+  templateId: string,
+  modelUsed?: string,
+) => {
   try {
     const response = await fetchWithCsrf(`${API_URL}/templates/usage`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         template_id: templateId,
@@ -222,7 +233,7 @@ export const trackTemplateUsage = async (templateId: string, modelUsed?: string)
     });
     return handleResponse(response);
   } catch (error) {
-    console.error('Error tracking template usage:', error);
+    console.error("Error tracking template usage:", error);
     throw error;
   }
 };
@@ -231,11 +242,11 @@ export const trackTemplateUsage = async (templateId: string, modelUsed?: string)
 export const fetchStyleGuides = async () => {
   try {
     const response = await fetch(`${API_URL}/style-guides`, {
-      credentials: 'include',
+      credentials: "include",
     });
     return handleResponse(response);
   } catch (error) {
-    console.error('Error fetching style guides:', error);
+    console.error("Error fetching style guides:", error);
     throw error;
   }
 };
@@ -243,7 +254,7 @@ export const fetchStyleGuides = async () => {
 export const fetchStyleGuideById = async (id: string) => {
   try {
     const response = await fetch(`${API_URL}/style-guides/${id}`, {
-      credentials: 'include',
+      credentials: "include",
     });
     return handleResponse(response);
   } catch (error) {
@@ -260,15 +271,15 @@ export const enhancePrompt = async (data: {
 }) => {
   try {
     const response = await fetchWithCsrf(`${API_URL}/openrouter/enhance`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
     return handleResponse(response);
   } catch (error) {
-    console.error('Error enhancing prompt:', error);
+    console.error("Error enhancing prompt:", error);
     throw error;
   }
 };

@@ -76,6 +76,17 @@ type Conversation = {
   };
 }
 
+type OpenRouterGenerationData = {
+  data?: {
+    latency?: number;
+    moderation_latency?: number;
+    generation_time?: number;
+    tokens_prompt?: number;
+    tokens_completion?: number;
+    total_cost?: number;
+  };
+} | null;
+
 // Updated types for OpenRouter API models response
 type ModelPricing = {
     prompt: string;
@@ -450,7 +461,7 @@ const OpenRouterComponent = () => {
     response: string,
     responseTime: number,
     generationId: string | null = null,
-    generationData: any = null
+    generationData: OpenRouterGenerationData = null
   ) => {
     const requestBody = {
       model,

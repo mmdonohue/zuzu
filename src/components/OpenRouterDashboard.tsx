@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Paper,
   Box,
@@ -10,15 +10,15 @@ import {
   Alert,
   Chip,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
   AccessTime as AccessTimeIcon,
   Info as InfoIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
-interface KeyInfo {
+type KeyInfo = {
   data?: {
     label?: string;
     usage?: number; // Number of credits used (all time)
@@ -33,7 +33,7 @@ interface KeyInfo {
     };
   };
   error?: string;
-}
+};
 
 const OpenRouterDashboard: React.FC = () => {
   const [keyInfo, setKeyInfo] = useState<KeyInfo | null>(null);
@@ -50,14 +50,14 @@ const OpenRouterDashboard: React.FC = () => {
         const apiKey = process.env.REACT_APP_ZUZU_OPENROUTER_KEY;
 
         if (!apiKey) {
-          throw new Error('OpenRouter API key not configured');
+          throw new Error("OpenRouter API key not configured");
         }
 
         // Use OpenRouter REST API directly for key info
-        const response = await fetch('https://openrouter.ai/api/v1/auth/key', {
-          method: 'GET',
+        const response = await fetch("https://openrouter.ai/api/v1/auth/key", {
+          method: "GET",
           headers: {
-            'Authorization': `Bearer ${apiKey}`,
+            Authorization: `Bearer ${apiKey}`,
           },
         });
 
@@ -68,8 +68,12 @@ const OpenRouterDashboard: React.FC = () => {
         const info = await response.json();
         setKeyInfo(info as KeyInfo);
       } catch (err) {
-        console.error('Error fetching OpenRouter key info:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch API key information');
+        console.error("Error fetching OpenRouter key info:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to fetch API key information",
+        );
       } finally {
         setLoading(false);
       }
@@ -81,7 +85,12 @@ const OpenRouterDashboard: React.FC = () => {
   if (loading) {
     return (
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="120px">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="120px"
+        >
           <CircularProgress />
         </Box>
       </Paper>
@@ -117,17 +126,22 @@ const OpenRouterDashboard: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card variant="outlined">
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                 <InfoIcon color="primary" sx={{ mr: 1 }} />
                 <Typography variant="subtitle2" color="text.secondary">
                   API Key
                 </Typography>
               </Box>
               <Typography variant="h6">
-                {data?.label || 'Default Key'}
+                {data?.label || "Default Key"}
               </Typography>
               {data?.is_free_tier && (
-                <Chip label="Free Tier" size="small" color="info" sx={{ mt: 1 }} />
+                <Chip
+                  label="Free Tier"
+                  size="small"
+                  color="info"
+                  sx={{ mt: 1 }}
+                />
               )}
             </CardContent>
           </Card>
@@ -137,7 +151,7 @@ const OpenRouterDashboard: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card variant="outlined">
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                 <TrendingUpIcon color="primary" sx={{ mr: 1 }} />
                 <Typography variant="subtitle2" color="text.secondary">
                   Usage
@@ -157,14 +171,16 @@ const OpenRouterDashboard: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card variant="outlined">
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                 <AccountBalanceIcon color="primary" sx={{ mr: 1 }} />
                 <Typography variant="subtitle2" color="text.secondary">
                   Credit Limit
                 </Typography>
               </Box>
               <Typography variant="h6">
-                {data?.limit ? `$${(data.limit / 100).toFixed(2)}` : 'Unlimited'}
+                {data?.limit
+                  ? `$${(data.limit / 100).toFixed(2)}`
+                  : "Unlimited"}
               </Typography>
               {data?.limit && (
                 <Typography variant="caption" color="text.secondary">
@@ -179,17 +195,17 @@ const OpenRouterDashboard: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card variant="outlined">
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                 <AccessTimeIcon color="primary" sx={{ mr: 1 }} />
                 <Typography variant="subtitle2" color="text.secondary">
                   Rate Limit
                 </Typography>
               </Box>
               <Typography variant="h6">
-                {data?.rate_limit?.requests || 'N/A'}
+                {data?.rate_limit?.requests || "N/A"}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                per {data?.rate_limit?.interval || 'interval'}
+                per {data?.rate_limit?.interval || "interval"}
               </Typography>
             </CardContent>
           </Card>
@@ -211,7 +227,7 @@ const OpenRouterDashboard: React.FC = () => {
         <Grid container spacing={2}>
           {/* Daily Usage */}
           <Grid item xs={12} sm={4}>
-            <Card variant="outlined" sx={{ bgcolor: 'background.default' }}>
+            <Card variant="outlined" sx={{ bgcolor: "background.default" }}>
               <CardContent>
                 <Typography variant="caption" color="text.secondary">
                   Today
@@ -225,7 +241,7 @@ const OpenRouterDashboard: React.FC = () => {
 
           {/* Weekly Usage */}
           <Grid item xs={12} sm={4}>
-            <Card variant="outlined" sx={{ bgcolor: 'background.default' }}>
+            <Card variant="outlined" sx={{ bgcolor: "background.default" }}>
               <CardContent>
                 <Typography variant="caption" color="text.secondary">
                   This Week
@@ -239,7 +255,7 @@ const OpenRouterDashboard: React.FC = () => {
 
           {/* Monthly Usage */}
           <Grid item xs={12} sm={4}>
-            <Card variant="outlined" sx={{ bgcolor: 'background.default' }}>
+            <Card variant="outlined" sx={{ bgcolor: "background.default" }}>
               <CardContent>
                 <Typography variant="caption" color="text.secondary">
                   This Month

@@ -69,7 +69,7 @@ export const csrfProtection = doubleCsrfProtection;
  * Error handler for CSRF validation failures
  * Add this after the CSRF middleware to provide better error messages
  */
-export const csrfErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const csrfErrorHandler = (err: Error & { code?: string }, req: Request, res: Response, next: NextFunction) => {
   if (err.code === 'EBADCSRFTOKEN' || err.message?.includes('csrf')) {
     return res.status(403).json({
       success: false,

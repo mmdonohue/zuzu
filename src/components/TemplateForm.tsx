@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -18,28 +18,32 @@ import {
   Alert,
   Autocomplete,
   FormLabel,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
   Save as SaveIcon,
   Cancel as CancelIcon,
-} from '@mui/icons-material';
-import Editor from '@monaco-editor/react';
-import StyleGuideSelector from './StyleGuideSelector';
-import type { Template, TemplateVariable, StyleGuide } from '../store/slices/templatesSlice';
+} from "@mui/icons-material";
+import Editor from "@monaco-editor/react";
+import StyleGuideSelector from "./StyleGuideSelector";
+import type {
+  Template,
+  TemplateVariable,
+  StyleGuide,
+} from "../store/slices/templatesSlice";
 
-interface TemplateFormProps {
+type TemplateFormProps = {
   template?: Template | null;
   onSubmit: (templateData: TemplateFormData) => Promise<void>;
   onCancel: () => void;
   isSubmitting?: boolean;
-}
+};
 
 export interface TemplateFormData {
   name: string;
   description?: string;
-  category: 'code' | 'content' | 'analysis' | 'creative' | 'custom';
+  category: "code" | "content" | "analysis" | "creative" | "custom";
   content: string;
   variables?: TemplateVariable[];
   style_guide_id?: string;
@@ -48,9 +52,9 @@ export interface TemplateFormData {
 }
 
 const defaultVariable: TemplateVariable = {
-  name: '',
-  label: '',
-  type: 'text',
+  name: "",
+  label: "",
+  type: "text",
   required: false,
 };
 
@@ -61,17 +65,17 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
   isSubmitting = false,
 }) => {
   // Form state
-  const [name, setName] = useState(template?.name || '');
-  const [description, setDescription] = useState(template?.description || '');
-  const [category, setCategory] = useState<TemplateFormData['category']>(
-    template?.category || 'custom'
+  const [name, setName] = useState(template?.name || "");
+  const [description, setDescription] = useState(template?.description || "");
+  const [category, setCategory] = useState<TemplateFormData["category"]>(
+    template?.category || "custom",
   );
-  const [content, setContent] = useState(template?.content || '');
+  const [content, setContent] = useState(template?.content || "");
   const [variables, setVariables] = useState<TemplateVariable[]>(
-    template?.variables || []
+    template?.variables || [],
   );
   const [styleGuideId, setStyleGuideId] = useState<string | null>(
-    template?.style_guide_id || null
+    template?.style_guide_id || null,
   );
   const [isPublic, setIsPublic] = useState(template?.is_public || false);
   const [tags, setTags] = useState<string[]>(template?.tags || []);
@@ -81,7 +85,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
   useEffect(() => {
     if (template) {
       setName(template.name);
-      setDescription(template.description || '');
+      setDescription(template.description || "");
       setCategory(template.category);
       setContent(template.content);
       setVariables(template.variables || []);
@@ -102,10 +106,10 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
   };
 
   // Update a variable field
-  const handleVariableChange = (
+  const handleVariableChange = <K extends keyof TemplateVariable>(
     index: number,
-    field: keyof TemplateVariable,
-    value: any
+    field: K,
+    value: TemplateVariable[K],
   ) => {
     const newVariables = [...variables];
     newVariables[index] = { ...newVariables[index], [field]: value };
@@ -117,27 +121,27 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!name.trim()) {
-      newErrors.name = 'Template name is required';
+      newErrors.name = "Template name is required";
     }
 
     if (!content.trim()) {
-      newErrors.content = 'Template content is required';
+      newErrors.content = "Template content is required";
     }
 
     // Validate variables
     variables.forEach((variable, index) => {
       if (!variable.name.trim()) {
-        newErrors[`variable_${index}_name`] = 'Variable name is required';
+        newErrors[`variable_${index}_name`] = "Variable name is required";
       }
       if (!variable.label.trim()) {
-        newErrors[`variable_${index}_label`] = 'Variable label is required';
+        newErrors[`variable_${index}_label`] = "Variable label is required";
       }
       // Check for duplicate variable names
       const duplicateIndex = variables.findIndex(
-        (v, i) => i !== index && v.name === variable.name
+        (v, i) => i !== index && v.name === variable.name,
       );
       if (duplicateIndex !== -1) {
-        newErrors[`variable_${index}_name`] = 'Variable name must be unique';
+        newErrors[`variable_${index}_name`] = "Variable name must be unique";
       }
     });
 
@@ -167,7 +171,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
     try {
       await onSubmit(formData);
     } catch (error) {
-      console.error('Error submitting template:', error);
+      console.error("Error submitting template:", error);
     }
   };
 
@@ -175,7 +179,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
     <Box component="form" onSubmit={handleSubmit}>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>
-          {template ? 'Edit Template' : 'Create New Template'}
+          {template ? "Edit Template" : "Create New Template"}
         </Typography>
 
         <Divider sx={{ mb: 3 }} />
@@ -202,7 +206,9 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
               <Select
                 value={category}
                 label="Category"
-                onChange={(e) => setCategory(e.target.value as TemplateFormData['category'])}
+                onChange={(e) =>
+                  setCategory(e.target.value as TemplateFormData["category"])
+                }
                 disabled={isSubmitting}
               >
                 <MenuItem value="code">Code</MenuItem>
@@ -234,28 +240,34 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
               <FormLabel required error={!!errors.content}>
                 Template Content
               </FormLabel>
-              <Typography variant="caption" display="block" color="text.secondary" sx={{ mb: 1 }}>
-                Use {`{{variableName}}`} syntax for variables that will be replaced
+              <Typography
+                variant="caption"
+                display="block"
+                color="text.secondary"
+                sx={{ mb: 1 }}
+              >
+                Use {`{{variableName}}`} syntax for variables that will be
+                replaced
               </Typography>
               <Paper
                 variant="outlined"
                 sx={{
-                  height: '400px',
-                  overflow: 'hidden',
+                  height: "400px",
+                  overflow: "hidden",
                   border: errors.content ? 2 : 1,
-                  borderColor: errors.content ? 'error.main' : 'divider',
+                  borderColor: errors.content ? "error.main" : "divider",
                 }}
               >
                 <Editor
                   height="100%"
                   defaultLanguage="markdown"
                   value={content}
-                  onChange={(value) => setContent(value || '')}
+                  onChange={(value) => setContent(value || "")}
                   options={{
                     minimap: { enabled: false },
                     fontSize: 14,
-                    lineNumbers: 'on',
-                    wordWrap: 'on',
+                    lineNumbers: "on",
+                    wordWrap: "on",
                     readOnly: isSubmitting,
                     scrollBeyondLastLine: false,
                     automaticLayout: true,
@@ -265,7 +277,11 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                 />
               </Paper>
               {errors.content && (
-                <Typography variant="caption" color="error" sx={{ ml: 2, mt: 0.5, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  color="error"
+                  sx={{ ml: 2, mt: 0.5, display: "block" }}
+                >
                   {errors.content}
                 </Typography>
               )}
@@ -274,7 +290,14 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
 
           {/* Variables */}
           <Grid item xs={12}>
-            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box
+              sx={{
+                mb: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Typography variant="subtitle1">Variables</Typography>
               <Button
                 startIcon={<AddIcon />}
@@ -288,10 +311,11 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
 
             {variables.length === 0 ? (
               <Alert severity="info">
-                No variables defined. Add variables to make your template dynamic.
+                No variables defined. Add variables to make your template
+                dynamic.
               </Alert>
             ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {variables.map((variable, index) => (
                   <Paper key={index} variant="outlined" sx={{ p: 2 }}>
                     <Grid container spacing={2} alignItems="center">
@@ -302,7 +326,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                           label="Variable Name"
                           value={variable.name}
                           onChange={(e) =>
-                            handleVariableChange(index, 'name', e.target.value)
+                            handleVariableChange(index, "name", e.target.value)
                           }
                           error={!!errors[`variable_${index}_name`]}
                           helperText={errors[`variable_${index}_name`]}
@@ -317,7 +341,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                           label="Label"
                           value={variable.label}
                           onChange={(e) =>
-                            handleVariableChange(index, 'label', e.target.value)
+                            handleVariableChange(index, "label", e.target.value)
                           }
                           error={!!errors[`variable_${index}_label`]}
                           helperText={errors[`variable_${index}_label`]}
@@ -334,8 +358,8 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                             onChange={(e) =>
                               handleVariableChange(
                                 index,
-                                'type',
-                                e.target.value as TemplateVariable['type']
+                                "type",
+                                e.target.value as TemplateVariable["type"],
                               )
                             }
                             disabled={isSubmitting}
@@ -353,7 +377,11 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                             <Switch
                               checked={variable.required}
                               onChange={(e) =>
-                                handleVariableChange(index, 'required', e.target.checked)
+                                handleVariableChange(
+                                  index,
+                                  "required",
+                                  e.target.checked,
+                                )
                               }
                               disabled={isSubmitting}
                             />
@@ -432,7 +460,9 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
         </Grid>
 
         {/* Form Actions */}
-        <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+        <Box
+          sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "flex-end" }}
+        >
           <Button
             variant="outlined"
             startIcon={<CancelIcon />}
@@ -447,7 +477,11 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
             startIcon={<SaveIcon />}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Saving...' : template ? 'Update Template' : 'Create Template'}
+            {isSubmitting
+              ? "Saving..."
+              : template
+                ? "Update Template"
+                : "Create Template"}
           </Button>
         </Box>
       </Paper>

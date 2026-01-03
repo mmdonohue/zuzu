@@ -1,26 +1,39 @@
 // server/routes/templates.ts
-import express from 'express';
-import { Request, Response } from 'express';
-import { supabase } from '../services/supabase.js';
-import { authenticateToken } from '../middleware/auth.middleware.js';
+import express from "express";
+import { Request, Response } from "express";
+import { supabase } from "../services/supabase.js";
+import { authenticateToken } from "../middleware/auth.middleware.js";
 import {
   validateTemplateCreate,
   validateTemplateUpdate,
-  validateTemplateUsage
-} from '../middleware/validation.middleware.js';
-import logger from '../config/logger.js';
+  validateTemplateUsage,
+} from "../middleware/validation.middleware.js";
+import logger from "../config/logger.js";
+
+type TemplateUpdateFields = {
+  name?: string;
+  description?: string;
+  category?: string;
+  content?: string;
+  variables?: unknown[];
+  style_guide_id?: string | null;
+  is_public?: boolean;
+  tags?: string[];
+  active?: boolean;
+};
 
 const router = express.Router();
 
 // Get all templates (user's own + public + system templates)
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get("/", authenticateToken, async (req: Request, res: Response) => {
   const { category, tag, search } = req.query;
 
   try {
     // Build query - RLS will automatically filter for user's own + public + system templates
     let query = supabase
-      .from('prompt_templates')
-      .select(`
+      .from("prompt_templates")
+      .select(
+        `
         *,
         style_guides (
           id,
@@ -28,47 +41,51 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
           description,
           temperature
         )
-      `)
-      .eq('active', true);
+      `,
+      )
+      .eq("active", true);
 
     // Apply filters
     if (category) {
-      query = query.eq('category', category);
+      query = query.eq("category", category);
     }
 
     if (tag) {
-      query = query.contains('tags', [tag]);
+      query = query.contains("tags", [tag]);
     }
 
     if (search) {
       query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
     }
 
-    const { data, error } = await query.order('usage_count', { ascending: false });
+    const { data, error } = await query.order("usage_count", {
+      ascending: false,
+    });
 
     if (error) throw error;
 
     res.json({
       success: true,
-      data
+      data,
     });
   } catch (error) {
-    logger.error('Error fetching templates:', error);
+    logger.error("Error fetching templates:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch templates'
+      message: "Failed to fetch templates",
     });
   }
 });
 
 // Get single template by ID
-router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.get("/:id", authenticateToken, async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
     const { data, error } = await supabase
-      .from('prompt_templates')
-      .select(`
+      .from("prompt_templates")
+      .select(
+        `
         *,
         style_guides (
           id,
@@ -77,9 +94,10 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
           system_prompt,
           temperature
         )
-      `)
-      .eq('id', id)
-      .eq('active', true)
+      `,
+      )
+      .eq("id", id)
+      .eq("active", true)
       .single();
 
     if (error) throw error;
@@ -87,26 +105,26 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     if (!data) {
       return res.status(404).json({
         success: false,
-        message: 'Template not found'
+        message: "Template not found",
       });
     }
 
     res.json({
       success: true,
-      data
+      data,
     });
   } catch (error) {
-    logger.error('Error fetching template:', error);
+    logger.error("Error fetching template:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch template'
+      message: "Failed to fetch template",
     });
   }
 });
 
 // Create new template
 router.post(
-  '/',
+  "/",
   authenticateToken,
   validateTemplateCreate,
   async (req: Request, res: Response) => {
@@ -118,12 +136,12 @@ router.post(
       variables,
       style_guide_id,
       is_public,
-      tags
+      tags,
     } = req.body;
 
     try {
       // Log the data being inserted for debugging
-      logger.info('Creating template with data:', {
+      logger.info("Creating template with data:", {
         user_id: req.user?.userId,
         name,
         category,
@@ -131,11 +149,11 @@ router.post(
         is_public,
         tags,
         tags_type: typeof tags,
-        tags_array: Array.isArray(tags)
+        tags_array: Array.isArray(tags),
       });
 
       const { data, error } = await supabase
-        .from('prompt_templates')
+        .from("prompt_templates")
         .insert([
           {
             user_id: req.user?.userId,
@@ -147,10 +165,11 @@ router.post(
             style_guide_id: style_guide_id || null,
             is_public: is_public || false,
             is_system: false, // User-created templates are never system templates
-            tags: tags || []
-          }
+            tags: tags || [],
+          },
         ])
-        .select(`
+        .select(
+          `
           *,
           style_guides (
             id,
@@ -158,7 +177,8 @@ router.post(
             description,
             temperature
           )
-        `)
+        `,
+        )
         .single();
 
       if (error) throw error;
@@ -167,21 +187,21 @@ router.post(
 
       res.status(201).json({
         success: true,
-        data
+        data,
       });
     } catch (error) {
-      logger.error('Error creating template:', error);
+      logger.error("Error creating template:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to create template'
+        message: "Failed to create template",
       });
     }
-  }
+  },
 );
 
 // Update template
 router.put(
-  '/:id',
+  "/:id",
   authenticateToken,
   validateTemplateUpdate,
   async (req: Request, res: Response) => {
@@ -195,12 +215,12 @@ router.put(
       style_guide_id,
       is_public,
       tags,
-      active
+      active,
     } = req.body;
 
     try {
       // Build update object with only provided fields
-      const updates: any = {};
+      const updates: TemplateUpdateFields = {};
       if (name !== undefined) updates.name = name;
       if (description !== undefined) updates.description = description;
       if (category !== undefined) updates.category = category;
@@ -213,12 +233,13 @@ router.put(
 
       // RLS will prevent updating if user doesn't own the template
       const { data, error } = await supabase
-        .from('prompt_templates')
+        .from("prompt_templates")
         .update(updates)
-        .eq('id', id)
-        .eq('user_id', req.user?.userId) // Ensure user owns the template
-        .eq('is_system', false) // Cannot update system templates
-        .select(`
+        .eq("id", id)
+        .eq("user_id", req.user?.userId) // Ensure user owns the template
+        .eq("is_system", false) // Cannot update system templates
+        .select(
+          `
           *,
           style_guides (
             id,
@@ -226,7 +247,8 @@ router.put(
             description,
             temperature
           )
-        `)
+        `,
+        )
         .single();
 
       if (error) throw error;
@@ -234,7 +256,8 @@ router.put(
       if (!data) {
         return res.status(404).json({
           success: false,
-          message: 'Template not found or you do not have permission to update it'
+          message:
+            "Template not found or you do not have permission to update it",
         });
       }
 
@@ -242,21 +265,21 @@ router.put(
 
       res.json({
         success: true,
-        data
+        data,
       });
     } catch (error) {
-      logger.error('Error updating template:', error);
+      logger.error("Error updating template:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to update template'
+        message: "Failed to update template",
       });
     }
-  }
+  },
 );
 
 // Delete template (soft delete by setting active = false)
 router.delete(
-  '/:id',
+  "/:id",
   authenticateToken,
   async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -264,11 +287,11 @@ router.delete(
     try {
       // RLS will prevent deleting if user doesn't own the template
       const { data, error } = await supabase
-        .from('prompt_templates')
+        .from("prompt_templates")
         .update({ active: false })
-        .eq('id', id)
-        .eq('user_id', req.user?.userId) // Ensure user owns the template
-        .eq('is_system', false) // Cannot delete system templates
+        .eq("id", id)
+        .eq("user_id", req.user?.userId) // Ensure user owns the template
+        .eq("is_system", false) // Cannot delete system templates
         .select()
         .single();
 
@@ -277,7 +300,8 @@ router.delete(
       if (!data) {
         return res.status(404).json({
           success: false,
-          message: 'Template not found or you do not have permission to delete it'
+          message:
+            "Template not found or you do not have permission to delete it",
         });
       }
 
@@ -285,21 +309,21 @@ router.delete(
 
       res.json({
         success: true,
-        message: 'Template deleted successfully'
+        message: "Template deleted successfully",
       });
     } catch (error) {
-      logger.error('Error deleting template:', error);
+      logger.error("Error deleting template:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to delete template'
+        message: "Failed to delete template",
       });
     }
-  }
+  },
 );
 
 // Track template usage
 router.post(
-  '/usage',
+  "/usage",
   authenticateToken,
   validateTemplateUsage,
   async (req: Request, res: Response) => {
@@ -308,13 +332,13 @@ router.post(
     try {
       // Insert usage record (trigger will auto-increment usage_count)
       const { data, error } = await supabase
-        .from('template_usage')
+        .from("template_usage")
         .insert([
           {
             template_id,
             user_id: req.user?.userId,
-            model_used
-          }
+            model_used,
+          },
         ])
         .select()
         .single();
@@ -323,16 +347,16 @@ router.post(
 
       res.json({
         success: true,
-        data
+        data,
       });
     } catch (error) {
-      logger.error('Error tracking template usage:', error);
+      logger.error("Error tracking template usage:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to track template usage'
+        message: "Failed to track template usage",
       });
     }
-  }
+  },
 );
 
 export default router;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -16,7 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
-} from '@mui/material';
+} from "@mui/material";
 import {
   AutoFixHigh as EnhanceIcon,
   ContentCopy as CopyIcon,
@@ -25,17 +25,17 @@ import {
   TrendingUp as ImprovementIcon,
   ExpandMore as ExpandMoreIcon,
   Check as AcceptIcon,
-} from '@mui/icons-material';
-import StyleGuideSelector from './StyleGuideSelector';
-import { enhancePrompt } from '../services/api';
-import type { StyleGuide } from '../store/slices/templatesSlice';
+} from "@mui/icons-material";
+import StyleGuideSelector from "./StyleGuideSelector";
+import { enhancePrompt } from "../services/api";
+import type { StyleGuide } from "../store/slices/templatesSlice";
 
-interface PromptEnhancerProps {
+type PromptEnhancerProps = {
   initialPrompt?: string;
   onAcceptEnhancement?: (enhancedPrompt: string) => void;
-}
+};
 
-interface EnhancementResult {
+type EnhancementResult = {
   enhanced_prompt: string;
   improvements: string[];
   suggestions: string[];
@@ -43,20 +43,21 @@ interface EnhancementResult {
     id: string;
     name: string;
   };
-}
+};
 
 const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
-  initialPrompt = '',
+  initialPrompt = "",
   onAcceptEnhancement,
 }) => {
   // Form state
   const [prompt, setPrompt] = useState(initialPrompt);
-  const [context, setContext] = useState('');
+  const [context, setContext] = useState("");
   const [styleGuideId, setStyleGuideId] = useState<string | null>(null);
 
   // Enhancement state
   const [isEnhancing, setIsEnhancing] = useState(false);
-  const [enhancementResult, setEnhancementResult] = useState<EnhancementResult | null>(null);
+  const [enhancementResult, setEnhancementResult] =
+    useState<EnhancementResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // UI state
@@ -67,7 +68,7 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
   // Handle enhance button click
   const handleEnhance = async () => {
     if (!prompt.trim()) {
-      setError('Please enter a prompt to enhance');
+      setError("Please enter a prompt to enhance");
       return;
     }
 
@@ -85,12 +86,13 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
       if (response.success && response.data) {
         setEnhancementResult(response.data);
       } else {
-        throw new Error(response.message || 'Failed to enhance prompt');
+        throw new Error(response.message || "Failed to enhance prompt");
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      const errorMessage =
+        err instanceof Error ? err.message : "Unknown error occurred";
       setError(errorMessage);
-      console.error('Error enhancing prompt:', err);
+      console.error("Error enhancing prompt:", err);
     } finally {
       setIsEnhancing(false);
     }
@@ -104,7 +106,7 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
-        console.error('Failed to copy:', err);
+        console.error("Failed to copy:", err);
       }
     }
   };
@@ -119,12 +121,17 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
   return (
     <Box>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
           <EnhanceIcon color="primary" />
           Prompt Enhancer
         </Typography>
         <Typography variant="body2" color="text.secondary" paragraph>
-          Get AI-powered suggestions to improve your prompt's clarity, specificity, and effectiveness.
+          Get AI-powered suggestions to improve your prompt's clarity,
+          specificity, and effectiveness.
         </Typography>
 
         <Divider sx={{ mb: 3 }} />
@@ -177,11 +184,13 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
               fullWidth
               variant="contained"
               size="large"
-              startIcon={isEnhancing ? <CircularProgress size={20} /> : <EnhanceIcon />}
+              startIcon={
+                isEnhancing ? <CircularProgress size={20} /> : <EnhanceIcon />
+              }
               onClick={handleEnhance}
               disabled={isEnhancing || !prompt.trim()}
             >
-              {isEnhancing ? 'Enhancing Prompt...' : 'Enhance Prompt'}
+              {isEnhancing ? "Enhancing Prompt..." : "Enhance Prompt"}
             </Button>
           </Grid>
         </Grid>
@@ -200,12 +209,22 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
 
             {/* Enhanced Prompt */}
             <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
                   <CheckIcon color="success" />
                   Enhanced Prompt
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box sx={{ display: "flex", gap: 1 }}>
                   {onAcceptEnhancement && (
                     <Button
                       variant="contained"
@@ -220,7 +239,7 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
                   <IconButton
                     size="small"
                     onClick={handleCopy}
-                    color={copied ? 'success' : 'default'}
+                    color={copied ? "success" : "default"}
                   >
                     {copied ? <CheckIcon /> : <CopyIcon />}
                   </IconButton>
@@ -230,16 +249,16 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
                 variant="outlined"
                 sx={{
                   p: 2,
-                  bgcolor: 'success.50',
-                  borderColor: 'success.main',
+                  bgcolor: "success.50",
+                  borderColor: "success.main",
                   borderWidth: 2,
                 }}
               >
                 <Typography
                   variant="body1"
                   sx={{
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
                   }}
                 >
                   {enhancementResult.enhanced_prompt}
@@ -248,94 +267,115 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
             </Box>
 
             {/* Improvements */}
-            {enhancementResult.improvements && enhancementResult.improvements.length > 0 && (
-              <Box sx={{ mb: 3 }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    mb: 1,
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setShowImprovements(!showImprovements)}
-                >
-                  <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <ImprovementIcon color="primary" />
-                    Improvements Made ({enhancementResult.improvements.length})
-                  </Typography>
-                  <IconButton
-                    size="small"
+            {enhancementResult.improvements &&
+              enhancementResult.improvements.length > 0 && (
+                <Box sx={{ mb: 3 }}>
+                  <Box
                     sx={{
-                      transform: showImprovements ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.3s',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mb: 1,
+                      cursor: "pointer",
                     }}
+                    onClick={() => setShowImprovements(!showImprovements)}
                   >
-                    <ExpandMoreIcon />
-                  </IconButton>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    >
+                      <ImprovementIcon color="primary" />
+                      Improvements Made ({enhancementResult.improvements.length}
+                      )
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      sx={{
+                        transform: showImprovements
+                          ? "rotate(180deg)"
+                          : "rotate(0deg)",
+                        transition: "transform 0.3s",
+                      }}
+                    >
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  </Box>
+                  <Collapse in={showImprovements}>
+                    <List dense>
+                      {enhancementResult.improvements.map(
+                        (improvement, index) => (
+                          <ListItem key={index}>
+                            <ListItemIcon>
+                              <CheckIcon color="success" fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary={improvement} />
+                          </ListItem>
+                        ),
+                      )}
+                    </List>
+                  </Collapse>
                 </Box>
-                <Collapse in={showImprovements}>
-                  <List dense>
-                    {enhancementResult.improvements.map((improvement, index) => (
-                      <ListItem key={index}>
-                        <ListItemIcon>
-                          <CheckIcon color="success" fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary={improvement} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Collapse>
-              </Box>
-            )}
+              )}
 
             {/* Additional Suggestions */}
-            {enhancementResult.suggestions && enhancementResult.suggestions.length > 0 && (
-              <Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    mb: 1,
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setShowSuggestions(!showSuggestions)}
-                >
-                  <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <SuggestionIcon color="warning" />
-                    Additional Suggestions ({enhancementResult.suggestions.length})
-                  </Typography>
-                  <IconButton
-                    size="small"
+            {enhancementResult.suggestions &&
+              enhancementResult.suggestions.length > 0 && (
+                <Box>
+                  <Box
                     sx={{
-                      transform: showSuggestions ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.3s',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mb: 1,
+                      cursor: "pointer",
                     }}
+                    onClick={() => setShowSuggestions(!showSuggestions)}
                   >
-                    <ExpandMoreIcon />
-                  </IconButton>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    >
+                      <SuggestionIcon color="warning" />
+                      Additional Suggestions (
+                      {enhancementResult.suggestions.length})
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      sx={{
+                        transform: showSuggestions
+                          ? "rotate(180deg)"
+                          : "rotate(0deg)",
+                        transition: "transform 0.3s",
+                      }}
+                    >
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  </Box>
+                  <Collapse in={showSuggestions}>
+                    <List dense>
+                      {enhancementResult.suggestions.map(
+                        (suggestion, index) => (
+                          <ListItem key={index}>
+                            <ListItemIcon>
+                              <SuggestionIcon
+                                color="warning"
+                                fontSize="small"
+                              />
+                            </ListItemIcon>
+                            <ListItemText primary={suggestion} />
+                          </ListItem>
+                        ),
+                      )}
+                    </List>
+                  </Collapse>
                 </Box>
-                <Collapse in={showSuggestions}>
-                  <List dense>
-                    {enhancementResult.suggestions.map((suggestion, index) => (
-                      <ListItem key={index}>
-                        <ListItemIcon>
-                          <SuggestionIcon color="warning" fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText primary={suggestion} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Collapse>
-              </Box>
-            )}
+              )}
 
             {/* Style Guide Used */}
             {enhancementResult.style_guide && (
-              <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
+              <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: "divider" }}>
                 <Typography variant="caption" color="text.secondary">
-                  Enhanced using style guide:{' '}
+                  Enhanced using style guide:{" "}
                   <Chip
                     label={enhancementResult.style_guide.name}
                     size="small"

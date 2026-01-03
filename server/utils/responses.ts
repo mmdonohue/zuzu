@@ -1,9 +1,9 @@
 // server/utils/responses.ts
 import { Response } from 'express';
 
-export const sendSuccess = (
+export const sendSuccess = <T = unknown>(
   res: Response,
-  data: any,
+  data: T,
   message?: string,
   statusCode: number = 200
 ) => {
@@ -14,11 +14,11 @@ export const sendSuccess = (
   });
 };
 
-export const sendError = (
+export const sendError = <T = unknown>(
   res: Response,
   message: string,
   statusCode: number = 500,
-  errors?: any
+  errors?: T
 ) => {
   return res.status(statusCode).json({
     success: false,

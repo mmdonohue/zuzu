@@ -181,21 +181,15 @@ const devTools = [
             </Suspense>
           </Typography>
         </>
-        <Typography variant="h6" gutterBottom>
-          API Response Example
-        </Typography>
         {isLoading ? (
           <Typography>Loading...</Typography>
         ) : error ? (
           <Typography color="error">Error connecting to API</Typography>
         ) : (
-          <Typography>
-            Server says: {data?.message || 'No message received'}
+          <Typography variant="h6" >
+            {data?.message || 'No message received'}
           </Typography>
         )}
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          This demonstrates TanStack Query integration with Express backend
-        </Typography>
       </Paper>
 
       {/* Technologies grid */}

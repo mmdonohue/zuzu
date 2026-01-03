@@ -125,8 +125,9 @@ export class EmailService {
 
       logger.info(`Email sent: ${type} to ${recipient}`);
       return { success: true, messageId: info.messageId };
-    } catch (error: any) {
-      logger.error(`Email send failed: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Email send failed: ${errorMessage}`);
 
       // Log failed email to database
       await supabase
@@ -137,7 +138,7 @@ export class EmailService {
           subject,
           message: html,
           status: 'failed',
-          error: error.message
+          error: errorMessage
         });
 
       throw new AppError('Failed to send email', 500);

@@ -24,7 +24,8 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, List, Any, Optional
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# File is in .claude/hooks/scripts/, need to go up to .claude/ for review module
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from review.utils.markdown_gen import MarkdownReportGenerator
 from review.checkers.documentation import DocumentationChecker
@@ -191,9 +192,12 @@ def update_executive_summary(project_root: str, focus: str, report_data: Dict[st
     """Update the executive summary with results from a focused review."""
     from datetime import datetime, timezone
 
-    summary_path = Path(project_root) / '.claude' / 'CODEBASE_REVIEW.md'
+    # Save all files to results directory
+    results_dir = Path(project_root) / '.claude' / 'review' / 'results'
+    results_dir.mkdir(parents=True, exist_ok=True)
+    summary_path = results_dir / 'codebase_review.md'
     focus_display = focus.title()
-    focus_upper = focus.upper()
+    focus_lower = focus.lower()
 
     # Calculate health score
     base_score = 100
@@ -226,7 +230,7 @@ def update_executive_summary(project_root: str, focus: str, report_data: Dict[st
 | Info | {report_data['info_count']} |
 | **Total Findings** | **{report_data['total_findings']}** |
 
-**Detailed Report**: [CODEBASE_REVIEW_{focus_upper}.md](./CODEBASE_REVIEW_{focus_upper}.md)
+**Detailed Report**: [codebase_review_{focus_lower}.md](./codebase_review_{focus_lower}.md)
 
 ---
 """
@@ -281,8 +285,11 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
     import re
     import json
 
-    summary_path = Path(project_root) / '.claude' / 'CODEBASE_REVIEW.md'
-    json_path = Path(project_root) / '.claude' / 'CODEBASE_REVIEW.json'
+    # Save JSON to results directory
+    results_dir = Path(project_root) / '.claude' / 'review' / 'results'
+    results_dir.mkdir(parents=True, exist_ok=True)
+    summary_path = results_dir / 'codebase_review.md'
+    json_path = results_dir / 'codebase_review.json'
 
     if not summary_path.exists():
         return
@@ -363,11 +370,12 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
             # Parse and update findings for this category
             # Map display names to actual file names
             category_file_map = {
-                'documentation': 'DOCS',
-                'docs': 'DOCS'
+                'documentation': 'docs',
+                'docs': 'docs'
             }
-            file_category = category_file_map.get(category_key, category.upper())
-            detail_path = Path(project_root) / '.claude' / f'CODEBASE_REVIEW_{file_category}.md'
+            file_category = category_file_map.get(category_key, category_key)
+            # Look for detailed reports in results directory
+            detail_path = Path(project_root) / '.claude' / 'review' / 'results' / f'codebase_review_{file_category}.md'
 
             if detail_path.exists():
                 with open(detail_path, 'r') as f:
@@ -681,7 +689,7 @@ REPORTS:
     parser.add_argument(
         '--output',
         default='.claude/CODEBASE_REVIEW.md',
-        help='Output path for markdown report (default: .claude/CODEBASE_REVIEW.md)'
+        help='Output path for markdown report (default: .claude/review/results/CODEBASE_REVIEW.md)'
     )
 
     parser.add_argument(
@@ -776,15 +784,18 @@ REPORTS:
     report = generator.generate(report_data)
 
     # Determine output path based on focus
+    # Always save to results directory
+    results_dir = Path(config['project_root']) / '.claude' / 'review' / 'results'
+    results_dir.mkdir(parents=True, exist_ok=True)
+
     if args.output == '.claude/CODEBASE_REVIEW.md':  # Using default output
         if args.focus != 'all':
-            # Use focus-specific filename
-            focus_name = args.focus.upper()
-            output_filename = f'.claude/CODEBASE_REVIEW_{focus_name}.md'
-            output_path = Path(config['project_root']) / output_filename
+            # Use focus-specific filename in results directory (lowercase)
+            focus_name = args.focus.lower()
+            output_path = results_dir / f'codebase_review_{focus_name}.md'
         else:
             # Use default for 'all' focus
-            output_path = Path(config['project_root']) / args.output
+            output_path = results_dir / 'codebase_review.md'
     else:
         # User specified custom output path
         output_path = Path(config['project_root']) / args.output

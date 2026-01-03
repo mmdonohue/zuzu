@@ -324,3 +324,4 @@ See `.claude/SECURITY.md` for complete security documentation and best practices
 3. **Logging Directory**: Server automatically creates `logs/` directory at project root on startup
 4. **IP Tracking**: Server tracks real client IPs via x-forwarded-for and x-real-ip headers for proxy support
 5. **Build Process**: `prebuild` script runs development build before production build
+6. **Package Version Synchronization**: When updating packages that exist in both `package.json` and `server/package.json`, always ensure both files use the highest version number. Duplicate packages must stay in sync to avoid version conflicts and unexpected behavior. Common duplicates include: `@types/express`, `@types/morgan`, `@types/node`, `@types/cors`, `cookie-parser`, `cors`, `dotenv`, `express`, `log4js`, `morgan`, `ts-node`, `typescript`, and `@supabase/supabase-js`

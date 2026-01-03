@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
 import {
   fetchTemplates,
   fetchTemplateById,
@@ -7,7 +7,7 @@ import {
   updateTemplate,
   deleteTemplate,
   trackTemplateUsage,
-} from '../services/api';
+} from "../services/api";
 import {
   setTemplates,
   setSelectedTemplate,
@@ -17,16 +17,19 @@ import {
   incrementTemplateUsage,
   setLoading,
   setError,
-} from '../store/slices/templatesSlice';
-import type { Template } from '../store/slices/templatesSlice';
+} from "../store/slices/templatesSlice";
+import type {
+  Template,
+  TemplateVariable,
+} from "../store/slices/templatesSlice";
 
 // Query keys
 export const templateKeys = {
-  all: ['templates'] as const,
-  lists: () => [...templateKeys.all, 'list'] as const,
+  all: ["templates"] as const,
+  lists: () => [...templateKeys.all, "list"] as const,
   list: (filters?: { category?: string; tag?: string; search?: string }) =>
     [...templateKeys.lists(), filters] as const,
-  details: () => [...templateKeys.all, 'detail'] as const,
+  details: () => [...templateKeys.all, "detail"] as const,
   detail: (id: string) => [...templateKeys.details(), id] as const,
 };
 
@@ -47,7 +50,8 @@ export const useTemplates = (filters?: {
         dispatch(setTemplates(result.data));
         return result.data as Template[];
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to fetch templates';
+        const message =
+          error instanceof Error ? error.message : "Failed to fetch templates";
         dispatch(setError(message));
         throw error;
       }
@@ -68,7 +72,8 @@ export const useTemplate = (id: string) => {
         dispatch(setSelectedTemplate(result.data));
         return result.data as Template;
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to fetch template';
+        const message =
+          error instanceof Error ? error.message : "Failed to fetch template";
         dispatch(setError(message));
         throw error;
       }
@@ -103,14 +108,31 @@ export const useUpdateTemplate = () => {
   const dispatch = useDispatch();
 
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: any }) =>
-      updateTemplate(id, updates),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: {
+        name?: string;
+        description?: string;
+        category?: string;
+        content?: string;
+        variables?: TemplateVariable[];
+        style_guide_id?: string;
+        is_public?: boolean;
+        tags?: string[];
+        active?: boolean;
+      };
+    }) => updateTemplate(id, updates),
     onSuccess: (result, variables) => {
       const template = result.data as Template;
       dispatch(updateTemplateInStore(template));
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: templateKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: templateKeys.detail(variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: templateKeys.detail(variables.id),
+      });
     },
     onError: (error: Error) => {
       dispatch(setError(error.message));
@@ -143,16 +165,23 @@ export const useTrackTemplateUsage = () => {
   const dispatch = useDispatch();
 
   return useMutation({
-    mutationFn: ({ templateId, modelUsed }: { templateId: string; modelUsed?: string }) =>
-      trackTemplateUsage(templateId, modelUsed),
+    mutationFn: ({
+      templateId,
+      modelUsed,
+    }: {
+      templateId: string;
+      modelUsed?: string;
+    }) => trackTemplateUsage(templateId, modelUsed),
     onSuccess: (_, variables) => {
       dispatch(incrementTemplateUsage(variables.templateId));
       // Update the template detail cache
-      queryClient.invalidateQueries({ queryKey: templateKeys.detail(variables.templateId) });
+      queryClient.invalidateQueries({
+        queryKey: templateKeys.detail(variables.templateId),
+      });
     },
     onError: (error: Error) => {
       // Don't show error for usage tracking failures
-      console.error('Failed to track template usage:', error);
+      console.error("Failed to track template usage:", error);
     },
   });
 };

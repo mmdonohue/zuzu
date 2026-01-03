@@ -303,7 +303,7 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Overall Health Score Card */}
-      <Card sx={{ mb: 2, background: 'linear-gradient(135deg, #becffd 0%, #6e86bf 100%)', color: 'white' }}>
+      <Card sx={{ mb: 1, backgroundColor: '#e0e5f2'}}>
         <CardContent sx={{ pt: 2, pb: 0, '&:last-child': { pb: 0 } }}>
           <Grid container spacing={3} alignItems="flex-start">
             {/* ZuZu Logo */}
@@ -314,9 +314,7 @@ const Dashboard: React.FC = () => {
                   alt="ZuZu Logo"
                   style={{
                     width: '60px',
-                    height: 'auto',
-                    filter: 'brightness(0) invert(1)', // Make the logo white
-                    opacity: 0.9
+                    height: 'auto'
                   }}
                 />
               </Box>
@@ -331,7 +329,7 @@ const Dashboard: React.FC = () => {
                 <Typography variant="overline" sx={{ fontSize: '0.7rem', letterSpacing: 1.5, opacity: 0.9 }}>
                   HEALTH SCORE
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+                <Box sx={{ borderRadius: 2, backgroundColor: '#fff', padding: 1, display: 'flex', alignItems: 'baseline', gap: 1 }}>
                   <Typography
                     variant="h3"
                     component="div"
@@ -374,7 +372,7 @@ const Dashboard: React.FC = () => {
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, justifyContent: 'space-between' }}>
                 <Box sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  backgroundColor: '#fff',
                   borderRadius: 2,
                   p: 1,
                   flex: 1,
@@ -386,7 +384,7 @@ const Dashboard: React.FC = () => {
                   <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>Critical</Typography>
                 </Box>
                 <Box sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  backgroundColor: '#fff',
                   borderRadius: 2,
                   p: 1,
                   flex: 1,
@@ -398,7 +396,7 @@ const Dashboard: React.FC = () => {
                   <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>Warnings</Typography>
                 </Box>
                 <Box sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  backgroundColor: '#fff',
                   borderRadius: 2,
                   p: 1,
                   flex: 1,
@@ -410,7 +408,7 @@ const Dashboard: React.FC = () => {
                   <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>Info</Typography>
                 </Box>
                 <Box sx={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  backgroundColor: '#fff',
                   borderRadius: 2,
                   p: 1,
                   flex: 1,
@@ -424,12 +422,12 @@ const Dashboard: React.FC = () => {
               </Box>
             </Grid>
             <Grid item xs={12} md={5}>
-              <Typography variant="overline" sx={{ fontSize: '0.7rem', letterSpacing: 1.5, opacity: 0.9, mb: 1, display: 'block' }}>
+              <Typography variant="overline" sx={{ fontSize: '0.7rem', letterSpacing: 1.5, opacity: 0.9, mb: 0, display: 'block' }}>
                 CATEGORY BREAKDOWN
               </Typography>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box sx={{ mb:2, padding: 1, backgroundColor: '#fff', borderRadius: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
                 {/* Donut Chart */}
-                <svg width="120" height="120" viewBox="0 0 42 42" style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
+                <svg width="80" height="80" viewBox="0 0 42 42" style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
                   <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="rgba(255,255,255,0.1)" strokeWidth="4"></circle>
                   {(() => {
                     let offset = 0;
@@ -480,52 +478,62 @@ const Dashboard: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Review Categories */}
+      {/* Review Categories
       <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3 }}>
         Review Categories
       </Typography>
-
-      <Grid container spacing={3}>
+       */}
+      <Grid container spacing={0} sx={{ gap: '0px' }}>
         {data.reviews.map((review) => (
-          <Grid item xs={12} sm={6} md={3} key={review.category}>
+          <Grid item xs={12} sm={6} md={2} lg={2} xl={2} key={review.category}>
             <Card
               onClick={() => handleCategoryClick(review.category)}
               sx={{
                 height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                border: '1px solid rgba(0,0,0,0.06)',
+                maxWidth: 'calc(100% - 2px)',
+                paddingBottom: '10px',
                 borderLeft: `4px solid ${getStatusColor(review.status)}`,
-                transition: 'transform 0.2s, box-shadow 0.2s, background-color 0.2s',
+                borderRadius: 1,
+                transition: 'transform 0.16s, box-shadow 0.16s, background-color 0.16s',
                 cursor: 'pointer',
-                backgroundColor: selectedCategory === review.category ? 'rgba(110, 134, 191, 0.1)' : 'inherit',
+                backgroundColor: selectedCategory === review.category ? 'rgba(110, 134, 191, 0.04)' : 'inherit',
                 '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 4,
-                  backgroundColor: selectedCategory === review.category ? 'rgba(110, 134, 191, 0.15)' : 'rgba(0, 0, 0, 0.04)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: 2,
+                  backgroundColor: selectedCategory === review.category ? 'rgba(110, 134, 191, 0.06)' : 'rgba(0, 0, 0, 0.02)',
                 },
               }}
             >
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box sx={{ color: getStatusColor(review.status) }}>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1, pt: 1, pb: 0, '&:last-child': { pb: 0 } }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                    <Box sx={{ color: getStatusColor(review.status), display: 'flex', flexShrink: 0 }}>
                       {categoryIcons[review.category] || <CodeIcon />}
                     </Box>
-                    <Typography variant="h6" component="div">
+                    <Typography variant="h6" component="div" noWrap sx={{ fontSize: '0.95rem' }}>
                       {getShortDisplayName(review.displayName)}
                     </Typography>
                   </Box>
-                  <Chip
-                    label={review.statusDisplay}
-                    size="small"
-                    sx={{
-                      backgroundColor: getStatusColor(review.status),
-                      color: 'white',
-                      fontSize: '0.7rem',
-                    }}
-                  />
                 </Box>
 
-                {/* Health Score */}
-                <Box sx={{ mb: 2 }}>
+                <Box sx={{ mt: 0.5 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                    <Chip
+                      label={review.statusDisplay}
+                      size="small"
+                      sx={{
+                        backgroundColor: getStatusColor(review.status),
+                        color: 'white',
+                        fontSize: '0.7rem',
+                        mr: 1,
+                      }}
+                    />
+                  </Box>
+
+                  <Box sx={{ mt: 0.5 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                     <Typography variant="body2" color="text.secondary">
                       Health Score
@@ -540,7 +548,7 @@ const Dashboard: React.FC = () => {
                     sx={{
                       height: 8,
                       borderRadius: 4,
-                      backgroundColor: 'rgba(0,0,0,0.1)',
+                      backgroundColor: 'rgba(0,0,0,0.06)',
                       '& .MuiLinearProgress-bar': {
                         backgroundColor: getHealthScoreColor(review.healthScore),
                         borderRadius: 4,
@@ -548,9 +556,9 @@ const Dashboard: React.FC = () => {
                     }}
                   />
                 </Box>
+                </Box>
 
-                {/* Metrics */}
-                <Grid container spacing={1}>
+                <Grid container spacing={1} sx={{ mt: 1 }}>
                   <Grid item xs={6}>
                     <Typography variant="caption" color="text.secondary">
                       Critical
@@ -585,9 +593,8 @@ const Dashboard: React.FC = () => {
                   </Grid>
                 </Grid>
 
-                {/* Last Updated */}
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
-                  Updated: {review.lastUpdated}
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, fontSize: '0.65rem' }}>
+                  {review.lastUpdated ? new Date(review.lastUpdated).toLocaleString() : ''}
                 </Typography>
               </CardContent>
             </Card>

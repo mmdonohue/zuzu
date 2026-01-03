@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -14,7 +14,7 @@ import {
   IconButton,
   Tooltip,
   Alert,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Close as CloseIcon,
   Code as CodeIcon,
@@ -33,18 +33,18 @@ import {
   Delete as DeleteIcon,
   Share as ShareIcon,
   Download as DownloadIcon,
-} from '@mui/icons-material';
-import { format } from 'date-fns';
-import type { Template } from '../store/slices/templatesSlice';
+} from "@mui/icons-material";
+import { format } from "date-fns";
+import type { Template } from "../store/slices/templatesSlice";
 
-interface TemplateDetailViewProps {
+type TemplateDetailViewProps = {
   template: Template | null;
   open: boolean;
   onClose: () => void;
   onUseTemplate: (template: Template) => void;
   onEditTemplate?: (template: Template) => void;
   onDeleteTemplate?: (template: Template) => void;
-}
+};
 
 // Category icon mapping
 const categoryIcons: Record<string, React.ReactElement> = {
@@ -56,12 +56,15 @@ const categoryIcons: Record<string, React.ReactElement> = {
 };
 
 // Category color mapping
-const categoryColors: Record<string, 'primary' | 'secondary' | 'success' | 'warning' | 'info'> = {
-  code: 'primary',
-  content: 'info',
-  analysis: 'secondary',
-  creative: 'warning',
-  custom: 'success',
+const categoryColors: Record<
+  string,
+  "primary" | "secondary" | "success" | "warning" | "info"
+> = {
+  code: "primary",
+  content: "info",
+  analysis: "secondary",
+  creative: "warning",
+  custom: "success",
 };
 
 const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
@@ -75,7 +78,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
   if (!template) return null;
 
   const categoryIcon = categoryIcons[template.category] || <ExtensionIcon />;
-  const categoryColor = categoryColors[template.category] || 'default';
+  const categoryColor = categoryColors[template.category] || "default";
 
   const handleCopyContent = () => {
     navigator.clipboard.writeText(template.content);
@@ -114,11 +117,16 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
 
     // Convert to JSON and copy to clipboard
     const jsonString = JSON.stringify(exportData, null, 2);
-    navigator.clipboard.writeText(jsonString).then(() => {
-      alert('Template JSON copied to clipboard! You can share this with others.');
-    }).catch((err) => {
-      console.error('Failed to copy template:', err);
-    });
+    navigator.clipboard
+      .writeText(jsonString)
+      .then(() => {
+        alert(
+          "Template JSON copied to clipboard! You can share this with others.",
+        );
+      })
+      .catch((err) => {
+        console.error("Failed to copy template:", err);
+      });
   };
 
   const handleDownloadTemplate = () => {
@@ -135,11 +143,11 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
 
     // Create a blob and download
     const jsonString = JSON.stringify(exportData, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
+    const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `${template.name.replace(/\s+/g, '_')}.json`;
+    a.download = `${template.name.replace(/\s+/g, "_")}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -153,19 +161,25 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: { minHeight: '600px' }
+        sx: { minHeight: "600px" },
       }}
     >
       <DialogTitle>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
+        >
           <Box sx={{ flex: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
               <Chip
                 icon={categoryIcon}
                 label={template.category}
                 size="small"
                 color={categoryColor}
-                sx={{ textTransform: 'capitalize' }}
+                sx={{ textTransform: "capitalize" }}
               />
               {template.is_system && (
                 <Tooltip title="System Template">
@@ -212,7 +226,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
         {/* Metadata Grid */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={6} sm={3}>
-            <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+            <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
               <TrendingUpIcon color="action" sx={{ mb: 1 }} />
               <Typography variant="h6" color="primary">
                 {template.usage_count}
@@ -223,7 +237,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
             </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+            <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
               <ExtensionIcon color="action" sx={{ mb: 1 }} />
               <Typography variant="h6" color="primary">
                 {template.variables?.length || 0}
@@ -234,24 +248,24 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
             </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+            <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
               <CalendarIcon color="action" sx={{ mb: 1 }} />
               <Typography variant="caption" color="text.secondary">
                 Created
               </Typography>
               <Typography variant="body2" sx={{ mt: 0.5 }}>
-                {format(new Date(template.created_at), 'MMM d, yyyy')}
+                {format(new Date(template.created_at), "MMM d, yyyy")}
               </Typography>
             </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+            <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
               <CalendarIcon color="action" sx={{ mb: 1 }} />
               <Typography variant="caption" color="text.secondary">
                 Updated
               </Typography>
               <Typography variant="body2" sx={{ mt: 0.5 }}>
-                {format(new Date(template.updated_at), 'MMM d, yyyy')}
+                {format(new Date(template.updated_at), "MMM d, yyyy")}
               </Typography>
             </Paper>
           </Grid>
@@ -263,14 +277,9 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
             <Typography variant="subtitle2" gutterBottom>
               Tags
             </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               {template.tags.map((tag, index) => (
-                <Chip
-                  key={index}
-                  label={tag}
-                  size="small"
-                  variant="outlined"
-                />
+                <Chip key={index} label={tag} size="small" variant="outlined" />
               ))}
             </Box>
           </Box>
@@ -289,11 +298,11 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
                 <Box
                   key={index}
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
+                    display: "flex",
+                    alignItems: "center",
                     py: 1,
                     borderBottom: index < template.variables.length - 1 ? 1 : 0,
-                    borderColor: 'divider',
+                    borderColor: "divider",
                   }}
                 >
                   <Box sx={{ flex: 1 }}>
@@ -304,12 +313,12 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
                       {variable.label}
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                     <Chip
                       label={variable.type}
                       size="small"
                       variant="outlined"
-                      sx={{ textTransform: 'capitalize' }}
+                      sx={{ textTransform: "capitalize" }}
                     />
                     {variable.required && (
                       <Chip
@@ -324,7 +333,8 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
               ))}
             </Paper>
             <Alert severity="info" sx={{ mt: 2 }}>
-              Variables are placeholders that will be replaced with your input when using the template.
+              Variables are placeholders that will be replaced with your input
+              when using the template.
             </Alert>
           </Box>
         )}
@@ -357,10 +367,15 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
 
         {/* Template Content */}
         <Box sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-            <Typography variant="subtitle2">
-              Template Content
-            </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
+            <Typography variant="subtitle2">Template Content</Typography>
             <Tooltip title="Copy to clipboard">
               <IconButton size="small" onClick={handleCopyContent}>
                 <ContentCopyIcon fontSize="small" />
@@ -371,18 +386,18 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
             variant="outlined"
             sx={{
               p: 2,
-              bgcolor: 'grey.50',
-              maxHeight: '300px',
-              overflow: 'auto',
+              bgcolor: "grey.50",
+              maxHeight: "300px",
+              overflow: "auto",
             }}
           >
             <Typography
               variant="body2"
               component="pre"
               sx={{
-                fontFamily: 'monospace',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
+                fontFamily: "monospace",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
                 m: 0,
               }}
             >
@@ -394,7 +409,11 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
         {/* Owner Info */}
         {!template.is_system && template.user_id && (
           <Box sx={{ mt: 2 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+            >
               <PersonIcon fontSize="small" />
               Created by user {template.user_id}
             </Typography>

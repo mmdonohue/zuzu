@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Paper,
@@ -15,10 +15,10 @@ import {
   TableHead,
   TableRow,
   Chip,
-} from '@mui/material';
-import { format } from 'date-fns';
+} from "@mui/material";
+import { format } from "date-fns";
 
-interface ActivityRequest {
+type ActivityRequest = {
   id: string;
   created_at: string;
   model: string;
@@ -33,20 +33,20 @@ interface ActivityRequest {
   finish_reason: string;
   generation_time?: number;
   tokens_per_second?: number;
-}
+};
 
-interface ActivitySummary {
+type ActivitySummary = {
   avg_daily_spend: number;
   past_month_spend: number;
   avg_daily_tokens: number;
   past_month_tokens: number;
   avg_daily_requests: number;
   past_month_requests: number;
-}
+};
 
-interface ActivityData {
+type ActivityData = {
   data: ActivityRequest[];
-}
+};
 
 const OpenRouterActivity: React.FC = () => {
   const [activityData, setActivityData] = useState<ActivityRequest[]>([]);
@@ -60,16 +60,17 @@ const OpenRouterActivity: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const provisionKey = process.env.REACT_APP_ZUZU_OPENROUTER_PROVISION_KEY;
+        const provisionKey =
+          process.env.REACT_APP_ZUZU_OPENROUTER_PROVISION_KEY;
 
         if (!provisionKey) {
-          throw new Error('OpenRouter provision key not configured');
+          throw new Error("OpenRouter provision key not configured");
         }
 
-        const response = await fetch('https://openrouter.ai/api/v1/activity', {
-          method: 'GET',
+        const response = await fetch("https://openrouter.ai/api/v1/activity", {
+          method: "GET",
           headers: {
-            'Authorization': `Bearer ${provisionKey}`,
+            Authorization: `Bearer ${provisionKey}`,
           },
         });
 
@@ -78,36 +79,52 @@ const OpenRouterActivity: React.FC = () => {
         }
 
         const data: ActivityData = await response.json();
-        console.log('Activity API response:', data);
+        console.log("Activity API response:", data);
         setActivityData(data.data || []);
 
         // Calculate summary statistics
         if (data.data && data.data.length > 0) {
           const now = new Date();
           const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-          const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          const oneMonthAgo = new Date(
+            now.getTime() - 30 * 24 * 60 * 60 * 1000,
+          );
 
-          const dailyRequests = data.data.filter(r => {
+          const dailyRequests = data.data.filter((r) => {
             const date = new Date(r.created_at);
             return !isNaN(date.getTime()) && date >= oneDayAgo;
           });
-          const monthlyRequests = data.data.filter(r => {
+          const monthlyRequests = data.data.filter((r) => {
             const date = new Date(r.created_at);
             return !isNaN(date.getTime()) && date >= oneMonthAgo;
           });
 
           setSummary({
-            avg_daily_spend: dailyRequests.reduce((sum, r) => sum + (r.total_cost || 0), 0),
-            past_month_spend: monthlyRequests.reduce((sum, r) => sum + (r.total_cost || 0), 0),
-            avg_daily_tokens: dailyRequests.reduce((sum, r) => sum + (r.total_tokens || 0), 0),
-            past_month_tokens: monthlyRequests.reduce((sum, r) => sum + (r.total_tokens || 0), 0),
+            avg_daily_spend: dailyRequests.reduce(
+              (sum, r) => sum + (r.total_cost || 0),
+              0,
+            ),
+            past_month_spend: monthlyRequests.reduce(
+              (sum, r) => sum + (r.total_cost || 0),
+              0,
+            ),
+            avg_daily_tokens: dailyRequests.reduce(
+              (sum, r) => sum + (r.total_tokens || 0),
+              0,
+            ),
+            past_month_tokens: monthlyRequests.reduce(
+              (sum, r) => sum + (r.total_tokens || 0),
+              0,
+            ),
             avg_daily_requests: dailyRequests.length,
             past_month_requests: monthlyRequests.length,
           });
         }
       } catch (err) {
-        console.error('Error fetching OpenRouter activity:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch activity data');
+        console.error("Error fetching OpenRouter activity:", err);
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch activity data",
+        );
       } finally {
         setLoading(false);
       }
@@ -119,7 +136,12 @@ const OpenRouterActivity: React.FC = () => {
   if (loading) {
     return (
       <Paper sx={{ p: 3 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+        >
           <CircularProgress />
         </Box>
       </Paper>
@@ -139,7 +161,12 @@ const OpenRouterActivity: React.FC = () => {
       <Typography variant="h5" gutterBottom>
         Your Activity
       </Typography>
-      <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 3 }}>
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        gutterBottom
+        sx={{ mb: 3 }}
+      >
         Usage across models on OpenRouter
       </Typography>
 
@@ -153,7 +180,13 @@ const OpenRouterActivity: React.FC = () => {
                 <Typography variant="h6" gutterBottom>
                   Spend
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mt: 2,
+                  }}
+                >
                   <Box>
                     <Typography variant="caption" color="text.secondary">
                       Avg Day
@@ -182,7 +215,13 @@ const OpenRouterActivity: React.FC = () => {
                 <Typography variant="h6" gutterBottom>
                   Tokens
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mt: 2,
+                  }}
+                >
                   <Box>
                     <Typography variant="caption" color="text.secondary">
                       Avg Day
@@ -211,7 +250,13 @@ const OpenRouterActivity: React.FC = () => {
                 <Typography variant="h6" gutterBottom>
                   Requests
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mt: 2,
+                  }}
+                >
                   <Box>
                     <Typography variant="caption" color="text.secondary">
                       Avg Day
@@ -252,7 +297,11 @@ const OpenRouterActivity: React.FC = () => {
             {activityData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} align="center">
-                  <Typography variant="body2" color="text.secondary" sx={{ py: 3 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ py: 3 }}
+                  >
                     No activity data available
                   </Typography>
                 </TableCell>
@@ -263,49 +312,50 @@ const OpenRouterActivity: React.FC = () => {
                 const isValidDate = !isNaN(createdDate.getTime());
 
                 return (
-                <TableRow key={activity.id} hover>
-                  <TableCell>
-                    <Typography variant="body2">
-                      {isValidDate
-                        ? format(createdDate, 'MMM d, h:mm a')
-                        : activity.created_at || 'N/A'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={activity.model.split('/').pop()}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {activity.prompt_tokens || 0} → {activity.completion_tokens || 0}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      ${(activity.total_cost || 0).toFixed(4)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {activity.generation_time && activity.completion_tokens
-                        ? `${((activity.completion_tokens || 0) / (activity.generation_time || 1)).toFixed(1)} tps`
-                        : activity.tokens_per_second
-                        ? `${activity.tokens_per_second.toFixed(1)} tps`
-                        : '-'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={activity.finish_reason || 'stop'}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                </TableRow>
+                  <TableRow key={activity.id} hover>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {isValidDate
+                          ? format(createdDate, "MMM d, h:mm a")
+                          : activity.created_at || "N/A"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={activity.model.split("/").pop()}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {activity.prompt_tokens || 0} →{" "}
+                        {activity.completion_tokens || 0}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        ${(activity.total_cost || 0).toFixed(4)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {activity.generation_time && activity.completion_tokens
+                          ? `${((activity.completion_tokens || 0) / (activity.generation_time || 1)).toFixed(1)} tps`
+                          : activity.tokens_per_second
+                            ? `${activity.tokens_per_second.toFixed(1)} tps`
+                            : "-"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={activity.finish_reason || "stop"}
+                        size="small"
+                        variant="outlined"
+                      />
+                    </TableCell>
+                  </TableRow>
                 );
               })
             )}
@@ -314,7 +364,11 @@ const OpenRouterActivity: React.FC = () => {
       </TableContainer>
 
       {activityData.length > 50 && (
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mt: 2, display: "block" }}
+        >
           Showing 50 most recent activities
         </Typography>
       )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,23 +13,23 @@ import {
   Typography,
   Box,
   Alert,
-} from '@mui/material';
-import { Check as CheckIcon, Cancel as CancelIcon } from '@mui/icons-material';
-import type { Template, TemplateVariable } from '../store/slices/templatesSlice';
+} from "@mui/material";
+import { Check as CheckIcon, Cancel as CancelIcon } from "@mui/icons-material";
+import type {
+  Template,
+  TemplateVariable,
+} from "../store/slices/templatesSlice";
 
-interface TemplateVariableSubstitutionProps {
+type TemplateVariableSubstitutionProps = {
   template: Template | null;
   open: boolean;
   onClose: () => void;
   onApply: (substitutedContent: string) => void;
-}
+};
 
-const TemplateVariableSubstitution: React.FC<TemplateVariableSubstitutionProps> = ({
-  template,
-  open,
-  onClose,
-  onApply,
-}) => {
+const TemplateVariableSubstitution: React.FC<
+  TemplateVariableSubstitutionProps
+> = ({ template, open, onClose, onApply }) => {
   const [values, setValues] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -38,7 +38,7 @@ const TemplateVariableSubstitution: React.FC<TemplateVariableSubstitutionProps> 
     if (template && template.variables) {
       const initialValues: Record<string, string> = {};
       template.variables.forEach((variable: TemplateVariable) => {
-        initialValues[variable.name] = (variable as any).default || '';
+        initialValues[variable.name] = (variable as any).default || "";
       });
       setValues(initialValues);
       setErrors({});
@@ -80,8 +80,8 @@ const TemplateVariableSubstitution: React.FC<TemplateVariableSubstitutionProps> 
     // Substitute variables in template content
     let substitutedContent = template.content;
     template.variables?.forEach((variable: TemplateVariable) => {
-      const value = values[variable.name] || '';
-      const pattern = new RegExp(`\\{\\{${variable.name}\\}\\}`, 'g');
+      const value = values[variable.name] || "";
+      const pattern = new RegExp(`\\{\\{${variable.name}\\}\\}`, "g");
       substitutedContent = substitutedContent.replace(pattern, value);
     });
 
@@ -90,11 +90,11 @@ const TemplateVariableSubstitution: React.FC<TemplateVariableSubstitutionProps> 
   };
 
   const renderField = (variable: TemplateVariable) => {
-    const value = values[variable.name] || '';
+    const value = values[variable.name] || "";
     const error = errors[variable.name];
 
     switch (variable.type) {
-      case 'textarea':
+      case "textarea":
         return (
           <TextField
             key={variable.name}
@@ -110,14 +110,21 @@ const TemplateVariableSubstitution: React.FC<TemplateVariableSubstitutionProps> 
           />
         );
 
-      case 'select':
+      case "select":
         return (
-          <FormControl key={variable.name} fullWidth error={!!error} required={variable.required}>
+          <FormControl
+            key={variable.name}
+            fullWidth
+            error={!!error}
+            required={variable.required}
+          >
             <InputLabel>{variable.label}</InputLabel>
             <Select
               value={value}
               label={variable.label}
-              onChange={(e) => handleValueChange(variable.name, e.target.value as string)}
+              onChange={(e) =>
+                handleValueChange(variable.name, e.target.value as string)
+              }
             >
               {(variable as any).options?.map((option: string) => (
                 <MenuItem key={option} value={option}>
@@ -126,14 +133,18 @@ const TemplateVariableSubstitution: React.FC<TemplateVariableSubstitutionProps> 
               ))}
             </Select>
             {error && (
-              <Typography variant="caption" color="error" sx={{ ml: 2, mt: 0.5 }}>
+              <Typography
+                variant="caption"
+                color="error"
+                sx={{ ml: 2, mt: 0.5 }}
+              >
                 {error}
               </Typography>
             )}
           </FormControl>
         );
 
-      case 'number':
+      case "number":
         return (
           <TextField
             key={variable.name}
@@ -148,7 +159,7 @@ const TemplateVariableSubstitution: React.FC<TemplateVariableSubstitutionProps> 
           />
         );
 
-      case 'text':
+      case "text":
       default:
         return (
           <TextField
@@ -173,15 +184,22 @@ const TemplateVariableSubstitution: React.FC<TemplateVariableSubstitutionProps> 
           Please provide values for the template variables below.
         </Alert>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {template.variables?.map((variable: TemplateVariable) => renderField(variable))}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {template.variables?.map((variable: TemplateVariable) =>
+            renderField(variable),
+          )}
         </Box>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onClose} startIcon={<CancelIcon />} color="inherit">
           Cancel
         </Button>
-        <Button onClick={handleApply} startIcon={<CheckIcon />} variant="contained" color="primary">
+        <Button
+          onClick={handleApply}
+          startIcon={<CheckIcon />}
+          variant="contained"
+          color="primary"
+        >
           Apply
         </Button>
       </DialogActions>

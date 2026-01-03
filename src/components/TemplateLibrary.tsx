@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -13,44 +13,58 @@ import {
   Paper,
   InputAdornment,
   Chip,
-} from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
-import { useTemplates } from '../hooks/useTemplates';
-import { useSelector, useDispatch } from 'react-redux';
-import type { RootState, AppDispatch } from '../store';
+} from "@mui/material";
+import { Search as SearchIcon } from "@mui/icons-material";
+import { useTemplates } from "../hooks/useTemplates";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../store";
 import {
   setFilterCategory,
   setFilterTag,
   setFilterSearch,
   clearFilters,
-} from '../store/slices/templatesSlice';
-import TemplateCard from './TemplateCard';
-import TemplateDetailView from './TemplateDetailView';
-import type { Template } from '../store/slices/templatesSlice';
+} from "../store/slices/templatesSlice";
+import TemplateCard from "./TemplateCard";
+import TemplateDetailView from "./TemplateDetailView";
+import type { Template } from "../store/slices/templatesSlice";
 
-interface TemplateLibraryProps {
+type TemplateLibraryProps = {
   onSelectTemplate?: (template: Template) => void;
   onEditTemplate?: (template: Template) => void;
   onDeleteTemplate?: (template: Template) => void;
-}
+};
 
-const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onEditTemplate, onDeleteTemplate }) => {
+const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
+  onSelectTemplate,
+  onEditTemplate,
+  onDeleteTemplate,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const filters = useSelector((state: RootState) => state.templates.filters);
 
   // Local state for search input (debounced)
-  const [searchInput, setSearchInput] = useState(filters.search || '');
+  const [searchInput, setSearchInput] = useState(filters.search || "");
 
   // Local state for detail view
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
+    null,
+  );
   const [detailViewOpen, setDetailViewOpen] = useState(false);
 
   // Fetch templates with current filters
-  const { data: templates, isLoading, error } = useTemplates({
+  const {
+    data: templates,
+    isLoading,
+    error,
+  } = useTemplates({
     category: filters.category || undefined,
     tag: filters.tag || undefined,
     search: filters.search || undefined,
-  }) as { data: Template[] | undefined; isLoading: boolean; error: Error | null };
+  }) as {
+    data: Template[] | undefined;
+    isLoading: boolean;
+    error: Error | null;
+  };
 
   // Handle category filter change
   const handleCategoryChange = (category: string) => {
@@ -99,7 +113,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onE
   // Clear all filters
   const handleClearFilters = () => {
     dispatch(clearFilters());
-    setSearchInput('');
+    setSearchInput("");
   };
 
   return (
@@ -133,7 +147,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onE
             <FormControl fullWidth size="small">
               <InputLabel>Category</InputLabel>
               <Select
-                value={filters.category || ''}
+                value={filters.category || ""}
                 label="Category"
                 onChange={(e) => handleCategoryChange(e.target.value)}
               >
@@ -152,7 +166,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onE
             <FormControl fullWidth size="small">
               <InputLabel>Tag</InputLabel>
               <Select
-                value={filters.tag || ''}
+                value={filters.tag || ""}
                 label="Tag"
                 onChange={(e) => dispatch(setFilterTag(e.target.value || null))}
               >
@@ -169,7 +183,15 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onE
 
         {/* Active Filters Display */}
         {(filters.category || filters.tag || filters.search) && (
-          <Box sx={{ mt: 2, display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+          <Box
+            sx={{
+              mt: 2,
+              display: "flex",
+              gap: 1,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <Typography variant="body2" color="text.secondary">
               Active filters:
             </Typography>
@@ -177,7 +199,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onE
               <Chip
                 label={`Category: ${filters.category}`}
                 size="small"
-                onDelete={() => handleCategoryChange('')}
+                onDelete={() => handleCategoryChange("")}
               />
             )}
             {filters.tag && (
@@ -193,7 +215,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onE
                 size="small"
                 onDelete={() => {
                   dispatch(setFilterSearch(null));
-                  setSearchInput('');
+                  setSearchInput("");
                 }}
               />
             )}
@@ -209,19 +231,20 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onE
 
       {/* Templates Grid */}
       {isLoading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress />
         </Box>
       )}
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          Failed to load templates: {error instanceof Error ? error.message : 'Unknown error'}
+          Failed to load templates:{" "}
+          {error instanceof Error ? error.message : "Unknown error"}
         </Alert>
       )}
 
       {!isLoading && !error && templates && templates.length === 0 && (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
+        <Paper sx={{ p: 4, textAlign: "center" }}>
           <Typography variant="body1" color="text.secondary">
             No templates found. Try adjusting your filters.
           </Typography>
@@ -232,13 +255,17 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({ onSelectTemplate, onE
         <>
           <Box sx={{ mb: 2 }}>
             <Typography variant="body2" color="text.secondary">
-              Showing {templates.length} template{templates.length !== 1 ? 's' : ''}
+              Showing {templates.length} template
+              {templates.length !== 1 ? "s" : ""}
             </Typography>
           </Box>
           <Grid container spacing={3}>
             {templates.map((template) => (
               <Grid item xs={12} sm={6} md={4} key={template.id}>
-                <TemplateCard template={template} onSelect={handleSelectTemplate} />
+                <TemplateCard
+                  template={template}
+                  onSelect={handleSelectTemplate}
+                />
               </Grid>
             ))}
           </Grid>

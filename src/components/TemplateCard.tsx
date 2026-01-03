@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Card,
   CardContent,
@@ -8,7 +8,7 @@ import {
   Box,
   IconButton,
   Tooltip,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Visibility as VisibilityIcon,
   Code as CodeIcon,
@@ -18,13 +18,13 @@ import {
   Extension as ExtensionIcon,
   Public as PublicIcon,
   VerifiedUser as VerifiedUserIcon,
-} from '@mui/icons-material';
-import type { Template } from '../store/slices/templatesSlice';
+} from "@mui/icons-material";
+import type { Template } from "../store/slices/templatesSlice";
 
-interface TemplateCardProps {
+type TemplateCardProps = {
   template: Template;
   onSelect: (template: Template) => void;
-}
+};
 
 // Category icon mapping
 const categoryIcons: Record<string, React.ReactElement> = {
@@ -36,28 +36,31 @@ const categoryIcons: Record<string, React.ReactElement> = {
 };
 
 // Category color mapping
-const categoryColors: Record<string, 'primary' | 'secondary' | 'success' | 'warning' | 'info'> = {
-  code: 'primary',
-  content: 'info',
-  analysis: 'secondary',
-  creative: 'warning',
-  custom: 'success',
+const categoryColors: Record<
+  string,
+  "primary" | "secondary" | "success" | "warning" | "info"
+> = {
+  code: "primary",
+  content: "info",
+  analysis: "secondary",
+  creative: "warning",
+  custom: "success",
 };
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
   const categoryIcon = categoryIcons[template.category] || <ExtensionIcon />;
-  const categoryColor = categoryColors[template.category] || 'default';
+  const categoryColor = categoryColors[template.category] || "default";
 
   return (
     <Card
       sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'all 0.2s ease-in-out',
-        cursor: 'pointer',
-        '&:hover': {
-          transform: 'translateY(-4px)',
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        transition: "all 0.2s ease-in-out",
+        cursor: "pointer",
+        "&:hover": {
+          transform: "translateY(-4px)",
           boxShadow: 4,
         },
       }}
@@ -65,15 +68,22 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
     >
       <CardContent sx={{ flexGrow: 1, pb: 1 }}>
         {/* Header with category and badges */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            mb: 1.5,
+          }}
+        >
           <Chip
             icon={categoryIcon}
             label={template.category}
             size="small"
             color={categoryColor}
-            sx={{ textTransform: 'capitalize' }}
+            sx={{ textTransform: "capitalize" }}
           />
-          <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Box sx={{ display: "flex", gap: 0.5 }}>
             {template.is_system && (
               <Tooltip title="System Template">
                 <VerifiedUserIcon fontSize="small" color="primary" />
@@ -94,7 +104,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
           gutterBottom
           sx={{
             fontWeight: 600,
-            fontSize: '1.1rem',
+            fontSize: "1.1rem",
             lineHeight: 1.3,
             mb: 1,
           }}
@@ -108,27 +118,27 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
           color="text.secondary"
           sx={{
             mb: 1.5,
-            display: '-webkit-box',
+            display: "-webkit-box",
             WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            minHeight: '40px',
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            minHeight: "40px",
           }}
         >
-          {template.description || 'No description provided'}
+          {template.description || "No description provided"}
         </Typography>
 
         {/* Tags */}
         {template.tags && template.tags.length > 0 && (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1 }}>
             {template.tags.slice(0, 3).map((tag, index) => (
               <Chip
                 key={index}
                 label={tag}
                 size="small"
                 variant="outlined"
-                sx={{ fontSize: '0.7rem', height: '20px' }}
+                sx={{ fontSize: "0.7rem", height: "20px" }}
               />
             ))}
             {template.tags.length > 3 && (
@@ -136,19 +146,28 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
                 label={`+${template.tags.length - 3}`}
                 size="small"
                 variant="outlined"
-                sx={{ fontSize: '0.7rem', height: '20px' }}
+                sx={{ fontSize: "0.7rem", height: "20px" }}
               />
             )}
           </Box>
         )}
 
         {/* Metadata */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mt: "auto",
+          }}
+        >
           <Typography variant="caption" color="text.secondary">
-            {template.variables?.length || 0} variable{template.variables?.length !== 1 ? 's' : ''}
+            {template.variables?.length || 0} variable
+            {template.variables?.length !== 1 ? "s" : ""}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Used {template.usage_count} time{template.usage_count !== 1 ? 's' : ''}
+            Used {template.usage_count} time
+            {template.usage_count !== 1 ? "s" : ""}
           </Typography>
         </Box>
       </CardContent>
@@ -162,7 +181,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
               e.stopPropagation();
               onSelect(template);
             }}
-            sx={{ ml: 'auto' }}
+            sx={{ ml: "auto" }}
           >
             <VisibilityIcon fontSize="small" />
           </IconButton>

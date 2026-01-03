@@ -1,9 +1,21 @@
 // server/services/auth.service.ts
 import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt, { SignOptions, JwtPayload } from 'jsonwebtoken';
 import crypto from 'crypto';
 import { JWT_CONFIG } from '../config/jwt.js';
 import { AuthenticationError } from '../utils/errors.js';
+
+type JwtAccessTokenPayload = JwtPayload & {
+  userId: string;
+  email: string;
+  role: string;
+  type: 'access';
+};
+
+type JwtRefreshTokenPayload = JwtPayload & {
+  userId: string;
+  type: 'refresh';
+};
 
 export class AuthService {
   // Hash password using bcrypt (salt rounds: 12)
@@ -44,24 +56,26 @@ export class AuthService {
   }
 
   // Verify access token
-  static verifyAccessToken(token: string): any {
+  static verifyAccessToken(token: string): JwtAccessTokenPayload {
     try {
-      return jwt.verify(token, JWT_CONFIG.accessTokenSecret, {
+      const payload = jwt.verify(token, JWT_CONFIG.accessTokenSecret, {
         issuer: JWT_CONFIG.issuer,
         audience: JWT_CONFIG.audience
       });
+      return payload as JwtAccessTokenPayload;
     } catch (error) {
       throw new AuthenticationError('Invalid or expired token');
     }
   }
 
   // Verify refresh token
-  static verifyRefreshToken(token: string): any {
+  static verifyRefreshToken(token: string): JwtRefreshTokenPayload {
     try {
-      return jwt.verify(token, JWT_CONFIG.refreshTokenSecret, {
+      const payload = jwt.verify(token, JWT_CONFIG.refreshTokenSecret, {
         issuer: JWT_CONFIG.issuer,
         audience: JWT_CONFIG.audience
       });
+      return payload as JwtRefreshTokenPayload;
     } catch (error) {
       throw new AuthenticationError('Invalid or expired refresh token');
     }

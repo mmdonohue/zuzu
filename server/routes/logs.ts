@@ -27,7 +27,7 @@ interface LogEntry {
   message: string;
   ip?: string;
   url?: string;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 
@@ -57,8 +57,8 @@ const splitLogEntries = (content: string): string[] => {
 };
 
 // Extract JSON data from markers [[[ ... ]]]
-const extractJsonData = (text: string): any[] => {
-  const jsonObjects: any[] = [];
+const extractJsonData = (text: string): Record<string, unknown>[] => {
+  const jsonObjects: Record<string, unknown>[] = [];
   const jsonRegex = /\[\[\[([\s\S]*?)\]\]\]/g;
   let match;
 
@@ -95,7 +95,7 @@ const parseLogEntry = (entry: string): LogEntry | null => {
     const jsonData = extractJsonData(entry);
     // replace any password fields in jsonData with ****
     jsonData.forEach((obj, index) => {
-      if (obj.password) {
+      if ('password' in obj) {
         // SECURITY-IGNORE: Password sanitization for logging, not a hardcoded credential
         jsonData[index] = { ...obj, password: '****' };
         // console.log('Redacted log entry data:', jsonData[index]);
@@ -115,7 +115,7 @@ const parseLogEntry = (entry: string): LogEntry | null => {
 
     // Extract IP from data if available
     let ip = '-';
-    let combinedData: any = {};
+    let combinedData: Record<string, unknown> = {};
     let url = '-';
 
     if (jsonData.length > 0) {
@@ -123,8 +123,10 @@ const parseLogEntry = (entry: string): LogEntry | null => {
       jsonData.forEach(obj => {
         combinedData = { ...combinedData, ...obj };
       });
-      ip = combinedData.ip || combinedData.clientIp || '-';
-      url = combinedData.url || '-';
+      ip = (typeof combinedData.ip === 'string' ? combinedData.ip : '') || 
+           (typeof combinedData.clientIp === 'string' ? combinedData.clientIp : '') || 
+           '-';
+      url = (typeof combinedData.url === 'string' ? combinedData.url : '') || '-';
       // combinedData.body = combinedData.body ? JSON.parse(combinedData.body) : '-';
     }
 

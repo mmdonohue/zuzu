@@ -9,10 +9,21 @@
       "Bash(chmod:*)",
       "Bash(/usr/bin/say:*)",
       "Bash(say:*)",
-      "Bash(python3 .claude/hooks/review-agent.py:*)"
+      "Bash(python3 ${workspaceFolder}/.claude/hooks/scripts/review-agent.py:*)"
     ]
   },
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${workspaceFolder}/.claude/hooks/scripts/format-on-edit.py"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
@@ -62,7 +73,7 @@
           },
           {
             "type": "command",
-            "command": "/opt/homebrew/bin/python3 .claude/hooks/review-agent.py --silent --focus docs"
+            "command": "python3 ${workspaceFolder}/.claude/hooks/scripts/review-agent.py --silent --focus docs"
           }
         ]
       }
