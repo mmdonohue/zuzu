@@ -1,7 +1,24 @@
 # ZuZu
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/a7fc82ea-07df-4ad1-9eac-4a13fd57291c" />
 
-ZuZu is a production-ready full-stack application scaffold designed to codify best practices for modern web development, security, and team workflows. The project features a React + TypeScript frontend using MUI, Redux Toolkit, and TanStack Query, paired with a Node.js / Express backend implementing JWT authentication, CSRF protection, rate limiting, and structured logging. It integrates Supabase for data persistence, Cypress for end-to-end testing, and includes a comprehensive security model with httpOnly cookies, short-lived access tokens, and automated validation of all mutation endpoints. A key focus of the project is embedding AI-driven agent hooks directly into the codebase and commit workflow to automate architecture review, security checks, documentation validation, and best-practice enforcement, creating faster, more consistent, and highly shareable development workflows suitable for real production teams. 
+###ZuZu is a production-ready full-stack application scaffold that codifies modern best practices for web development, security, and scalable team workflows. It is designed to be a realistic foundation for building, operating, and evolving secure systems in production.
+
+###Highlights
+
+- Modern Full-Stack Foundation
+  React + TypeScript frontend (MUI, Redux Toolkit, TanStack Query) with a Node.js / Express backend.
+
+- Security Built In
+  JWT authentication with httpOnly cookies, CSRF protection, rate limiting, and structured logging by default.
+
+- Production-Ready Tooling
+  Supabase for data persistence and Cypress for end-to-end testing to support confident iteration.
+
+- AI-Driven Workflow Automation
+  Embedded AI agent hooks automate architecture review, security checks, and documentation validation directly in the code and commit workflow.
+
+- Scalable Team Patterns
+  Designed to reduce cognitive load and enable fast, consistent, and governed development across teams.
 
 ![alt text](dashboard.png)
 
