@@ -153,7 +153,7 @@ const parseLogEntry = (entry: string): LogEntry | null => {
 
 // GET current log file
 router.get('/current', async (req: Request, res: Response) => {
-  const { limit = 100, level } = req.query;
+  const { limit = 100, level, startTime } = req.query;
 
   try {
     const logFile = getLogFile();
@@ -178,6 +178,15 @@ router.get('/current', async (req: Request, res: Response) => {
       // Apply filters to cached data
       if (level && typeof level === 'string') {
         logs = logs.filter(log => log.level.toLowerCase() === level.toLowerCase());
+      }
+
+      // Apply time period filter
+      if (startTime && typeof startTime === 'string') {
+        const startTimeMs = new Date(startTime).getTime();
+        logs = logs.filter(log => {
+          const logTimeMs = new Date(log.timestamp).getTime();
+          return logTimeMs >= startTimeMs;
+        });
       }
 
       const limitNum = parseInt(limit as string, 10);
@@ -210,6 +219,15 @@ router.get('/current', async (req: Request, res: Response) => {
 
     if (level && typeof level === 'string') {
       logs = logs.filter(log => log.level.toLowerCase() === level.toLowerCase());
+    }
+
+    // Apply time period filter
+    if (startTime && typeof startTime === 'string') {
+      const startTimeMs = new Date(startTime).getTime();
+      logs = logs.filter(log => {
+        const logTimeMs = new Date(log.timestamp).getTime();
+        return logTimeMs >= startTimeMs;
+      });
     }
 
     const limitNum = parseInt(limit as string, 10);

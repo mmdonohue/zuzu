@@ -1,7 +1,7 @@
 # ZuZu
 <img width="200" height="200" alt="image" src="https://github.com/user-attachments/assets/a7fc82ea-07df-4ad1-9eac-4a13fd57291c" />
 
-### ZuZu is a production-ready full-stack application scaffold that codifies modern best practices for web development, security, and scalable team workflows. It is designed to be a realistic foundation for building, operating, and evolving secure systems in production.
+### ZuZu **is a production-ready full-stack application scaffold that codifies modern best practices for web development, security, and scalable team workflows. It is designed to be a realistic foundation for building, operating, and evolving secure systems in production.**
 
 ### Highlights
 - **Modern Full-Stack Foundation**

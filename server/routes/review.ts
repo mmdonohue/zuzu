@@ -16,11 +16,12 @@ router.get("/summary", (req: Request, res: Response) => {
 
     let reviewPath: string;
     if (useExample) {
-      // Example file stays in .claude root for backward compatibility
       reviewPath = path.join(
         process.cwd(),
         ".claude",
-        "CODEBASE_REVIEW_EXAMPLE.json",
+        "review",
+        "results",
+        "codebase_review_example.json",
       );
     } else {
       // Actual review results are in .claude/review/results/
@@ -29,7 +30,7 @@ router.get("/summary", (req: Request, res: Response) => {
         ".claude",
         "review",
         "results",
-        "CODEBASE_REVIEW.json",
+        "codebase_review.json",
       );
     }
 
@@ -56,43 +57,64 @@ router.get("/summary", (req: Request, res: Response) => {
   }
 });
 
-// Get detailed report for a specific category
+// Get detailed findings for a specific category
 router.get("/details/:category", (req: Request, res: Response) => {
   try {
     const { category } = req.params;
-    const categoryUpper = category.toUpperCase();
-    const reportPath = path.join(
+    const categoryLower = category.toLowerCase();
+
+    // Read from main JSON file
+    const jsonPath = path.join(
       process.cwd(),
       ".claude",
-      `CODEBASE_REVIEW_${categoryUpper}.md`,
+      "review",
+      "results",
+      "codebase_review.json",
     );
 
     // Check if file exists
-    if (!fs.existsSync(reportPath)) {
+    if (!fs.existsSync(jsonPath)) {
       return res.status(404).json({
-        error: "Detailed report not found",
-        message: `No detailed report found for category: ${category}`,
+        error: "Code review data not found",
+        message: "Run code review to generate data",
       });
     }
 
-    // Read the markdown file
-    const reportContent = fs.readFileSync(reportPath, "utf-8");
+    // Read the JSON file
+    const reviewData = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+
+    // Find the category in reviews array
+    const categoryData = reviewData.reviews?.find(
+      (r: { category: string }) => r.category === categoryLower,
+    );
+
+    if (!categoryData) {
+      return res.status(404).json({
+        error: "Category not found",
+        message: `No data found for category: ${category}`,
+      });
+    }
 
     res.json({
-      category,
-      content: reportContent,
+      category: categoryLower,
+      displayName: categoryData.displayName,
+      findings: categoryData.findings || [],
+      metrics: categoryData.metrics,
+      status: categoryData.status,
+      healthScore: categoryData.healthScore,
+      lastUpdated: categoryData.lastUpdated,
     });
   } catch (error) {
-    console.error("Error reading detailed report:", error);
+    console.error("Error reading category details:", error);
     res.status(500).json({
-      error: "Failed to read detailed report",
+      error: "Failed to read category details",
       message: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
 
 // Trigger code review
-router.post("/trigger", async (req: Request, res: Response) => {
+router.post("/trigger", async (_req: Request, res: Response) => {
   try {
     const projectRoot = process.cwd();
     const scriptPath = path.join(
@@ -121,7 +143,9 @@ router.post("/trigger", async (req: Request, res: Response) => {
     const reviewPath = path.join(
       projectRoot,
       ".claude",
-      "CODEBASE_REVIEW.json",
+      "review",
+      "results",
+      "codebase_review.json",
     );
     const reviewExists = fs.existsSync(reviewPath);
 

@@ -9,7 +9,7 @@
       "Bash(chmod:*)",
       "Bash(/usr/bin/say:*)",
       "Bash(say:*)",
-      "Bash(python3 ${workspaceFolder}/.claude/hooks/scripts/review-agent.py:*)"
+      "Bash(python3 $CLAUDE_PROJECT_DIR/.claude/hooks/scripts/review-agent.py:*)"
     ]
   },
   "hooks": {
@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${workspaceFolder}/.claude/hooks/scripts/format-on-edit.py"
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/scripts/format-on-edit.py"
           }
         ]
       }
@@ -73,7 +73,7 @@
           },
           {
             "type": "command",
-            "command": "python3 ${workspaceFolder}/.claude/hooks/scripts/review-agent.py --silent --focus docs"
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/scripts/review-agent.py --silent --focus docs"
           }
         ]
       }

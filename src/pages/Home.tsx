@@ -1,4 +1,4 @@
-import React, {useState, lazy, Suspense} from 'react';
+import React, {useState, useEffect, lazy, Suspense} from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link as RouterLink } from 'react-router-dom';
 import {
@@ -40,6 +40,87 @@ function delayForDemo<T>(promise: Promise<T>): Promise<T> {
     setTimeout(resolve, demo_delay)
   }).then(() => promise)
 }
+
+type AsciiAnimatorProps = {
+  text: string;
+  speed?: number; // ms per character
+  loop?: boolean;
+};
+
+const AsciiAnimator: React.FC<AsciiAnimatorProps> = ({ text, speed = 30, loop = false }) => {
+  const [pos, setPos] = useState(0);
+  const [visible, setVisible] = useState('');
+  const [showCursor, setShowCursor] = useState(true);
+  const [visibleLines, setVisibleLines] = useState<string[]>([]);
+
+  const isAsciiArt = React.useMemo(() => {
+    if (!text) return false;
+    const lines = text.split('\n');
+    return lines.length > 1 && lines.some((l) => l.trim().length > 10);
+  }, [text]);
+
+  // typing effect for normal text OR line-by-line for ASCII art
+  useEffect(() => {
+    setPos(0);
+    setVisible('');
+    setVisibleLines([]);
+    if (!text) return;
+
+    if (isAsciiArt) {
+      const lines = text.split('\n');
+      let idx = 0;
+      const lineDelay = Math.max(40, speed * 4);
+      const id = window.setInterval(() => {
+        setVisibleLines((v) => [...v, lines[idx]]);
+        idx += 1;
+        if (idx >= lines.length) {
+          window.clearInterval(id);
+          if (loop) {
+            setTimeout(() => setVisibleLines([]), 800);
+          }
+        }
+      }, lineDelay);
+
+      return () => window.clearInterval(id);
+    }
+
+    // fallback: character typing
+    let t: number | null = null;
+    t = window.setInterval(() => {
+      setPos((p) => {
+        const np = Math.min(text.length, p + 1);
+        setVisible(text.slice(0, np));
+        if (np === text.length && t) {
+          window.clearInterval(t);
+          if (loop) {
+            setTimeout(() => {
+              setPos(0);
+              setVisible('');
+            }, 800);
+          }
+        }
+        return np;
+      });
+    }, speed);
+
+    return () => {
+      if (t) window.clearInterval(t);
+    };
+  }, [text, speed, loop, isAsciiArt]);
+
+  // blinking cursor
+  useEffect(() => {
+    const id = window.setInterval(() => setShowCursor((s) => !s), 500);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <Box component="pre" sx={{ fontFamily: 'monospace', whiteSpace: 'pre', fontSize: '0.95rem', m: 0 }}>
+      {isAsciiArt ? visibleLines.join('\n') : visible}
+      {showCursor && <Box component="span">█</Box>}
+    </Box>
+  );
+};
 
 const Home: React.FC<appProps> = ({message}) => {
   // Example of using TanStack Query
@@ -186,9 +267,7 @@ const devTools = [
         ) : error ? (
           <Typography color="error">Error connecting to API</Typography>
         ) : (
-          <Typography variant="h6" >
-            {data?.message || 'No message received'}
-          </Typography>
+          <AsciiAnimator text={data?.message || 'No message received'} speed={25} />
         )}
       </Paper>
 

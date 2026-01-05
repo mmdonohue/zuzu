@@ -5,6 +5,7 @@ import {
   Paper,
   Typography,
   Button,
+  ButtonGroup,
   FormControl,
   InputLabel,
   Select,
@@ -43,6 +44,25 @@ type LogEntry = {
   remote_user?: string;
 }
 
+// Time period constants (in milliseconds)
+const TIME_PERIOD_8_HOURS_MS = 28800000;   // 8 hours
+const TIME_PERIOD_1_DAY_MS = 86400000;     // 24 hours
+const TIME_PERIOD_3_DAYS_MS = 259200000;   // 72 hours
+const TIME_PERIOD_8_DAYS_MS = 691200000;   // 192 hours
+
+type TimePeriodOption = {
+  label: string;
+  value: number | null;
+};
+
+const TIME_PERIOD_OPTIONS: TimePeriodOption[] = [
+  { label: '8 Hours', value: TIME_PERIOD_8_HOURS_MS },
+  { label: '1 Day', value: TIME_PERIOD_1_DAY_MS },
+  { label: '3 Days', value: TIME_PERIOD_3_DAYS_MS },
+  { label: '8 Days', value: TIME_PERIOD_8_DAYS_MS },
+  { label: 'All Time', value: null },
+];
+
 const logs_mb = 1024;
 
 type LogFile = {
@@ -58,11 +78,12 @@ const Logs: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [limit, setLimit] = useState(100);
+  const [limit, setLimit] = useState(1000);
   const [error, setError] = useState<string | null>(null);
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState<number | null>(TIME_PERIOD_8_HOURS_MS);
   const [paginationModel, setPaginationModel] = useState({
-            pageSize: 25,
+            pageSize: 50,
             page: 0,
         });
   
@@ -88,21 +109,34 @@ const Logs: React.FC = () => {
     setError(null);
 
     try {
-      const levelParam = selectedLevel !== 'all' ? `&level=${selectedLevel}` : '';
-      const response = await apiFetch(`/api/logs/current?limit=${limit}${levelParam}`);
-      
+      // Build query parameters
+      const params = new URLSearchParams();
+      params.append('limit', limit.toString());
+
+      if (selectedLevel !== 'all') {
+        params.append('level', selectedLevel);
+      }
+
+      // Add time period filter
+      if (selectedTimePeriod !== null) {
+        const startTime = new Date(Date.now() - selectedTimePeriod).toISOString();
+        params.append('startTime', startTime);
+      }
+
+      const response = await apiFetch(`/api/logs/current?${params.toString()}`);
+
       if (!response.ok) {
         throw new Error('Failed to fetch logs');
       }
-      
+
       const data = await response.json();
-      
+
       // Add IDs for DataGrid
       const logsWithIds = data.logs.map((log: LogEntry, index: number) => ({
         ...log,
         id: index
       }));
-      
+
       setLogs(logsWithIds);
     } catch (err) {
       console.error('Error fetching logs:', err);
@@ -179,6 +213,7 @@ const Logs: React.FC = () => {
             setSelectedLog(params.row);
           }}
           disabled={!params.row.data}
+          sx={{ p: 0.5 }}
         >
           <KeyboardArrowRightOutlined fontSize="small" />
         </IconButton>
@@ -220,7 +255,7 @@ const Logs: React.FC = () => {
         renderCell: (params: GridRenderCellParams) => {
             const sessId = params.value as string;
             return (
-                <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace', color: sessId === '-' ? 'text.disabled' : 'primary.main' }}>
+                <Typography sx={{ fontSize: '0.8rem', fontFamily: 'monospace', color: sessId === '-' ? 'text.disabled' : 'primary.main' }}>
                     {sessId}
                 </Typography>
             );
@@ -238,7 +273,7 @@ const Logs: React.FC = () => {
         renderCell: (params: GridRenderCellParams) => {
             const user = params.value as string;
             return (
-                <Typography sx={{ fontSize: '0.875rem', color: user === '-' ? 'text.disabled' : 'text.primary' }}>
+                <Typography sx={{ fontSize: '0.8rem', color: user === '-' ? 'text.disabled' : 'text.primary' }}>
                     {user}
                 </Typography>
             );
@@ -251,7 +286,7 @@ const Logs: React.FC = () => {
         renderCell: (params: GridRenderCellParams) => {
             const urlValue = params.value || params.row.data?.url || '-';
             return (
-                <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace' }}>
+                <Typography sx={{ fontSize: '0.8rem', fontFamily: 'monospace' }}>
                     {urlValue}
                 </Typography>
             );
@@ -281,6 +316,7 @@ const Logs: React.FC = () => {
       width: 100,
       renderCell: (params: GridRenderCellParams) => (
         <Chip 
+          sx={{ fontSize: '0.7rem' }}
           size="small" 
           label={params.value} 
           color={getLevelColor(params.value) as any}
@@ -294,7 +330,7 @@ const Logs: React.FC = () => {
       renderCell: (params: GridRenderCellParams) => {
         params.value  = params.value === 'default' ? 'server' : params.value;
         return (  
-          <Typography sx={{ fontSize: '0.875rem' }}>
+          <Typography sx={{ fontSize: '0.8rem' }}>
             {params.value === undefined || params.value === null ? '-' : params.value}
           </Typography>
         );
@@ -308,7 +344,7 @@ const Logs: React.FC = () => {
         const hasData = params.row.data && Object.keys(params.row.data).length > 0;
         return (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
-            <Typography sx={{ fontSize: '0.875rem', flex: 1 }}>
+            <Typography sx={{ fontSize: '0.8rem', flex: 1 }}>
               {params.value}
             </Typography>
             {hasData && (
@@ -317,7 +353,7 @@ const Logs: React.FC = () => {
                 label="JSON"
                 color="primary"
                 variant="outlined"
-                sx={{ fontSize: '0.7rem', height: '20px' }}
+                sx={{ fontSize: '0.7rem', height: '16px' }}
               />
             )}
           </Box>
@@ -330,7 +366,7 @@ const Logs: React.FC = () => {
   useEffect(() => {
     fetchLogs();
     fetchLogFiles();
-  }, [selectedLevel, limit]);
+  }, [selectedLevel, limit, selectedTimePeriod]);
   
   const logs_refresh_interval = 90000;
   // Auto-refresh every 90 seconds
@@ -338,9 +374,9 @@ const Logs: React.FC = () => {
     const interval = setInterval(() => {
       fetchLogs();
     }, logs_refresh_interval);
-    
+
     return () => clearInterval(interval);
-  }, [selectedLevel, limit]);
+  }, [selectedLevel, limit, selectedTimePeriod]);
   
   // Calculate statistics
   const stats = {
@@ -352,7 +388,7 @@ const Logs: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h3" component="h1" gutterBottom>
+      <Typography variant="h4" component="h1" gutterBottom>
         Server Logs Dashboard
       </Typography>
       <Typography variant="subtitle1" paragraph color="text.secondary">
@@ -366,7 +402,7 @@ const Logs: React.FC = () => {
       )}
       
       {/* Statistics Cards */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      <Grid container spacing={3} sx={{ mb: 0 }}>
         <Grid item xs={6} md={3}>
           <Card
             onClick={() => setSelectedLevel('all')}
@@ -381,7 +417,7 @@ const Logs: React.FC = () => {
               }
             }}
           >
-            <CardContent>
+            <CardContent sx={{mb: 0, p: 1, ':last-child': { pb: 0 }}}>
               <Typography color="text.secondary" gutterBottom>
                 Total Logs
               </Typography>
@@ -405,7 +441,7 @@ const Logs: React.FC = () => {
               }
             }}
           >
-            <CardContent>
+            <CardContent sx={{mb: 0, p: 1, ':last-child': { pb: 0 }}}>
               <Typography color="text.secondary" gutterBottom>
                 Errors
               </Typography>
@@ -429,7 +465,7 @@ const Logs: React.FC = () => {
               }
             }}
           >
-            <CardContent>
+            <CardContent sx={{mb: 0, p: 1, ':last-child': { pb: 0 }}}>
               <Typography color="text.secondary" gutterBottom>
                 Warnings
               </Typography>
@@ -453,7 +489,7 @@ const Logs: React.FC = () => {
               }
             }}
           >
-            <CardContent>
+            <CardContent sx={{mb: 0, p: 1, ':last-child': { pb: 0 }}}>
               <Typography color="text.secondary" gutterBottom>
                 Info
               </Typography>
@@ -464,7 +500,25 @@ const Logs: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
-      
+
+      {/* Time Period Filter */}
+      <Paper sx={{ p: 2, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 2 }}>
+        <Typography variant="body2" color="text.secondary">
+          Time Period:
+        </Typography>
+        <ButtonGroup variant="outlined" size="small">
+          {TIME_PERIOD_OPTIONS.map((option) => (
+            <Button
+              key={option.label}
+              variant={selectedTimePeriod === option.value ? 'contained' : 'outlined'}
+              onClick={() => setSelectedTimePeriod(option.value)}
+            >
+              {option.label}
+            </Button>
+          ))}
+        </ButtonGroup>
+      </Paper>
+
       {/* Filters and Controls */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
@@ -543,9 +597,41 @@ const Logs: React.FC = () => {
             onRowClick={(params) => setSelectedLog(params.row)}
             getRowHeight={() => 'auto'}
             sx={{
+            // Target the row class name
+            '& .super-hot': {
+              backgroundColor: '#faf1f1',
+            },
+            '& .super-hot:hover, & .super-hot.Mui-hovered': {
+              backgroundColor: '#f7d4d4ff',
+            },
+            '& .hot': {
+              backgroundColor: '#fbf3eaff',
+            },
+            '& .hot:hover, & .hot.Mui-hovered': {
+              backgroundColor: '#faedd4ff',
+            },
+            '& .info': {
+              backgroundColor: '#fff',
+            },
+            '& .info:hover, & .info.Mui-hovered': {
+              backgroundColor: '#d6e9ff',
+            },
+            '& .miss': {
+              backgroundColor: '#371d1dff',
+            },
+            '& .miss:hover, & .miss.Mui-hovered': {
+              backgroundColor: '#4d2a2aff',
+            },
             '& .MuiDataGrid-cell': {
-                py: 1
+                p: 0.5
             }
+            }}
+            getRowClassName={(params) => {
+              console.log(params.row.level);
+              if (params.row.level === `ERROR`) return 'super-hot';
+              if (params.row.level === `WARN`) return 'hot';
+              if (params.row.level === `INFO`) return 'info';
+              return 'miss';
             }}
         />
       </Paper>
@@ -559,7 +645,7 @@ const Logs: React.FC = () => {
           <Grid container spacing={2}>
             {logFiles.map((file) => (
               <Grid item xs={12} sm={6} md={4} key={file.name}>
-                <Card variant="outlined">
+                <Card variant="outlined" sx={{ m: 0.5 }}>
                   <CardContent>
                     <Typography variant="subtitle2" gutterBottom>
                       {file.name}

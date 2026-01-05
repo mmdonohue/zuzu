@@ -305,85 +305,59 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
 
     # Get existing reviews as a dictionary for easy updates
     existing_reviews = {r['category']: r for r in existing_data.get('reviews', [])}
-    existing_findings = {f.get('category'): [] for f in existing_data.get('findings', [])}
-    for finding in existing_data.get('findings', []):
-        category = finding.get('category')
-        if category:
-            if category not in existing_findings:
-                existing_findings[category] = []
-            existing_findings[category].append(finding)
 
-    # Read current markdown summary
-    with open(summary_path, 'r') as f:
-        content = f.read()
+    # Process report_data directly (Option 2: simpler, always fresh)
+    timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
 
-    # Pattern to match review sections
-    section_pattern = r'## (.+?) Review\s*\n\s*\n\*\*Last Updated\*\*:\s*(.+?)\s*\n\*\*Status\*\*:\s*(.+?)\s*\n\*\*Health Score\*\*:\s*(\d+)/100\s*\n\s*\n\| Metric \| Count \|\s*\n\|[^|]+\|[^|]+\|\s*\n\| Critical Issues \| (\d+) \|\s*\n\| Warnings \| (\d+) \|\s*\n\| Info \| (\d+) \|\s*\n\| \*\*Total Findings\*\* \| \*\*(\d+)\*\* \|'
-
-    matches = re.finditer(section_pattern, content, re.MULTILINE)
-
-    # Parse newly reviewed sections from markdown
-    for match in matches:
-        category = match.group(1)
-        last_updated = match.group(2)
-        status_raw = match.group(3)
-        health_score = int(match.group(4))
-        critical = int(match.group(5))
-        warnings = int(match.group(6))
-        info = int(match.group(7))
-        total = int(match.group(8))
-
-        # Parse status emoji and text
-        status_map = {
-            '🔴 CRITICAL': 'critical',
-            '⚠️ WARNING': 'warning',
-            '✅ PASS': 'pass',
-            'ℹ️ INFO': 'pass'
-        }
-        status = status_map.get(status_raw, 'unknown')
-
-        # Build review data for this category
-        review_data = {
-            'category': category.lower(),
-            'displayName': category,
-            'lastUpdated': last_updated,
-            'status': status,
-            'statusDisplay': status_raw,
-            'healthScore': health_score,
-            'metrics': {
-                'critical': critical,
-                'warnings': warnings,
-                'info': info,
-                'total': total
-            }
+    if report_data and 'categories' in report_data:
+        # Map category names (documentation -> docs)
+        category_name_map = {
+            'documentation': 'docs',
+            'docs': 'docs'
         }
 
-        # Update or add this category's review data
-        category_key = category.lower()
+        # Process each category from the current review
+        for category_key, category_data in report_data['categories'].items():
+            # Normalize category name
+            normalized_key = category_name_map.get(category_key, category_key)
 
-        # Only update if this category was actually reviewed (based on focus or if no focus specified)
-        should_update = (focus is None) or (focus == category_key) or (focus == 'all')
+            # Calculate health score
+            base_score = 100
+            critical_penalty = category_data.get('critical', 0) * 10
+            warning_penalty = category_data.get('warning', 0) * 3
+            info_penalty = category_data.get('info', 0) * 1
+            health_score = max(0, base_score - critical_penalty - warning_penalty - info_penalty)
 
-        if should_update:
-            existing_reviews[category_key] = review_data
+            # Determine status
+            critical_count = category_data.get('critical', 0)
+            warning_count = category_data.get('warning', 0)
 
-            # Parse and update findings for this category
-            # Map display names to actual file names
-            category_file_map = {
-                'documentation': 'docs',
-                'docs': 'docs'
+            if critical_count > 0:
+                status = 'critical'
+                status_display = '🔴 CRITICAL'
+            elif warning_count > 0:
+                status = 'warning'
+                status_display = '⚠️ WARNING'
+            else:
+                status = 'pass'
+                status_display = '✅ PASS'
+
+            # Build review entry with findings
+            existing_reviews[normalized_key] = {
+                'category': normalized_key,
+                'displayName': normalized_key.title() if normalized_key != 'docs' else 'Docs',
+                'lastUpdated': timestamp,
+                'status': status,
+                'statusDisplay': status_display,
+                'healthScore': health_score,
+                'metrics': {
+                    'critical': critical_count,
+                    'warnings': warning_count,
+                    'info': category_data.get('info', 0),
+                    'total': critical_count + warning_count + category_data.get('info', 0)
+                },
+                'findings': category_data.get('findings', [])
             }
-            file_category = category_file_map.get(category_key, category_key)
-            # Look for detailed reports in results directory
-            detail_path = Path(project_root) / '.claude' / 'review' / 'results' / f'codebase_review_{file_category}.md'
-
-            if detail_path.exists():
-                with open(detail_path, 'r') as f:
-                    detail_content = f.read()
-
-                # Parse findings from markdown
-                findings = _parse_findings_from_markdown(detail_content, category_key, category)
-                existing_findings[category_key] = findings
 
     # Clean up legacy 'documentation' category in favor of 'docs'
     if 'docs' in existing_reviews and 'documentation' in existing_reviews:
@@ -428,7 +402,8 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
                             'warnings': 0,
                             'info': 0,
                             'total': 0
-                        }
+                        },
+                        'findings': []
                     }
                     added_count += 1
 
@@ -437,17 +412,23 @@ def export_json_summary(project_root: str, focus: str = None, report_data: Dict[
         except (json.JSONDecodeError, IOError) as e:
             print(f"[review-agent] Warning: Could not load config to check enabled checkers: {e}")
 
-    # Convert back to lists and nest findings under each review
+    # Convert back to lists and build flat findings list
     all_reviews = []
     all_findings = []  # Keep flat list for backward compatibility
 
     for category_key, review in existing_reviews.items():
-        # Add findings array to each review
-        category_findings = existing_findings.get(category_key, [])
-        review['findings'] = category_findings
+        # Ensure findings array exists (might not exist for old entries)
+        if 'findings' not in review:
+            review['findings'] = []
+
         all_reviews.append(review)
         # Also keep flat list for backward compatibility
-        all_findings.extend(category_findings)
+        # Ensure each finding has correct category and categoryDisplay for frontend filtering
+        for finding in review['findings']:
+            # Set category to the review category (architecture, docs, etc.) for frontend filtering
+            finding['category'] = review['category']
+            finding['categoryDisplay'] = review['displayName']
+            all_findings.append(finding)
 
     # Calculate overall metrics from all reviews
     if all_reviews:

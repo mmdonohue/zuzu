@@ -1,7 +1,22 @@
+
+# developer notes
 .docs
+/del
+
+# SQL files
 /sql
 /server/migrations
+
+/media
+
+
+
+# items for removal or archiving
 /archive
+
+
+# local scripts
+/scripts
 
 # python cache
 __pycache__/
@@ -59,3 +74,4 @@ yarn-error.log*
 .claude/CODEBASE_REVIEW.json
 .claude/plans/
 /tmp/.claude-review-trigger
+.claude/del
