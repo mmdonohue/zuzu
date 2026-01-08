@@ -15,9 +15,11 @@
 - **Scalable Team Patterns**
   Designed to reduce cognitive load and enable fast, consistent, and governed development across teams.
 
+### Code Health
 ![alt text](dashboard.png)
 
 ### Leet Master
+AI assited leet code training using Sandpack React powered by CodeSandbox
 ![alt text](leet_master.png)
 
 ## Tech Stack
