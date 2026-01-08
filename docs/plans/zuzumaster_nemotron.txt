@@ -1,0 +1,126 @@
+Can you review this project plan to implement a leet code trainer on an existing site already providing auth, express backend and supabase database.
+Edit the plan in place and return just an updated plan without any revised comments or suggestions but the new plan fully updated.
+Place any notes or concerns about changes at the very bottom and be concise.
+
+--
+
+### **Project Plan**
+
+### **Existing Items**
+* JWT auth, CORS and rate limiting are already handled
+* Existing OpenRouter API integration with list of free models as options
+
+Here is the optimized plan incorporating these fixes.
+
+#### **1. Project Overview **
+**Objective:** Build a web app that generates LeetCode-style problems via OpenRouter.
+**Key Architectural Change:** Decouple **Generated Problems** (static) from **User Attempts** (dynamic) to allow problem re-use and better data integrity.
+
+#### **2. Technical Stack **
+*   **Frontend:** React.js, MUI, Tailwind CSS
+*   **Backend:** Node.js (Express)
+*   **Database:** PostgreSQL (Supabase)
+*   **AI:** OpenRouter (Target `deepseek-coder` or `mistral-7b` for JSON reliability)
+*   **Auth:** JWT
+
+#### **3. Project Phases**
+
+**Phase 1: Architecture & Setup (1 Day)**
+*   **DB Schema Design:**
+    *   Table 1: `problems` (id, focus_area, problem_json, created_at)
+    *   Table 2: `attempts` (id, user_id, problem_id, user_solution, rating)
+*   **Prompt Engineering:** Create the prompt template.
+*   **Boilerplate:** Initialize React + Express repos.
+
+**Phase 2: Backend Development (3 Days)**
+*   **AI Service Layer:**
+    *   Call OpenRouter.
+    *   Implement a "sanitizer" function to strip markdown wrappers (```json) from the AI response before parsing.
+    *   Use **strict JSON mode** in the OpenRouter request (if supported) and set `strict: true` in the request payload.
+*   **API Endpoints:**
+    *   `GET /problems/generate`:
+        *   Checks DB first: "Is there an unused problem for this focus area?"
+        *   Only show results for 'active' problems
+        *   If no: Call AI -> Sanitize Response -> Parse JSON -> Save to `problems` -> Return.
+    *   `POST /problems/attempt`: Save user solution/rating to `attempts`.
+    *   `GET /progress`: Join tables to show user history.
+*   **Logging:** Save OpenRouter API calls (request & response) to a dedicated table (e.g., `openrouter_events`) for debugging and cost tracking. Include the parsed `problem_json` in the log.
+
+**Phase 3: Frontend Development (3 Days)**
+*   **Code Execution:** Integrate Sandpack: https://github.com/codesandbox/sandpack
+*   **UI Layout:**
+    *   **Sidebar:** Focus areas (buttons) + Progress Bar (visual percentage).
+    *   **Main Area:**
+        *   State A: "Select a topic" (Empty state).
+        *   State B: "Loading..." (While AI generates).
+        *   State C: Problem Display (Description, Test Cases).
+        *   State D: Editor (Sandpack) + Run/Submit buttons.
+        *   State E: All test cases pass the user submitted solution (Gong sound).
+*   **State Management:** Use Redux Toolkit.
+
+**Phase 4: AI Integration & Refinement (1 Day)**
+*   **Handling Hallucinations:**
+    *   The AI might generate an incorrect difficulty.
+    *   *Fix:* Add a post-processing check in the backend to validate difficulty tags.  Implement a fallback mechanism if the difficulty is invalid.
+*   **Rate Limiting:** Implement additional rate limiting on the `/problems/generate` endpoint to prevent abuse.
+
+**Phase 5: Testing & Deployment (2 Days)**
+*   **Testing:**
+    *   Test "Bad JSON" response: Mock an AI response with markdown and ensure the backend handles it correctly.
+    *   Test "Empty Input": Ensure user can't submit blank code.
+    *   Test edge cases for different focus areas and difficulty levels.
+*   **Deployment:**
+    *   **Frontend:** Vercel.
+    *   **Backend/DB:** Supabase (handles Postgres + Auth).
+
+#### **4. Timeline**
+*   **Day 1:** Setup DB, Auth, and Backend Boilerplate.
+*   **Day 2-4:** Build AI integration with sanitizers and parsing. Implement API endpoints.
+*   **Day 5-7:** Build Frontend with Sandpack integration and UI components.
+*   **Day 8-9:** Connect Frontend to Backend. Implement state management.
+*   **Day 10:** Testing and Deployment.
+
+---
+
+### **Appendix A: Prompt Template**
+*Use this to reduce JSON parsing errors.*
+
+```json
+{
+  "role": "system",
+  "content": "You are a strict JSON generator. You must output ONLY valid JSON. No markdown, no explanation. The JSON must match this schema: { problem: string, test_cases: [{input: string, output: string}], solution_code: string, starter_code: string, difficulty: 'easy'|'medium'|'hard' }."
+}
+```
+
+### **Appendix B: PostgreSQL Schema**
+*Normalized for efficiency.*
+
+
+```sql
+-- Stores the raw AI-generated content
+CREATE TABLE problems (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    model character varying not null, -- The OpenRouter AI model used
+    generation_id character varying null, -- OpenRouter response id
+    focus_area VARCHAR(100) NOT NULL,
+    raw_content JSONB NOT NULL, -- Stores the full AI JSON response
+    active boolean null default true,
+    created_at TIMESTAMP DEFAULT NOW(),
+    created_by UUID NULL -- If you want to track who generated it (optional)
+);
+
+-- Stores user interactions
+CREATE TABLE attempts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    problem_id UUID REFERENCES problems(id),
+    user_solution TEXT,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Indexes
+CREATE INDEX idx_attempts_user ON attempts(user_id);
+CREATE INDEX idx_problems_area ON problems(focus_area);
+CREATE INDEX idx_problems_active_area ON problems(active, focus_area);
+```

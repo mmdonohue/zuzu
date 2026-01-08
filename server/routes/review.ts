@@ -69,7 +69,7 @@ router.get("/details/:category", (req: Request, res: Response) => {
       ".claude",
       "review",
       "results",
-      "codebase_review.json",
+      "codebase_review.json"
     );
 
     // Check if file exists
@@ -122,7 +122,7 @@ router.post("/trigger", async (_req: Request, res: Response) => {
       ".claude",
       "hooks",
       "scripts",
-      "review-agent.py",
+      "review-agent.py"
     );
 
     // Check if the script exists

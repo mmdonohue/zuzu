@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ZuZu is a full-stack React application scaffold that integrates multiple modern web technologies. It consists of a TypeScript/React frontend with MUI components and Tailwind CSS, and an Express backend server.
 
+## Guidance
+When working on a new feature or plan, you **must** interview the user in detail using the `AskUserQuestionTool` to gather all necessary technical implementation details, UI/UX preferences, and implementation trade-offs before you start writing any significant code. Continue asking questions until the requirements are complete, then summarize the final spec in the file.
+
+
 ## Development Commands
 
 ### Frontend Development
@@ -127,6 +131,8 @@ npm run test:open
 - **TypeScript**:
   - Root tsconfig.json for frontend (JSX: react-jsx, target: ES2020)
   - Separate server/tsconfig.json (CommonJS modules)
+  - Always compile the server typescript with a path to the config instead of changing to the server directory 
+    - npx tsc --project ./server/tsconfig.json --noEmit
 
 ### Testing
 - Cypress configured for e2e tests

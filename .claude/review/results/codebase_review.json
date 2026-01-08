@@ -1,13 +1,13 @@
 {
-  "lastUpdated": "2026-01-05 04:12 UTC",
-  "overallStatus": "pass",
-  "overallStatusDisplay": "\u2705 PASS",
-  "overallHealthScore": 99,
+  "lastUpdated": "2026-01-08 13:55 UTC",
+  "overallStatus": "warning",
+  "overallStatusDisplay": "\u26a0\ufe0f WARNING",
+  "overallHealthScore": 98,
   "overallMetrics": {
     "critical": 0,
-    "warnings": 0,
+    "warnings": 2,
     "info": 3,
-    "total": 3
+    "total": 5
   },
   "reviews": [
     {
@@ -43,441 +43,110 @@
     {
       "category": "docs",
       "displayName": "Docs",
-      "lastUpdated": "2026-01-05 04:12 UTC",
-      "status": "pass",
-      "statusDisplay": "\u2705 PASS",
-      "healthScore": 97,
-      "metrics": {
-        "critical": 0,
-        "warnings": 0,
-        "info": 3,
-        "total": 3
-      },
-      "findings": [
-        {
-          "severity": "info",
-          "issue": "Technology stack not fully documented in README.md",
-          "file": "README.md",
-          "description": "Some major dependencies are not mentioned in the README tech stack section.",
-          "actual": "Technologies in use: Material-UI (MUI), React Router",
-          "documented": "Missing from README.md tech stack",
-          "recommendation": "Consider adding: Material-UI (MUI), React Router",
-          "category": "docs",
-          "categoryDisplay": "Docs"
-        },
-        {
-          "severity": "info",
-          "issue": "README.md missing npm scripts from CLAUDE.md",
-          "file": "README.md",
-          "description": "Some npm commands documented in CLAUDE.md are not in README.md.",
-          "actual": "CLAUDE.md documents: npm serve",
-          "documented": "Missing from README.md",
-          "recommendation": "Add command documentation to README.md: serve",
-          "category": "docs",
-          "categoryDisplay": "Docs"
-        },
-        {
-          "severity": "info",
-          "issue": "README.md missing environment variables from CLAUDE.md",
-          "file": "README.md",
-          "description": "Some environment variables in CLAUDE.md are not documented in README.md.",
-          "actual": "CLAUDE.md documents: REACT_APP_ENVIRONMENT",
-          "documented": "Missing from README.md",
-          "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT",
-          "category": "docs",
-          "categoryDisplay": "Docs"
-        }
-      ]
-    },
-    {
-      "category": "quality",
-      "displayName": "Quality",
-      "lastUpdated": "Not yet reviewed",
-      "status": "pass",
-      "statusDisplay": "\u2705 PASS",
-      "healthScore": 100,
-      "metrics": {
-        "critical": 0,
-        "warnings": 0,
-        "info": 0,
-        "total": 0
-      },
-      "findings": []
-    },
-    {
-      "category": "security",
-      "displayName": "Security",
-      "lastUpdated": "Not yet reviewed",
-      "status": "pass",
-      "statusDisplay": "\u2705 PASS",
-      "healthScore": 100,
-      "metrics": {
-        "critical": 0,
-        "warnings": 0,
-        "info": 0,
-        "total": 0
-      },
-      "findings": []
-    },
-    {
-      "category": "testing",
-      "displayName": "Testing",
-      "lastUpdated": "Not yet reviewed",
-      "status": "pass",
-      "statusDisplay": "\u2705 PASS",
-      "healthScore": 100,
-      "metrics": {
-        "critical": 0,
-        "warnings": 0,
-        "info": 0,
-        "total": 0
-      },
-      "findings": []
-    }
-  ],
-  "findings": [
-    {
-      "severity": "info",
-      "issue": "Technology stack not fully documented in README.md",
-      "file": "README.md",
-      "description": "Some major dependencies are not mentioned in the README tech stack section.",
-      "actual": "Technologies in use: Material-UI (MUI), React Router",
-      "documented": "Missing from README.md tech stack",
-      "recommendation": "Consider adding: Material-UI (MUI), React Router",
-      "category": "docs",
-      "categoryDisplay": "Docs"
-    },
-    {
-      "severity": "info",
-      "issue": "README.md missing npm scripts from CLAUDE.md",
-      "file": "README.md",
-      "description": "Some npm commands documented in CLAUDE.md are not in README.md.",
-      "actual": "CLAUDE.md documents: npm serve",
-      "documented": "Missing from README.md",
-      "recommendation": "Add command documentation to README.md: serve",
-      "category": "docs",
-      "categoryDisplay": "Docs"
-    },
-    {
-      "severity": "info",
-      "issue": "README.md missing environment variables from CLAUDE.md",
-      "file": "README.md",
-      "description": "Some environment variables in CLAUDE.md are not documented in README.md.",
-      "actual": "CLAUDE.md documents: REACT_APP_ENVIRONMENT",
-      "documented": "Missing from README.md",
-      "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT",
-      "category": "docs",
-      "categoryDisplay": "Docs"
-    }
-  ]
-}    "description": "Package \"ts-node\" appears in both dependencies and devDependencies",
-          "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development",
-          "category": "dependencies",
-          "categoryDisplay": "Dependencies"
-        },
-        {
-          "severity": "warning",
-          "issue": "Duplicate dependency: typescript",
-          "file": "server/package.json",
-          "description": "Package \"typescript\" appears in both dependencies and devDependencies",
-          "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development",
-          "category": "dependencies",
-          "categoryDisplay": "Dependencies"
-        },
-        {
-          "severity": "info",
-          "issue": "Potentially unused dependency: serve",
-          "file": "package.json",
-          "description": "Package \"serve\" is listed in dependencies but no imports were found",
-          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size",
-          "category": "dependencies",
-          "categoryDisplay": "Dependencies"
-        }
-      ]
-    },
-    {
-      "category": "docs",
-      "displayName": "Docs",
-      "lastUpdated": "2026-01-05 04:12 UTC",
-      "status": "pass",
-      "statusDisplay": "\u2705 PASS",
-      "healthScore": 97,
-      "metrics": {
-        "critical": 0,
-        "warnings": 0,
-        "info": 3,
-        "total": 3
-      },
-      "findings": [
-        {
-          "severity": "info",
-          "issue": "Technology stack not fully documented in README.md",
-          "file": "README.md",
-          "description": "Some major dependencies are not mentioned in the README tech stack section.",
-          "actual": "Technologies in use: Material-UI (MUI), React Router",
-          "documented": "Missing from README.md tech stack",
-          "recommendation": "Consider adding: Material-UI (MUI), React Router",
-          "category": "docs",
-          "categoryDisplay": "Docs"
-        },
-        {
-          "severity": "info",
-          "issue": "README.md missing npm scripts from CLAUDE.md",
-          "file": "README.md",
-          "description": "Some npm commands documented in CLAUDE.md are not in README.md.",
-          "actual": "CLAUDE.md documents: npm serve",
-          "documented": "Missing from README.md",
-          "recommendation": "Add command documentation to README.md: serve",
-          "category": "docs",
-          "categoryDisplay": "Docs"
-        },
-        {
-          "severity": "info",
-          "issue": "README.md missing environment variables from CLAUDE.md",
-          "file": "README.md",
-          "description": "Some environment variables in CLAUDE.md are not documented in README.md.",
-          "actual": "CLAUDE.md documents: REACT_APP_ENVIRONMENT",
-          "documented": "Missing from README.md",
-          "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT",
-          "category": "docs",
-          "categoryDisplay": "Docs"
-        }
-      ]
-    },
-    {
-      "category": "quality",
-      "displayName": "Quality",
-      "lastUpdated": "2026-01-05 04:11 UTC",
-      "status": "pass",
-      "statusDisplay": "\u2705 PASS",
-      "healthScore": 84,
-      "metrics": {
-        "critical": 0,
-        "warnings": 0,
-        "info": 16,
-        "total": 16
-      },
-      "findings": [
-        {
-          "severity": "info",
-          "issue": "Magic number \"1000\" should be a named constant",
-          "file": "src/hooks/useTemplates.ts",
-          "line": 59,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-          "code_snippet": "staleTime: 5 * 60 * 1000, // 5 minutes",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"1000\" should be a named constant",
-          "file": "src/hooks/useTemplates.ts",
-          "line": 82,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-          "code_snippet": "staleTime: 5 * 60 * 1000, // 5 minutes",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"1000\" should be a named constant",
-          "file": "src/hooks/useStyleGuides.ts",
-          "line": 39,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-          "code_snippet": "staleTime: 10 * 60 * 1000, // 10 minutes - style guides rarely change",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"1000\" should be a named constant",
-          "file": "src/hooks/useStyleGuides.ts",
-          "line": 61,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-          "code_snippet": "staleTime: 10 * 60 * 1000, // 10 minutes",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"1000\" should be a named constant",
-          "file": "src/components/OpenRouterActivity.tsx",
-          "line": 90,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-          "code_snippet": "now.getTime() - 30 * 24 * 60 * 60 * 1000,",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"1000\" should be a named constant",
-          "file": "src/components/OpenRouterActivity.tsx",
-          "line": 238,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-          "code_snippet": "{((summary.past_month_tokens || 0) / 1000).toFixed(1)}K",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"300\" should be a named constant",
-          "file": "src/components/TemplateLibrary.tsx",
-          "line": 78,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 300",
-          "code_snippet": "}, 300);",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"800\" should be a named constant",
-          "file": "src/pages/Home.tsx",
-          "line": 99,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 800",
-          "code_snippet": "}, 800);",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"0.8\" should be a named constant",
-          "file": "src/pages/OpenRouter.tsx",
-          "line": 229,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 0.8",
-          "code_snippet": "setCurrTokens(modelSelectedModel ? modelSelectedModel.context_length * 0.8 : max_context_length * 0.8);",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "Magic number \"0.8\" should be a named constant",
-          "file": "src/pages/OpenRouter.tsx",
-          "line": 229,
-          "description": "Using magic numbers reduces code readability and maintainability.",
-          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 0.8",
-          "code_snippet": "setCurrTokens(modelSelectedModel ? modelSelectedModel.context_length * 0.8 : max_context_length * 0.8);",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "console.log() found in source code",
-          "file": "src/services/auth.service.ts",
-          "line": 112,
-          "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
-          "recommendation": "Remove debug console.log or use a proper logging library",
-          "code_snippet": "1 occurrence(s) found",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "console.log() found in source code",
-          "file": "src/context/AuthContext.tsx",
-          "line": 43,
-          "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
-          "recommendation": "Remove debug console.log or use a proper logging library",
-          "code_snippet": "1 occurrence(s) found",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "console.log() found in source code",
-          "file": "src/components/OpenRouterActivity.tsx",
-          "line": 82,
-          "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
-          "recommendation": "Remove debug console.log or use a proper logging library",
-          "code_snippet": "1 occurrence(s) found",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "console.log() found in source code",
-          "file": "src/pages/Dashboard.tsx",
-          "line": 159,
-          "description": "Found 3 console.log statement(s) which should be removed or replaced with proper logging.",
-          "recommendation": "Remove debug console.log or use a proper logging library",
-          "code_snippet": "3 occurrence(s) found",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "console.log() found in source code",
-          "file": "src/pages/Logs.tsx",
-          "line": 630,
-          "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
-          "recommendation": "Remove debug console.log or use a proper logging library",
-          "code_snippet": "1 occurrence(s) found",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        },
-        {
-          "severity": "info",
-          "issue": "console.log() found in source code",
-          "file": "src/pages/OpenRouter.tsx",
-          "line": 223,
-          "description": "Found 7 console.log statement(s) which should be removed or replaced with proper logging.",
-          "recommendation": "Remove debug console.log or use a proper logging library",
-          "code_snippet": "7 occurrence(s) found",
-          "category": "quality",
-          "categoryDisplay": "Quality"
-        }
-      ]
-    },
-    {
-      "category": "security",
-      "displayName": "Security",
-      "lastUpdated": "2026-01-05 04:11 UTC",
+      "lastUpdated": "2026-01-08 13:55 UTC",
       "status": "warning",
       "statusDisplay": "\u26a0\ufe0f WARNING",
-      "healthScore": 94,
+      "healthScore": 91,
       "metrics": {
         "critical": 0,
         "warnings": 2,
-        "info": 0,
-        "total": 2
+        "info": 3,
+        "total": 5
       },
       "findings": [
         {
           "severity": "warning",
-          "issue": "Use of MD5",
-          "file": "server/index.ts",
-          "line": 77,
-          "description": "MD5 is cryptographically broken",
-          "recommendation": "Use SHA-256 or better for hashing. Use crypto.randomBytes() for random values.",
-          "category": "security",
-          "code_snippet": "const hash = crypto.createHash('md5').update(sessionSource).digest('hex');",
-          "categoryDisplay": "Security"
+          "issue": "Missing AuthProvider in CLAUDE.md provider hierarchy",
+          "file": ".claude/CLAUDE.md",
+          "line": 47,
+          "description": "The provider hierarchy documentation does not mention AuthProvider, but it exists in the code.",
+          "actual": "Provider hierarchy includes: Redux, QueryClient, BrowserRouter, ThemeProvider, CssBaseline, AuthProvider",
+          "documented": "Provider hierarchy lists: Redux, QueryClient, BrowserRouter, ThemeProvider, CssBaseline (missing AuthProvider)",
+          "recommendation": "Add AuthProvider to the provider hierarchy list in CLAUDE.md around line 52",
+          "category": "docs",
+          "categoryDisplay": "Docs"
         },
         {
           "severity": "warning",
-          "issue": "Use of MD5",
-          "file": "server/index.ts",
-          "line": 195,
-          "description": "MD5 is cryptographically broken",
-          "recommendation": "Use SHA-256 or better for hashing. Use crypto.randomBytes() for random values.",
-          "category": "security",
-          "code_snippet": "? crypto.createHash('md5').update(sessionSource).digest('hex').substring(0, 8)",
-          "categoryDisplay": "Security"
+          "issue": "Incomplete routing documentation",
+          "file": ".claude/CLAUDE.md",
+          "line": 54,
+          "description": "Documentation lists 2 routes but codebase has 10 routes.",
+          "actual": "10 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
+          "documented": "2 routes: Home, About",
+          "recommendation": "Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        },
+        {
+          "severity": "info",
+          "issue": "Technology stack not fully documented in README.md",
+          "file": "README.md",
+          "description": "Some major dependencies are not mentioned in the README tech stack section.",
+          "actual": "Technologies in use: Material-UI (MUI), React Router",
+          "documented": "Missing from README.md tech stack",
+          "recommendation": "Consider adding: Material-UI (MUI), React Router",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        },
+        {
+          "severity": "info",
+          "issue": "README.md missing npm scripts from CLAUDE.md",
+          "file": "README.md",
+          "description": "Some npm commands documented in CLAUDE.md are not in README.md.",
+          "actual": "CLAUDE.md documents: npm serve",
+          "documented": "Missing from README.md",
+          "recommendation": "Add command documentation to README.md: serve",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        },
+        {
+          "severity": "info",
+          "issue": "README.md missing environment variables from CLAUDE.md",
+          "file": "README.md",
+          "description": "Some environment variables in CLAUDE.md are not documented in README.md.",
+          "actual": "CLAUDE.md documents: REACT_APP_ENVIRONMENT",
+          "documented": "Missing from README.md",
+          "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT",
+          "category": "docs",
+          "categoryDisplay": "Docs"
         }
       ]
     },
     {
+      "category": "quality",
+      "displayName": "Quality",
+      "lastUpdated": "Not yet reviewed",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    },
+    {
+      "category": "security",
+      "displayName": "Security",
+      "lastUpdated": "Not yet reviewed",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    },
+    {
       "category": "testing",
       "displayName": "Testing",
-      "lastUpdated": "2026-01-05 04:11 UTC",
+      "lastUpdated": "Not yet reviewed",
       "status": "pass",
       "statusDisplay": "\u2705 PASS",
       "healthScore": 100,
@@ -492,118 +161,28 @@
   ],
   "findings": [
     {
-      "severity": "info",
-      "issue": "Multiple styling systems detected",
-      "file": "package.json",
-      "description": "Both Material-UI and Tailwind CSS are in use. Ensure consistent styling approach.",
-      "recommendation": "Document when to use MUI components vs Tailwind utilities to avoid styling conflicts",
-      "category": "architecture",
-      "categoryDisplay": "Architecture"
-    },
-    {
-      "severity": "info",
-      "issue": "API versioning not detected",
-      "file": "server/routes/csrf.ts",
-      "description": "Consider implementing API versioning for future compatibility",
-      "recommendation": "Use versioned routes like /api/v1/ to allow breaking changes without affecting existing clients",
-      "category": "architecture",
-      "categoryDisplay": "Architecture"
+      "severity": "warning",
+      "issue": "Missing AuthProvider in CLAUDE.md provider hierarchy",
+      "file": ".claude/CLAUDE.md",
+      "line": 47,
+      "description": "The provider hierarchy documentation does not mention AuthProvider, but it exists in the code.",
+      "actual": "Provider hierarchy includes: Redux, QueryClient, BrowserRouter, ThemeProvider, CssBaseline, AuthProvider",
+      "documented": "Provider hierarchy lists: Redux, QueryClient, BrowserRouter, ThemeProvider, CssBaseline (missing AuthProvider)",
+      "recommendation": "Add AuthProvider to the provider hierarchy list in CLAUDE.md around line 52",
+      "category": "docs",
+      "categoryDisplay": "Docs"
     },
     {
       "severity": "warning",
-      "issue": "Route handler missing error handling",
-      "file": "server/routes/auth.routes.ts",
-      "line": 22,
-      "description": "API route handlers should include error handling",
-      "recommendation": "Wrap route logic in try-catch or use .catch() for promises",
-      "category": "architecture",
-      "code_snippet": "router.post('/signup', validateSignup, AuthController.signup);",
-      "categoryDisplay": "Architecture"
-    },
-    {
-      "severity": "warning",
-      "issue": "Route handler missing error handling",
-      "file": "server/routes/api.js",
-      "line": 6,
-      "description": "API route handlers should include error handling",
-      "recommendation": "Wrap route logic in try-catch or use .catch() for promises",
-      "category": "architecture",
-      "code_snippet": "router.get('/hello', function (req, res) {",
-      "categoryDisplay": "Architecture"
-    },
-    {
-      "severity": "info",
-      "issue": "API versioning not detected",
-      "file": "server/routes/csrf.ts",
-      "description": "Consider implementing API versioning for future compatibility",
-      "recommendation": "Use versioned routes like /api/v1/ to allow breaking changes without affecting existing clients",
-      "category": "architecture",
-      "categoryDisplay": "Architecture"
-    },
-    {
-      "severity": "warning",
-      "issue": "Route handler missing error handling",
-      "file": "server/routes/auth.routes.ts",
-      "line": 22,
-      "description": "API route handlers should include error handling",
-      "recommendation": "Wrap route logic in try-catch or use .catch() for promises",
-      "category": "architecture",
-      "code_snippet": "router.post('/signup', validateSignup, AuthController.signup);",
-      "categoryDisplay": "Architecture"
-    },
-    {
-      "severity": "warning",
-      "issue": "Route handler missing error handling",
-      "file": "server/routes/api.js",
-      "line": 6,
-      "description": "API route handlers should include error handling",
-      "recommendation": "Wrap route logic in try-catch or use .catch() for promises",
-      "category": "architecture",
-      "code_snippet": "router.get('/hello', function (req, res) {",
-      "categoryDisplay": "Architecture"
-    },
-    {
-      "severity": "info",
-      "issue": "No Architecture Decision Records found",
-      "description": "Documenting architectural decisions helps maintain context over time",
-      "recommendation": "Consider creating ADR directory to document key architectural choices",
-      "category": "architecture",
-      "categoryDisplay": "Architecture"
-    },
-    {
-      "severity": "info",
-      "issue": "Architecture documentation not found",
-      "description": "High-level architecture documentation helps onboard new developers",
-      "recommendation": "Create ARCHITECTURE.md documenting system components and their interactions",
-      "category": "architecture",
-      "categoryDisplay": "Architecture"
-    },
-    {
-      "severity": "warning",
-      "issue": "Duplicate dependency: ts-node",
-      "file": "server/package.json",
-      "description": "Package \"ts-node\" appears in both dependencies and devDependencies",
-      "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development",
-      "category": "dependencies",
-      "categoryDisplay": "Dependencies"
-    },
-    {
-      "severity": "warning",
-      "issue": "Duplicate dependency: typescript",
-      "file": "server/package.json",
-      "description": "Package \"typescript\" appears in both dependencies and devDependencies",
-      "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development",
-      "category": "dependencies",
-      "categoryDisplay": "Dependencies"
-    },
-    {
-      "severity": "info",
-      "issue": "Potentially unused dependency: serve",
-      "file": "package.json",
-      "description": "Package \"serve\" is listed in dependencies but no imports were found",
-      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size",
-      "category": "dependencies",
-      "categoryDisplay": "Dependencies"
+      "issue": "Incomplete routing documentation",
+      "file": ".claude/CLAUDE.md",
+      "line": 54,
+      "description": "Documentation lists 2 routes but codebase has 10 routes.",
+      "actual": "10 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
+      "documented": "2 routes: Home, About",
+      "recommendation": "Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
+      "category": "docs",
+      "categoryDisplay": "Docs"
     },
     {
       "severity": "info",
@@ -637,204 +216,6 @@
       "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT",
       "category": "docs",
       "categoryDisplay": "Docs"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"1000\" should be a named constant",
-      "file": "src/hooks/useTemplates.ts",
-      "line": 59,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-      "code_snippet": "staleTime: 5 * 60 * 1000, // 5 minutes",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"1000\" should be a named constant",
-      "file": "src/hooks/useTemplates.ts",
-      "line": 82,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-      "code_snippet": "staleTime: 5 * 60 * 1000, // 5 minutes",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"1000\" should be a named constant",
-      "file": "src/hooks/useStyleGuides.ts",
-      "line": 39,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-      "code_snippet": "staleTime: 10 * 60 * 1000, // 10 minutes - style guides rarely change",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"1000\" should be a named constant",
-      "file": "src/hooks/useStyleGuides.ts",
-      "line": 61,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-      "code_snippet": "staleTime: 10 * 60 * 1000, // 10 minutes",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"1000\" should be a named constant",
-      "file": "src/components/OpenRouterActivity.tsx",
-      "line": 90,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-      "code_snippet": "now.getTime() - 30 * 24 * 60 * 60 * 1000,",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"1000\" should be a named constant",
-      "file": "src/components/OpenRouterActivity.tsx",
-      "line": 238,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000",
-      "code_snippet": "{((summary.past_month_tokens || 0) / 1000).toFixed(1)}K",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"300\" should be a named constant",
-      "file": "src/components/TemplateLibrary.tsx",
-      "line": 78,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 300",
-      "code_snippet": "}, 300);",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"800\" should be a named constant",
-      "file": "src/pages/Home.tsx",
-      "line": 99,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 800",
-      "code_snippet": "}, 800);",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"0.8\" should be a named constant",
-      "file": "src/pages/OpenRouter.tsx",
-      "line": 229,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 0.8",
-      "code_snippet": "setCurrTokens(modelSelectedModel ? modelSelectedModel.context_length * 0.8 : max_context_length * 0.8);",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "Magic number \"0.8\" should be a named constant",
-      "file": "src/pages/OpenRouter.tsx",
-      "line": 229,
-      "description": "Using magic numbers reduces code readability and maintainability.",
-      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 0.8",
-      "code_snippet": "setCurrTokens(modelSelectedModel ? modelSelectedModel.context_length * 0.8 : max_context_length * 0.8);",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "console.log() found in source code",
-      "file": "src/services/auth.service.ts",
-      "line": 112,
-      "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
-      "recommendation": "Remove debug console.log or use a proper logging library",
-      "code_snippet": "1 occurrence(s) found",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "console.log() found in source code",
-      "file": "src/context/AuthContext.tsx",
-      "line": 43,
-      "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
-      "recommendation": "Remove debug console.log or use a proper logging library",
-      "code_snippet": "1 occurrence(s) found",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "console.log() found in source code",
-      "file": "src/components/OpenRouterActivity.tsx",
-      "line": 82,
-      "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
-      "recommendation": "Remove debug console.log or use a proper logging library",
-      "code_snippet": "1 occurrence(s) found",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "console.log() found in source code",
-      "file": "src/pages/Dashboard.tsx",
-      "line": 159,
-      "description": "Found 3 console.log statement(s) which should be removed or replaced with proper logging.",
-      "recommendation": "Remove debug console.log or use a proper logging library",
-      "code_snippet": "3 occurrence(s) found",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "console.log() found in source code",
-      "file": "src/pages/Logs.tsx",
-      "line": 630,
-      "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
-      "recommendation": "Remove debug console.log or use a proper logging library",
-      "code_snippet": "1 occurrence(s) found",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "info",
-      "issue": "console.log() found in source code",
-      "file": "src/pages/OpenRouter.tsx",
-      "line": 223,
-      "description": "Found 7 console.log statement(s) which should be removed or replaced with proper logging.",
-      "recommendation": "Remove debug console.log or use a proper logging library",
-      "code_snippet": "7 occurrence(s) found",
-      "category": "quality",
-      "categoryDisplay": "Quality"
-    },
-    {
-      "severity": "warning",
-      "issue": "Use of MD5",
-      "file": "server/index.ts",
-      "line": 77,
-      "description": "MD5 is cryptographically broken",
-      "recommendation": "Use SHA-256 or better for hashing. Use crypto.randomBytes() for random values.",
-      "category": "security",
-      "code_snippet": "const hash = crypto.createHash('md5').update(sessionSource).digest('hex');",
-      "categoryDisplay": "Security"
-    },
-    {
-      "severity": "warning",
-      "issue": "Use of MD5",
-      "file": "server/index.ts",
-      "line": 195,
-      "description": "MD5 is cryptographically broken",
-      "recommendation": "Use SHA-256 or better for hashing. Use crypto.randomBytes() for random values.",
-      "category": "security",
-      "code_snippet": "? crypto.createHash('md5').update(sessionSource).digest('hex').substring(0, 8)",
-      "categoryDisplay": "Security"
     }
   ]
 }

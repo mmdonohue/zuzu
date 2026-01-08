@@ -17,6 +17,9 @@
 
 ![alt text](dashboard.png)
 
+### Leet Master
+![alt text](leet_master.png)
+
 ## Tech Stack
 
 This project integrates the following technologies:

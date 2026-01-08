@@ -1,31 +1,31 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { Box, Container } from '@mui/material';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { Box, Container } from "@mui/material";
 
 // Import components
-import Header from './components/Header';
-import Footer from './components/Footer';
-import ProtectedRoute from './components/ProtectedRoute';
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Import pages
-import Home from './pages/Home';
-import About from './pages/About';
-import Dashboard from './pages/Dashboard';
-import OpenRouterComponent from './pages/OpenRouter';
-import Logs from './pages/Logs';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import VerifyCode from './pages/VerifyCode';
-import Account from './pages/Account';
-
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Dashboard from "./pages/Dashboard";
+import OpenRouterComponent from "./pages/OpenRouter";
+import LeetMaster from "./pages/LeetMaster";
+import Logs from "./pages/Logs";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import VerifyCode from "./pages/VerifyCode";
+import Account from "./pages/Account";
 
 const App: React.FC = () => {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
       }}
     >
       <Header />
@@ -37,7 +37,7 @@ const App: React.FC = () => {
       >
         <Routes>
           {/* Public routes */}
-          <Route path="/" element={<Home message={'welcome to zuzu'} />} />
+          <Route path="/" element={<Home message={"welcome to zuzu"} />} />
           <Route path="/about" element={<About />} />
 
           {/* Auth routes (redirect to dashboard if already logged in) */}
@@ -73,6 +73,14 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute>
                 <OpenRouterComponent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leet-master"
+            element={
+              <ProtectedRoute>
+                <LeetMaster />
               </ProtectedRoute>
             }
           />

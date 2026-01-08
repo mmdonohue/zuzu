@@ -1,8 +1,9 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { authSlice } from './slices/authSlice';
-import { uiSlice } from './slices/uiSlice';
-import { templatesSlice } from './slices/templatesSlice';
-import { openRouterSlice } from './slices/openRouterSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import { authSlice } from "./slices/authSlice";
+import { uiSlice } from "./slices/uiSlice";
+import { templatesSlice } from "./slices/templatesSlice";
+import { openRouterSlice } from "./slices/openRouterSlice";
+import { leetMasterSlice } from "./slices/leetMasterSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     ui: uiSlice.reducer,
     templates: templatesSlice.reducer,
     openRouter: openRouterSlice.reducer,
+    leetMaster: leetMasterSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
