@@ -6,6 +6,7 @@ import {
   SandpackConsole,
   useSandpack,
 } from "@codesandbox/sandpack-react";
+import { dracula } from "@codesandbox/sandpack-themes";
 import { Box, Button, Chip, Typography, Paper } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -15,9 +16,22 @@ type TestCase = {
   expected_output: string;
 };
 
+type ProblemJson = {
+  title: string;
+  description: string;
+  test_cases: TestCase[];
+  starter_code: string;
+  solution_code: string;
+  hints: string[];
+  constraints: string[];
+  keywords: string[];
+  time_complexity: string;
+  space_complexity: string;
+};
+
 type CodeEditorProps = {
-  starterCode: string;
-  testCases: TestCase[];
+  problemJson: ProblemJson;
+  difficulty: string;
   onComplete?: () => void;
 };
 
@@ -51,15 +65,15 @@ const RunButton: React.FC = () => {
 };
 
 const LeetMasterCodeEditor: React.FC<CodeEditorProps> = ({
-  starterCode,
-  testCases,
+  problemJson,
+  difficulty,
   onComplete,
 }) => {
   const [allTestsPassed, setAllTestsPassed] = useState(false);
 
   // Generate the test runner code
   const generateTestCode = (): string => {
-    const testCasesCode = testCases
+    const testCasesCode = problemJson.test_cases
       .map((tc, index) => {
         return `  // Test Case ${index + 1}
   try {
@@ -84,7 +98,50 @@ const LeetMasterCodeEditor: React.FC<CodeEditorProps> = ({
       })
       .join("\n\n");
 
-    return `${starterCode}
+    // Build problem header comments (without solution)
+    const headerComments = `/*
+ * ============================================
+ * ${problemJson.title}
+ * Difficulty: ${difficulty.toUpperCase()}
+ * ============================================
+ *
+ * DESCRIPTION:
+ * ${problemJson.description.split("\n").join("\n * ")}
+ *
+ * CONSTRAINTS:
+${problemJson.constraints.map((c) => ` * - ${c}`).join("\n")}
+ *
+ * COMPLEXITY:
+ * Time: ${problemJson.time_complexity}
+ * Space: ${problemJson.space_complexity}
+ *
+ * KEYWORDS:
+ * ${problemJson.keywords.join(", ")}
+ *
+ * TEST CASES:
+${problemJson.test_cases.map((tc, i) => ` * ${i + 1}. Input: ${tc.input} | Expected: ${tc.expected_output}`).join("\n")}
+ *
+ * HINTS:
+${problemJson.hints.map((h, i) => ` * ${i + 1}. ${h}`).join("\n")}
+ * ============================================
+ */
+
+`;
+
+    // Build solution comments (placed at bottom)
+    const solutionComments = `
+
+// ============================================
+// SOLUTION (SCROLL DOWN AT YOUR OWN RISK!)
+// ============================================
+/*
+${problemJson.solution_code
+  .split("\n")
+  .map((line) => ` * ${line}`)
+  .join("\n")}
+ */`;
+
+    return `${headerComments}${problemJson.starter_code}
 
 // ============================================
 // TEST RUNNER (DO NOT MODIFY)
@@ -95,7 +152,7 @@ function runTests() {
 
   console.clear();
   console.log('Node.js v${NODE_VERSION}');
-  console.log('Running ${testCases.length} test case(s)...\\n');
+  console.log('Running ${problemJson.test_cases.length} test case(s)...\\n');
 
 ${testCasesCode}
 
@@ -114,6 +171,7 @@ ${testCasesCode}
 
 // Run tests when this code is executed
 runTests();
+${solutionComments}
 `;
   };
 
@@ -161,37 +219,7 @@ runTests();
         <SandpackProvider
           template="vanilla"
           files={files}
-          theme={{
-            colors: {
-              surface1: "#1e1e1e",
-              surface2: "#252526",
-              surface3: "#2d2d30",
-              clickable: "#6F87BF",
-              base: "#d4d4d4",
-              disabled: "#858585",
-              hover: "#3e3e42",
-              accent: "#6F87BF",
-              error: "#f44336",
-              errorSurface: "#5a1d1d",
-            },
-            syntax: {
-              plain: "#d4d4d4",
-              comment: { color: "#6a9955" },
-              keyword: { color: "#569cd6" },
-              tag: { color: "#569cd6" },
-              punctuation: { color: "#d4d4d4" },
-              definition: { color: "#4ec9b0" },
-              property: { color: "#9cdcfe" },
-              static: { color: "#4fc1ff" },
-              string: { color: "#ce9178" },
-            },
-            font: {
-              body: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-              mono: '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace',
-              size: "14px",
-              lineHeight: "1.5",
-            },
-          }}
+          theme={dracula}
           customSetup={{
             entry: "/index.js",
           }}
@@ -204,6 +232,8 @@ runTests();
               style={{
                 height: "500px",
                 fontSize: "14px",
+                width: "50%",
+                flex: "0 0 50%",
               }}
               showTabs={false}
               showLineNumbers={true}
@@ -211,6 +241,7 @@ runTests();
             <Box
               sx={{
                 width: "50%",
+                flex: "0 0 50%",
                 display: "flex",
                 flexDirection: "column",
                 backgroundColor: "#1e1e1e",

@@ -6,6 +6,8 @@ type Problem = {
   id: string;
   focus_area: string;
   difficulty: string;
+  title: string;
+  tags: string[];
   problem_json: {
     title: string;
     description: string;
@@ -168,7 +170,7 @@ export class LeetMasterService {
     const systemPrompt = `You are a coding problem generator. You MUST output ONLY valid JSON with no markdown formatting, no explanations, no code fences. The JSON must match this exact schema:
 
 {
-  "title": "Problem Title",
+  "title": "Unique Problem Title (REQUIRED)",
   "description": "Detailed problem description",
   "test_cases": [
     {"input": "example input", "expected_output": "example output"}
@@ -177,10 +179,14 @@ export class LeetMasterService {
   "solution_code": "complete working solution",
   "hints": ["hint 1", "hint 2"],
   "constraints": ["constraint 1"],
-  "keywords": ["keyword1", "keyword2", "keyword3"],
+  "keywords": ["algorithm pattern 1", "technique 2", "approach 3"],
   "time_complexity": "Big O notation",
   "space_complexity": "Big O notation"
 }
+
+CRITICAL FIELDS:
+- "title": MUST be unique and descriptive
+- "keywords": MUST contain 3-5 algorithm-specific tags (e.g., "two pointers", "sliding window", "dynamic programming", "hash map", "binary search")
 
 CRITICAL TEST CASE FORMAT - READ CAREFULLY:
 - EVERY test case input/output MUST be EXECUTABLE JavaScript code
@@ -217,14 +223,26 @@ CRITICAL: test_cases array must contain 3-5 items (NEVER more than 5). All array
 
     const userPrompt = `Generate a ${difficulty} LeetCode-style problem focused on ${focusArea}.${titlesListText}
 
-Requirements:
-- Create a UNIQUE title - do not duplicate any existing titles listed above
-- Include EXACTLY 3-5 test cases with diverse inputs (MAXIMUM 5 test cases)
-- Keep all test case inputs CONCISE - arrays must have MAXIMUM 30 elements
-- Keep input values small and readable (single or double digits preferred)
-- Add 2-3 helpful hints
-- Add 3-5 keywords that describe algorithms, patterns, or techniques used (e.g., "two pointers", "sliding window", "tortoise and hare", "dynamic programming")
-- Specify time/space complexity
+CRITICAL REQUIREMENTS:
+1. TITLE: Create a UNIQUE, descriptive title - do not duplicate any existing titles listed above
+2. KEYWORDS/TAGS (MANDATORY): Include 3-5 algorithm-specific tags that identify:
+   - Algorithm patterns (e.g., "two pointers", "sliding window", "binary search")
+   - Data structure techniques (e.g., "hash map", "stack", "queue", "heap")
+   - Classical algorithms (e.g., "Kadane's algorithm", "Floyd's cycle detection", "tortoise and hare")
+   - Optimization techniques (e.g., "dynamic programming", "greedy", "divide and conquer")
+   - Problem-solving patterns (e.g., "prefix sum", "monotonic stack", "backtracking")
+
+   Examples of good keywords:
+   - ["two pointers", "sliding window", "array traversal"]
+   - ["hash map", "frequency counting", "O(n) lookup"]
+   - ["dynamic programming", "memoization", "optimal substructure"]
+   - ["Floyd's cycle detection", "tortoise and hare", "linked list"]
+
+3. TEST CASES: Include EXACTLY 3-5 test cases with diverse inputs (MAXIMUM 5 test cases)
+4. INPUT SIZE: Keep all test case inputs CONCISE - arrays must have MAXIMUM 30 elements
+5. INPUT VALUES: Keep input values small and readable (single or double digits preferred)
+6. HINTS: Add 2-3 helpful hints
+7. COMPLEXITY: Specify time/space complexity
 
 TEST CASE FORMAT - MANDATORY SQUARE BRACKETS FOR ARRAYS:
 
@@ -330,10 +348,33 @@ CRITICAL CONSTRAINTS:
       // Sanitize and parse JSON response
       const problemData = this.sanitizeJsonResponse(aiContent);
 
+      // Log what we received
+      logger.info("Generated problem data:", {
+        title: problemData.title,
+        keywords: problemData.keywords,
+        hasDescription: !!problemData.description,
+        testCaseCount: Array.isArray(problemData.test_cases)
+          ? problemData.test_cases.length
+          : 0,
+      });
+
+      logger.info("Saving title and keywords to separate columns:", {
+        title: problemData.title,
+        tagsCount: Array.isArray(problemData.keywords)
+          ? problemData.keywords.length
+          : 0,
+      });
+
       // Validate difficulty
       const validatedDifficulty = this.validateDifficulty(
         (problemData.difficulty as string) || difficulty,
       );
+
+      // Extract title and keywords for separate columns
+      const title = problemData.title as string;
+      const keywords = Array.isArray(problemData.keywords)
+        ? problemData.keywords
+        : [];
 
       // Save to database
       const { data: savedProblem, error: insertError } = await supabase
@@ -343,6 +384,8 @@ CRITICAL CONSTRAINTS:
             focus_area: focusArea,
             difficulty: validatedDifficulty,
             problem_json: problemData,
+            title: title,
+            tags: keywords,
           },
         ])
         .select()

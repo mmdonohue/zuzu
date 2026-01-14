@@ -1764,11 +1764,38 @@ const OpenRouterComponent = () => {
 
           {isStreaming || results ? (
             <>
+              {/* Response actions bar */}
+              {results && !isStreaming && (
+                <Box
+                  sx={{
+                    mt: 2,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Tooltip title="Copy response to clipboard">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<ContentCopyOutlined />}
+                      onClick={() => {
+                        navigator.clipboard.writeText(results);
+                        showSnackbar(
+                          "Response copied to clipboard!",
+                          "success",
+                        );
+                      }}
+                    >
+                      Copy Response
+                    </Button>
+                  </Tooltip>
+                </Box>
+              )}
               <Paper
                 elevation={1}
                 sx={{
                   p: 2,
-                  mt: 2,
+                  mt: results && !isStreaming ? 1 : 2,
                   whiteSpace: "pre-wrap",
                   minHeight: "200px",
                   maxHeight: "500px",

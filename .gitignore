@@ -1,7 +1,10 @@
 
 # developer notes
 .docs
+/docs
 /del
+
+
 
 # SQL files
 /sql

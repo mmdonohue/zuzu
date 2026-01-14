@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-01-08 13:55 UTC",
+  "lastUpdated": "2026-01-14 19:45 UTC",
   "overallStatus": "warning",
   "overallStatusDisplay": "\u26a0\ufe0f WARNING",
   "overallHealthScore": 98,
@@ -43,7 +43,7 @@
     {
       "category": "docs",
       "displayName": "Docs",
-      "lastUpdated": "2026-01-08 13:55 UTC",
+      "lastUpdated": "2026-01-14 19:45 UTC",
       "status": "warning",
       "statusDisplay": "\u26a0\ufe0f WARNING",
       "healthScore": 91,
@@ -71,9 +71,9 @@
           "issue": "Incomplete routing documentation",
           "file": ".claude/CLAUDE.md",
           "line": 54,
-          "description": "Documentation lists 2 routes but codebase has 10 routes.",
+          "description": "Documentation lists 0 routes but codebase has 10 routes.",
           "actual": "10 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
-          "documented": "2 routes: Home, About",
+          "documented": "0 routes: ",
           "recommendation": "Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
           "category": "docs",
           "categoryDisplay": "Docs"
@@ -177,9 +177,9 @@
       "issue": "Incomplete routing documentation",
       "file": ".claude/CLAUDE.md",
       "line": 54,
-      "description": "Documentation lists 2 routes but codebase has 10 routes.",
+      "description": "Documentation lists 0 routes but codebase has 10 routes.",
       "actual": "10 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
-      "documented": "2 routes: Home, About",
+      "documented": "0 routes: ",
       "recommendation": "Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
       "category": "docs",
       "categoryDisplay": "Docs"

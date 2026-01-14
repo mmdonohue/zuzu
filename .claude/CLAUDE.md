@@ -7,12 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ZuZu is a full-stack React application scaffold that integrates multiple modern web technologies. It consists of a TypeScript/React frontend with MUI components and Tailwind CSS, and an Express backend server.
 
 ## Guidance
-When working on a new feature or plan, you **must** interview the user in detail using the `AskUserQuestionTool` to gather all necessary technical implementation details, UI/UX preferences, and implementation trade-offs before you start writing any significant code. Continue asking questions until the requirements are complete, then summarize the final spec in the file.
 
+When working on a new feature or plan, you **must** interview the user in detail using the `AskUserQuestionTool` to gather all necessary technical implementation details, UI/UX preferences, and implementation trade-offs before you start writing any significant code. Continue asking questions until the requirements are complete, then summarize the final spec in the file.
 
 ## Development Commands
 
 ### Frontend Development
+
 ```bash
 # Start frontend dev server (webpack-dev-server on port 3000)
 npm start
@@ -25,6 +26,7 @@ npm run serve
 ```
 
 ### Backend Development
+
 ```bash
 # Run backend server (port 5000)
 npm run server
@@ -37,6 +39,7 @@ npm run dev
 ```
 
 ### Testing
+
 ```bash
 # Run Cypress tests in headless mode
 npm test
@@ -48,6 +51,7 @@ npm run test:open
 ## Architecture
 
 ### Frontend Stack
+
 - **Entry Point**: `src/index.tsx` - Wraps app with Provider hierarchy:
   1. Redux Provider (state management)
   2. TanStack QueryClientProvider (server state/data fetching)
@@ -81,6 +85,7 @@ npm run test:open
   - **Auto-detection**: Checks hostname (localhost, 127.0.0.1, [::1]) or REACT_APP_ENVIRONMENT variable
 
 ### Backend Stack
+
 - **Entry Point**: `server/index.ts` - Express server with:
   - CORS configured for localhost:3000 and production frontend (credentials enabled)
   - Morgan HTTP logger integrated with log4js
@@ -113,6 +118,7 @@ npm run test:open
   - Frontend uses ESNext modules
 
 ### External Services
+
 - **Supabase**: Database service configured via environment variables
   - `REACT_APP_SUPABASE_URL` and `REACT_APP_SUPABASE_KEY` required
   - Client initialized in `src/services/supabase.ts`
@@ -120,7 +126,32 @@ npm run test:open
 
 - **OpenRouter**: AI service integration via `REACT_APP_ZUZU_OPENROUTER_KEY`
 
+### Database Schema and MCP Tools
+
+**IMPORTANT**: When you need to review table schemas, understand database structure, or verify column names/types:
+
+- **Always use the Supabase MCP tools** instead of asking the user or guessing
+- Use `mcp__plugin_supabase_supabase__list_tables` to see all tables in the database
+- Use `mcp__plugin_supabase_supabase__execute_sql` with `SELECT * FROM table_name LIMIT 0` to get schema information
+- This ensures you have accurate, up-to-date schema information before writing queries or migrations
+
+**When to use Supabase MCP**:
+
+- Verifying table column names and types before writing INSERT/UPDATE queries
+- Understanding foreign key relationships
+- Checking if a table or column exists
+- Reviewing constraints and indexes
+- Writing database migrations or schema changes
+
+**Example workflow**:
+
+1. User mentions a table (e.g., "problems table")
+2. Use `list_tables` to confirm it exists
+3. Use `execute_sql` with a LIMIT 0 query to get exact column names and types
+4. Write your service code with confidence in the schema
+
 ### Build Configuration
+
 - **Webpack**: Bundle config in `webpack.config.cjs`
   - Dev server proxies `/api` requests to `http://localhost:5000`
   - Uses dotenv-webpack to inject environment variables
@@ -131,10 +162,11 @@ npm run test:open
 - **TypeScript**:
   - Root tsconfig.json for frontend (JSX: react-jsx, target: ES2020)
   - Separate server/tsconfig.json (CommonJS modules)
-  - Always compile the server typescript with a path to the config instead of changing to the server directory 
+  - Always compile the server typescript with a path to the config instead of changing to the server directory
     - npx tsc --project ./server/tsconfig.json --noEmit
 
 ### Testing
+
 - Cypress configured for e2e tests
 - Base URL: http://localhost:3000
 - Spec pattern: `cypress/e2e/**/*.cy.{js,jsx,ts,tsx}`
@@ -145,6 +177,7 @@ npm run test:open
 Required environment variables are defined in `.env.example` and `server/.env.example`. Copy these to `.env` and `server/.env` respectively.
 
 **Frontend** (`.env`):
+
 - `REACT_APP_SUPABASE_URL` - Supabase project URL
 - `REACT_APP_SUPABASE_KEY` - Supabase anon key
 - `REACT_APP_ZUZU_OPENROUTER_KEY` - OpenRouter API key
@@ -152,6 +185,7 @@ Required environment variables are defined in `.env.example` and `server/.env.ex
 - `REACT_APP_ENVIRONMENT` - Environment type (optional) - Set to 'local' or 'development' to enable local-only features. Auto-detected from hostname if not set.
 
 **Backend** (`server/.env`):
+
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_KEY` - Supabase service role key
 - `ZUZU_OPENROUTER_KEY` - OpenRouter API key
@@ -174,11 +208,13 @@ TEST_USER_EMAIL=your.test.user@example.com
 ```
 
 **How it works**:
+
 1. Backend provides `/api/auth/dev-login` endpoint that only works on localhost
 2. Frontend automatically calls this endpoint on app load when no user is logged in
 3. User is logged in without password or 2FA verification
 
 **Security**:
+
 - Only works when `req.hostname` is `localhost`, `127.0.0.1`, or `[::1]`
 - Automatically disabled in production deployments
 - No credentials required - development convenience only
@@ -190,11 +226,13 @@ TEST_USER_EMAIL=your.test.user@example.com
 **Why Required**: Cookie-based auth with `sameSite: 'none'` allows cross-origin cookie transmission, creating CSRF vulnerability.
 
 **Implementation**: Double Submit Cookie pattern
+
 1. Server generates token, sends in cookie + response body
 2. Client stores token, includes in `x-csrf-token` header
 3. Server validates cookie matches header (attacker can't read response body due to Same-Origin Policy)
 
 **Files**:
+
 - `server/middleware/csrf.middleware.ts` - CSRF middleware, error handling
 - `src/services/csrf.service.ts` - Frontend token management
 - `src/services/api.ts` - `fetchWithCsrf` helper for automatic token inclusion
@@ -209,12 +247,14 @@ TEST_USER_EMAIL=your.test.user@example.com
 ### Security Configuration
 
 Review agent uses `.claude/review/config/security.json` to:
+
 - Define authentication method (`cookie`, `header`, `both`)
 - Configure CSRF requirements
 - Enable/disable security checks
 - Set severity levels
 
 **CSRF Check Behavior**: Automatically skipped when:
+
 - Authentication method is `header` (no cookies = no CSRF risk)
 - `sameSite` is `strict` or `lax` (browser blocks cross-origin cookies)
 - Suppressed via `.claude/review/config/suppressions.json`
@@ -224,6 +264,7 @@ Review agent uses `.claude/review/config/security.json` to:
 False positives can be suppressed in `.claude/review/config/suppressions.json`:
 
 **Types**:
+
 1. **Specific**: Suppress exact file + line number
 2. **Pattern**: Suppress regex-matched paths (e.g., test files)
 3. **Inline**: Code comments (`// SECURITY-IGNORE: <reason>`)
@@ -255,6 +296,7 @@ See `.claude/SECURITY.md` for complete security documentation and best practices
      - Generic types - `T extends SomeConstraint`
 
 3. **Type Safety Examples**
+
    ```typescript
    // BAD - Using any
    const handleChange = (event: any) => {

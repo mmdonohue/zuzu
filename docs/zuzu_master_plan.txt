@@ -42,31 +42,13 @@ Here is the optimized plan incorporating these fixes.
         *   Only show results for 'active' problems
         *   If no: Call AI -> Save to `problems` -> Return.
         *   **Important!** use existing openrouter_events table and logging to save OpenRouter API calls with the result parsed and saved to problems table
-    *   `POST` /problems/run
-        ** import ivm from "isolated-vm";
-            - `code` → This is the code written in the code editor
-            - `call` → This is the function call text
-        export function executeScript(code, call) {
-          const isolate = new ivm.Isolate({ memoryLimit: 128 });
-          const context = isolate.createContextSync();
-          const script = isolate.compileScriptSync(code);
-          script.runSync(context);
-          const res = context.evalSync(`${call}.toString()`);
-          const cpuTime = Number(isolate.cpuTime) / 1000000;
-          const { used_heap_size } = isolate.getHeapStatisticsSync();
-          context.release();
-          script.release();
-          isolate.dispose();
-          return {
-            result: res,
-            time: cpuTime.toString(),
-            memory: used_heap_size / 1024,
-          };
-        }
     *   `POST /problems/attempt`: Save user solution/rating to `user_attempts`.
     *   `GET /progress`: Join tables to show user history.
 
 **Phase 3: Frontend Development **
+*   **Code Execution** 
+        **Sandpack** https://github.com/codesandbox/sandpack
+        - Sandpack is a component toolkit for creating your own live running code editing experience powered by CodeSandbox.
 *   **UI Layout:**
     *   **Sidebar:** Focus areas (buttons) + Progress Bar (visual percentage).
     *   **Main Area:**

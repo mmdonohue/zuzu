@@ -34,6 +34,7 @@
   "license": "MIT",
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.20.0",
+    "@codesandbox/sandpack-themes": "^2.0.21",
     "@emotion/react": "^11.11.3",
     "@monaco-editor/react": "^4.7.0",
     "@mui/icons-material": "^5.15.3",

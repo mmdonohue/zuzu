@@ -4,29 +4,16 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
-  Chip,
   CircularProgress,
   Container,
-  Divider,
-  Grid,
   Paper,
   Rating,
   Typography,
   Alert,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   ToggleButton,
   ToggleButtonGroup,
-  List,
-  ListItem,
-  ListItemText,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CodeIcon from "@mui/icons-material/Code";
-import LightbulbIcon from "@mui/icons-material/Lightbulb";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
 import masterLogo from "../assets/img/zuzu-master.png";
@@ -36,8 +23,6 @@ import { AppDispatch, RootState } from "../store";
 import {
   selectFocusArea,
   selectDifficulty,
-  toggleHints,
-  toggleSolution,
   generateProblem,
   saveAttempt,
   loadProgress,
@@ -421,9 +406,6 @@ const LeetMaster: React.FC = () => {
     error,
     selectedFocusArea,
     selectedDifficulty,
-    userProgress,
-    showHints,
-    showSolution,
   } = useSelector((state: RootState) => state.leetMaster);
 
   const [userRating, setUserRating] = React.useState<number>(0);
@@ -477,29 +459,6 @@ const LeetMaster: React.FC = () => {
     }
   };
 
-  const handleToggleHints = () => {
-    dispatch(toggleHints());
-  };
-
-  const handleToggleSolution = () => {
-    dispatch(toggleSolution());
-  };
-
-  const getDifficultyColor = (
-    difficulty: string,
-  ): "success" | "warning" | "error" => {
-    switch (difficulty.toLowerCase()) {
-      case "easy":
-        return "success";
-      case "medium":
-        return "warning";
-      case "hard":
-        return "error";
-      default:
-        return "warning";
-    }
-  };
-
   return (
     <Container maxWidth="xl" sx={{ mt: 0, mb: 4 }}>
       {/* Horizontal Header */}
@@ -547,8 +506,18 @@ const LeetMaster: React.FC = () => {
             color="text.secondary"
             sx={{ fontWeight: 400 }}
           >
-            <p>Your journey begins not when you step onto the mat or write your first line of code, but the moment you embrace the fall as your greatest teacher.</p>
-            <p>When you stop chasing the solution and start creating the space for it to arrive—just as the Tai Chi master yields to an incoming strike, you must yield to the complexity of the problem until the logic flows, effortless and unbidden, from the stillness of your own mind.</p>
+            <p>
+              Your journey begins not when you step onto the mat or write your
+              first line of code, but the moment you embrace the fall as your
+              greatest teacher.
+            </p>
+            <p>
+              When you stop chasing the solution and start creating the space
+              for it to arrive—just as the Tai Chi master yields to an incoming
+              strike, you must yield to the complexity of the problem until the
+              logic flows, effortless and unbidden, from the stillness of your
+              own mind.
+            </p>
           </Typography>
         </Box>
       </Box>
@@ -563,447 +532,183 @@ const LeetMaster: React.FC = () => {
         </Alert>
       )}
 
-      <Grid container spacing={3}>
-        {/* Left Sidebar - Focus Area Selector */}
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography
-                variant="overline"
+      {/* Focus Area and Difficulty Selector */}
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          gap: 2,
+          alignItems: "flex-end",
+          flexWrap: "wrap",
+        }}
+      >
+        <Box sx={{ flex: 1, minWidth: "400px" }}>
+          <Typography
+            variant="overline"
+            sx={{
+              fontWeight: 600,
+              letterSpacing: "0.1em",
+              fontSize: "0.75rem",
+              mb: 1,
+              display: "block",
+            }}
+          >
+            Focus Area
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            {FOCUS_AREAS.map((area) => (
+              <Button
+                key={area.id}
+                variant={
+                  selectedFocusArea === area.id ? "contained" : "outlined"
+                }
+                onClick={() => handleFocusAreaSelect(area.id)}
                 sx={{
-                  fontWeight: 600,
-                  letterSpacing: "0.1em",
-                  fontSize: "0.75rem",
+                  textTransform: "none",
+                  fontWeight: selectedFocusArea === area.id ? 600 : 400,
                 }}
               >
-                Focus Areas
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 0.5,
-                  mt: 2,
-                }}
-              >
-                {FOCUS_AREAS.map((area) => {
-                  const areaStats = userProgress?.by_focus_area[area.id];
-                  const attemptCount = areaStats?.count || 0;
+                {area.name}
+              </Button>
+            ))}
+          </Box>
+        </Box>
 
-                  return (
-                    <Box key={area.id}>
-                      <Button
-                        variant={
-                          selectedFocusArea === area.id
-                            ? "contained"
-                            : "outlined"
-                        }
-                        onClick={() => handleFocusAreaSelect(area.id)}
-                        sx={{
-                          width: "100%",
-                          justifyContent: "space-between",
-                          textAlign: "left",
-                          textTransform: "none",
-                          py: 1.5,
-                          px: 2,
-                          borderRadius: 1,
-                          fontWeight: selectedFocusArea === area.id ? 600 : 400,
-                          borderColor:
-                            selectedFocusArea === area.id
-                              ? "primary.main"
-                              : "divider",
-                          backgroundColor:
-                            selectedFocusArea === area.id
-                              ? "primary.main"
-                              : "transparent",
-                          "&:hover": {
-                            borderColor: "primary.main",
-                            backgroundColor:
-                              selectedFocusArea === area.id
-                                ? "primary.dark"
-                                : "action.hover",
-                          },
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{ fontWeight: "inherit" }}
-                        >
-                          {area.name}
-                        </Typography>
-                        {attemptCount > 0 && (
-                          <Chip
-                            label={attemptCount}
-                            size="small"
-                            sx={{
-                              height: 20,
-                              fontSize: "0.75rem",
-                              backgroundColor:
-                                selectedFocusArea === area.id
-                                  ? "rgba(255,255,255,0.3)"
-                                  : "action.hover",
-                              color:
-                                selectedFocusArea === area.id
-                                  ? "white"
-                                  : "text.secondary",
-                            }}
-                          />
-                        )}
-                      </Button>
-                      {attemptCount > 0 && selectedFocusArea === area.id && (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{
-                            display: "block",
-                            mt: 0.5,
-                            ml: 2,
-                            fontSize: "0.7rem",
-                          }}
-                        >
-                          {attemptCount} attempted • History coming soon
-                        </Typography>
-                      )}
-                    </Box>
-                  );
-                })}
-              </Box>
+        <Box sx={{ minWidth: "200px" }}>
+          <Typography
+            variant="overline"
+            sx={{
+              fontWeight: 600,
+              letterSpacing: "0.1em",
+              fontSize: "0.75rem",
+              mb: 1,
+              display: "block",
+            }}
+          >
+            Difficulty
+          </Typography>
+          <ToggleButtonGroup
+            value={selectedDifficulty}
+            exclusive
+            onChange={handleDifficultyChange}
+            fullWidth
+            size="small"
+          >
+            <ToggleButton
+              value="easy"
+              sx={{ textTransform: "none", fontWeight: 500 }}
+            >
+              Easy
+            </ToggleButton>
+            <ToggleButton
+              value="medium"
+              sx={{ textTransform: "none", fontWeight: 500 }}
+            >
+              Medium
+            </ToggleButton>
+            <ToggleButton
+              value="hard"
+              sx={{ textTransform: "none", fontWeight: 500 }}
+            >
+              Hard
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
 
-              <Divider sx={{ my: 2 }} />
+        {selectedFocusArea && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleGenerateProblem}
+            disabled={isGenerating}
+            startIcon={
+              isGenerating ? <CircularProgress size={20} /> : <RefreshIcon />
+            }
+          >
+            {isGenerating ? "Generating..." : "Generate Problem"}
+          </Button>
+        )}
+      </Box>
 
-              <Typography
-                variant="overline"
-                sx={{
-                  fontWeight: 600,
-                  letterSpacing: "0.1em",
-                  fontSize: "0.75rem",
-                }}
-              >
-                Difficulty
-              </Typography>
-              <ToggleButtonGroup
-                value={selectedDifficulty}
-                exclusive
-                onChange={handleDifficultyChange}
-                fullWidth
-                size="small"
-                sx={{ mt: 2 }}
-              >
-                <ToggleButton
-                  value="easy"
-                  sx={{ textTransform: "none", fontWeight: 500 }}
-                >
-                  Easy
-                </ToggleButton>
-                <ToggleButton
-                  value="medium"
-                  sx={{ textTransform: "none", fontWeight: 500 }}
-                >
-                  Medium
-                </ToggleButton>
-                <ToggleButton
-                  value="hard"
-                  sx={{ textTransform: "none", fontWeight: 500 }}
-                >
-                  Hard
-                </ToggleButton>
-              </ToggleButtonGroup>
+      {/* Problem Display */}
+      <Box>
+        {!currentProblem && !isGenerating && (
+          <Paper
+            sx={{
+              p: 6,
+              textAlign: "center",
+              backgroundColor: "background.default",
+            }}
+          >
+            <CodeIcon sx={{ fontSize: 60, color: "text.secondary", mb: 2 }} />
+            <Typography variant="h5" color="text.secondary" gutterBottom>
+              Select a focus area and generate a problem to get started
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Choose from Arrays, Strings, Hash Tables, Linked Lists, or Trees
+            </Typography>
+          </Paper>
+        )}
 
-              {selectedFocusArea && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{ mt: 2 }}
-                  onClick={handleGenerateProblem}
-                  disabled={isGenerating}
-                  startIcon={
-                    isGenerating ? (
-                      <CircularProgress size={20} />
-                    ) : (
-                      <RefreshIcon />
-                    )
-                  }
-                >
-                  {isGenerating ? "Generating..." : "Generate Problem"}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+        {isGenerating && (
+          <Paper sx={{ p: 6, textAlign: "center" }}>
+            <CircularProgress size={60} sx={{ mb: 2 }} />
+            <Typography variant="h6">Generating your problem...</Typography>
+            <Typography variant="body2" color="text.secondary">
+              This may take a few moments
+            </Typography>
+          </Paper>
+        )}
 
-          {/* Progress Stats */}
-          {userProgress && (
-            <Card sx={{ mt: 2 }}>
-              <CardContent>
-                <Typography
-                  variant="overline"
-                  sx={{
-                    fontWeight: 600,
-                    letterSpacing: "0.1em",
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  Progress
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1.5, mb: 1.5, fontWeight: 400 }}
-                >
-                  {userProgress.total_attempted} problems attempted
-                </Typography>
-                <Divider sx={{ my: 1.5 }} />
-                {Object.entries(userProgress.by_focus_area).map(
-                  ([area, stats]) => (
-                    <Box key={area} sx={{ mb: 1.5 }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          mb: 0.5,
-                        }}
-                      >
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                          {area.charAt(0).toUpperCase() + area.slice(1)}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {stats.count}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Rating
-                          value={stats.avg_rating}
-                          readOnly
-                          size="small"
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{ ml: 1 }}
-                          color="text.secondary"
-                        >
-                          {stats.avg_rating.toFixed(1)}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  ),
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </Grid>
+        {currentProblem && !isGenerating && (
+          <Box>
+            {/* Code Editor */}
+            <LeetMasterCodeEditor
+              problemJson={currentProblem.problem_json}
+              difficulty={currentProblem.difficulty}
+            />
 
-        {/* Center - Problem Display */}
-        <Grid item xs={12} md={9}>
-          {!currentProblem && !isGenerating && (
-            <Paper
+            {/* Actions */}
+            <Box
               sx={{
-                p: 6,
-                textAlign: "center",
-                backgroundColor: "background.default",
+                mt: 3,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              <CodeIcon sx={{ fontSize: 60, color: "text.secondary", mb: 2 }} />
-              <Typography variant="h5" color="text.secondary" gutterBottom>
-                Select a focus area and generate a problem to get started
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Choose from Arrays, Strings, Hash Tables, Linked Lists, or Trees
-              </Typography>
-            </Paper>
-          )}
-
-          {isGenerating && (
-            <Paper sx={{ p: 6, textAlign: "center" }}>
-              <CircularProgress size={60} sx={{ mb: 2 }} />
-              <Typography variant="h6">Generating your problem...</Typography>
-              <Typography variant="body2" color="text.secondary">
-                This may take a few moments
-              </Typography>
-            </Paper>
-          )}
-
-          {currentProblem && !isGenerating && (
-            <Card>
-              <CardContent>
-                {/* Problem Header */}
-                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  <Typography variant="h5" component="h2" sx={{ flexGrow: 1 }}>
-                    {currentProblem.problem_json.title}
-                  </Typography>
-                  <Chip
-                    label={currentProblem.difficulty}
-                    color={getDifficultyColor(currentProblem.difficulty)}
-                    sx={{ ml: 2 }}
-                  />
-                </Box>
-
-                {/* Description */}
-                <Typography
-                  variant="body1"
-                  paragraph
-                  sx={{ whiteSpace: "pre-wrap" }}
-                >
-                  {currentProblem.problem_json.description}
+              <Box>
+                <Typography variant="body2" gutterBottom>
+                  Rate this problem:
                 </Typography>
-
-                {/* Constraints */}
-                {currentProblem.problem_json.constraints &&
-                  currentProblem.problem_json.constraints.length > 0 && (
-                    <>
-                      <Divider sx={{ my: 3 }} />
-                      <Typography
-                        variant="overline"
-                        sx={{
-                          fontWeight: 600,
-                          letterSpacing: "0.1em",
-                          fontSize: "0.75rem",
-                        }}
-                      >
-                        Constraints
-                      </Typography>
-                      <List dense sx={{ mt: 1 }}>
-                        {currentProblem.problem_json.constraints.map(
-                          (constraint, index) => (
-                            <ListItem key={index}>
-                              <ListItemText primary={constraint} />
-                            </ListItem>
-                          ),
-                        )}
-                      </List>
-                    </>
-                  )}
-
-                {/* Complexity Info */}
-                <Divider sx={{ my: 3 }} />
-                <Box sx={{ display: "flex", gap: 2 }}>
-                  <Chip
-                    label={`Time: ${currentProblem.problem_json.time_complexity}`}
-                    variant="outlined"
-                  />
-                  <Chip
-                    label={`Space: ${currentProblem.problem_json.space_complexity}`}
-                    variant="outlined"
-                  />
-                </Box>
-
-                {/* Hints Accordion */}
-                {currentProblem.problem_json.hints &&
-                  currentProblem.problem_json.hints.length > 0 && (
-                    <>
-                      <Divider sx={{ my: 3 }} />
-                      <Accordion
-                        expanded={showHints}
-                        onChange={handleToggleHints}
-                      >
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            <LightbulbIcon sx={{ mr: 1 }} />
-                            <Typography>
-                              Hints ({currentProblem.problem_json.hints.length})
-                            </Typography>
-                          </Box>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <List>
-                            {currentProblem.problem_json.hints.map(
-                              (hint, index) => (
-                                <ListItem key={index}>
-                                  <ListItemText
-                                    primary={`${index + 1}. ${hint}`}
-                                  />
-                                </ListItem>
-                              ),
-                            )}
-                          </List>
-                        </AccordionDetails>
-                      </Accordion>
-                    </>
-                  )}
-
-                {/* Solution Accordion */}
-                <Accordion
-                  expanded={showSolution}
-                  onChange={handleToggleSolution}
-                  sx={{ mt: 1 }}
-                >
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <VisibilityIcon sx={{ mr: 1 }} />
-                      <Typography>Solution</Typography>
-                    </Box>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Paper
-                      sx={{
-                        p: 2,
-                        backgroundColor: "grey.900",
-                        color: "grey.50",
-                        overflow: "auto",
-                      }}
-                    >
-                      <pre
-                        style={{
-                          margin: 0,
-                          fontFamily: "monospace",
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        {currentProblem.problem_json.solution_code}
-                      </pre>
-                    </Paper>
-                  </AccordionDetails>
-                </Accordion>
-
-                {/* Code Editor */}
-                <LeetMasterCodeEditor
-                  starterCode={currentProblem.problem_json.starter_code}
-                  testCases={currentProblem.problem_json.test_cases}
+                <Rating
+                  value={userRating}
+                  onChange={handleRatingChange}
+                  disabled={isSavingAttempt}
+                  size="large"
                 />
-
-                {/* Actions */}
-                <Divider sx={{ my: 3 }} />
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box>
-                    <Typography variant="body2" gutterBottom>
-                      Rate this problem:
-                    </Typography>
-                    <Rating
-                      value={userRating}
-                      onChange={handleRatingChange}
-                      disabled={isSavingAttempt}
-                      size="large"
-                    />
-                    {isSavingAttempt && (
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ ml: 1 }}
-                      >
-                        Saving...
-                      </Typography>
-                    )}
-                  </Box>
-                  <Button
-                    variant="outlined"
-                    onClick={handleGenerateProblem}
-                    disabled={isGenerating}
-                    startIcon={<RefreshIcon />}
+                {isSavingAttempt && (
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ ml: 1 }}
                   >
-                    New Problem
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          )}
-        </Grid>
-      </Grid>
+                    Saving...
+                  </Typography>
+                )}
+              </Box>
+              <Button
+                variant="outlined"
+                onClick={handleGenerateProblem}
+                disabled={isGenerating}
+                startIcon={<RefreshIcon />}
+              >
+                New Problem
+              </Button>
+            </Box>
+          </Box>
+        )}
+      </Box>
     </Container>
   );
 };

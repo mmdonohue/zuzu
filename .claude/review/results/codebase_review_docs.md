@@ -1,8 +1,8 @@
 # Codebase Review Report
 
-**Generated**: 2026-01-08 13:55:09 UTC
+**Generated**: 2026-01-14 19:45:29 UTC
 **Review Version**: 1.0.0
-**Commit**: 8176842 (main)
+**Commit**: 0a8d585 (main)
 **Total Findings**: 5
 
 
@@ -39,11 +39,11 @@ The provider hierarchy documentation does not mention AuthProvider, but it exist
 
 **Location**: `.claude/CLAUDE.md:54`
 
-Documentation lists 2 routes but codebase has 10 routes.
+Documentation lists 0 routes but codebase has 10 routes.
 
 **Actual**: 10 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account
 
-**Documented**: 2 routes: Home, About
+**Documented**: 0 routes: 
 
 **Recommendation**: Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account
 
