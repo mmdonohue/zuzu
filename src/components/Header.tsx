@@ -20,6 +20,7 @@ import PersonIcon from "@mui/icons-material/Person";
 
 import logo from "../assets/img/zuzu-logo.png";
 import { useAuth } from "@/context/AuthContext";
+import { useBackground, BACKGROUND_COLORS } from "@/context/BackgroundContext";
 
 function Logo() {
   return <img src={logo} alt="Logo" className="w-12 sm:w-10 md:w-16 lg:w-16" />;
@@ -43,6 +44,12 @@ const Header: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { isAuthenticated, user, logout } = useAuth();
+  const {
+    backgroundColor,
+    setBackgroundColor,
+    ditherEnabled,
+    setDitherEnabled,
+  } = useBackground();
   const navigate = useNavigate();
 
   const pages = isAuthenticated
@@ -87,7 +94,11 @@ const Header: React.FC = () => {
   };
 
   return (
-    <AppBar position="static" className="bg-zuzu-primary">
+    <AppBar
+      position="static"
+      className="bg-zuzu-primary"
+      sx={{ backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", backdropFilter: "blur(2px)" }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/*  Logo() */}
@@ -179,6 +190,89 @@ const Header: React.FC = () => {
               >
                 {page.name}
               </Button>
+            ))}
+          </Box>
+
+          {/* Background Controls */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: 0.5,
+              mr: 2,
+              alignItems: "center",
+            }}
+          >
+            {/* Dither Pattern Button */}
+            <Tooltip title="dither">
+              <Box
+                onClick={() => setDitherEnabled(!ditherEnabled)}
+                sx={{
+                  width: 28,
+                  height: 28,
+                  backgroundImage: "url(/images/dither.png)",
+                  backgroundSize: "28px",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "repeat",
+                  cursor: "pointer",
+                  border: ditherEnabled
+                    ? "2px solid #10a1f2"
+                    : "1px solid #fff",
+                  borderRadius: 1,
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                    border: "2px solid #fff",
+                  },
+                }}
+              />
+            </Tooltip>
+
+            {/* Divider */}
+            <Box
+              sx={{
+                width: "1px",
+                height: 28,
+                backgroundColor: "rgba(255,255,255,0.5)",
+                mx: 0.5,
+              }}
+            />
+
+            {/* Color Options */}
+            {BACKGROUND_COLORS.map((bg) => (
+              <Tooltip key={bg.color} title={bg.name}>
+                <Box
+                  onClick={() => setBackgroundColor(bg.color)}
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    backgroundColor:
+                      bg.color === "transparent"
+                        ? "rgba(255,255,255,0.2)"
+                        : bg.color,
+                    backgroundBlendMode:
+                      bg.color === "transparent" ? "normal" : "overlay",
+                    backgroundImage:
+                      bg.color === "transparent"
+                        ? "linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3)), linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.3) 75%, rgba(255,255,255,0.3))"
+                        : "none",
+                    backgroundSize:
+                      bg.color === "transparent" ? "8px 8px" : "auto",
+                    backgroundPosition:
+                      bg.color === "transparent" ? "0 0, 4px 4px" : "0 0",
+                    cursor: "pointer",
+                    border:
+                      backgroundColor === bg.color
+                        ? "2px solid #10a1f2"
+                        : "1px solid #fff",
+                    borderRadius: 1,
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      transform: "scale(1.1)",
+                      border: "2px solid #fff",
+                    },
+                  }}
+                />
+              </Tooltip>
             ))}
           </Box>
 

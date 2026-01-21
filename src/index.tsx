@@ -1,17 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
-import App from './App';
-import { store } from './store';
-import { AuthProvider } from './context/AuthContext';
-import { SnackbarProvider } from './contexts/SnackbarContext';
-import './styles/globals.css';
+import App from "./App";
+import { store } from "./store";
+import { AuthProvider } from "./context/AuthContext";
+import { BackgroundProvider } from "./context/BackgroundContext";
+import { SnackbarProvider } from "./contexts/SnackbarContext";
+import "./styles/globals.css";
 
 // Create a client for TanStack Query
 const queryClient = new QueryClient({
@@ -27,10 +28,10 @@ const queryClient = new QueryClient({
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#6F87BF',
+      main: "#6F87BF",
     },
     secondary: {
-      main: '#001133',
+      main: "#001133",
     },
   },
   typography: {
@@ -40,7 +41,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
+          textTransform: "none",
         },
       },
     },
@@ -48,7 +49,7 @@ const theme = createTheme({
 });
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 root.render(
@@ -60,7 +61,9 @@ root.render(
             <CssBaseline />
             <SnackbarProvider>
               <AuthProvider>
-                <App />
+                <BackgroundProvider>
+                  <App />
+                </BackgroundProvider>
               </AuthProvider>
             </SnackbarProvider>
           </ThemeProvider>
@@ -68,5 +71,5 @@ root.render(
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

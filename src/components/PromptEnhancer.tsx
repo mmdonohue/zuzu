@@ -1,22 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  Grid,
-  Alert,
-  CircularProgress,
-  Divider,
-  IconButton,
-  Chip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-} from "@mui/material";
+import { Box, Button, TextField, Typography, Paper, Grid, Alert, CircularProgress, Divider, IconButton, Chip, List, ListItem, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 import {
   AutoFixHigh as EnhanceIcon,
   ContentCopy as CopyIcon,
@@ -138,7 +121,7 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
 
         <Grid container spacing={3}>
           {/* Original Prompt */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               required
@@ -154,7 +137,7 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
           </Grid>
 
           {/* Context (Optional) */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               multiline
@@ -169,7 +152,7 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
           </Grid>
 
           {/* Style Guide */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <StyleGuideSelector
               value={styleGuideId}
               onChange={(id) => setStyleGuideId(id)}
@@ -179,7 +162,7 @@ const PromptEnhancer: React.FC<PromptEnhancerProps> = ({
           </Grid>
 
           {/* Enhance Button */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Button
               fullWidth
               variant="contained"

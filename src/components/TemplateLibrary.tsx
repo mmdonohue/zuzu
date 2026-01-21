@@ -1,19 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Grid,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Typography,
-  CircularProgress,
-  Alert,
-  Paper,
-  InputAdornment,
-  Chip,
-} from "@mui/material";
+import { Box, Grid, TextField, FormControl, InputLabel, Select, MenuItem, Typography, CircularProgress, Alert, Paper, InputAdornment, Chip } from '@mui/material';
 import { Search as SearchIcon } from "@mui/icons-material";
 import { useTemplates } from "../hooks/useTemplates";
 import { useSelector, useDispatch } from "react-redux";
@@ -27,6 +13,9 @@ import {
 import TemplateCard from "./TemplateCard";
 import TemplateDetailView from "./TemplateDetailView";
 import type { Template } from "../store/slices/templatesSlice";
+
+const bgOptions = ["#ffffff44", "#00000044", "#ff000044", "#00ff0044", "#0000ff44"];
+const bgOptionIndex = 1;
 
 type TemplateLibraryProps = {
   onSelectTemplate?: (template: Template) => void;
@@ -119,23 +108,42 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   return (
     <Box>
       {/* Filters Section */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
+      <Paper
+        sx={{
+          p: 2,
+          mb: 3,
+          backgroundColor: bgOptions[bgOptionIndex],
+          border: "1px solid #fff",
+        }}
+      >
+        <Typography variant="h6" gutterBottom sx={{ color: "#fff" }}>
           Filter Templates
         </Typography>
         <Grid container spacing={2}>
           {/* Search */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
               size="small"
               placeholder="Search templates..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
+              sx={{
+                backgroundColor: "#00000044",
+                border: "1px solid #fff",
+                borderRadius: 1,
+                "& .MuiInputBase-input": {
+                  color: "#fff",
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "#ffffff99",
+                  opacity: 1,
+                },
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
+                    <SearchIcon fontSize="small" sx={{ color: "#fff" }} />
                   </InputAdornment>
                 ),
               }}
@@ -143,13 +151,51 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
           </Grid>
 
           {/* Category Filter */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth size="small">
-              <InputLabel>Category</InputLabel>
+              <InputLabel sx={{ color: "#fff !important", "& .Mui-focused": { color: '#fff' }}} >Category</InputLabel>
               <Select
                 value={filters.category || ""}
                 label="Category"
                 onChange={(e) => handleCategoryChange(e.target.value)}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      backgroundColor: bgOptions[bgOptionIndex],
+                      color: '#fff',
+                    },
+                  },
+                  sx: {
+                    // Target all MenuItem components within the Menu
+                    "& .MuiMenuItem-root": {
+                      // Default styles for the menu items
+                      backgroundColor: bgOptions[bgOptionIndex],
+                      backdropFilter: "blur(4px)",
+                      "&:hover": {
+                        backgroundColor: "#ffffff66", // Example hover background color (light red)
+                      },
+                      "&.Mui-selected": {
+                        backgroundColor: "transparent", // Optional: Style for the selected item
+                        "&:hover": {
+                          backgroundColor: "transparent", // Optional: Hover style for selected item
+                        },
+                      },
+                    }
+                  }}
+                }
+                sx={{
+                  backgroundColor: "#ffffff44",
+                  color: "#fff",
+                  border: "1px solid #fff",
+                  "& .MuiInputLabel-root": { color: '#fff' }, 
+                  "& .MuiInputLabel-root.Mui-focused": { color: '#fff' }, 
+                  "& .MuiSvgIcon-root": {
+                    color: "#fff",
+                  },
+                  "&:hover": {
+                    backgroundColor: bgOptions[bgOptionIndex],
+                  },
+                }}
               >
                 <MenuItem value="">All Categories</MenuItem>
                 <MenuItem value="code">Code</MenuItem>
@@ -162,13 +208,49 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
           </Grid>
 
           {/* Tag Filter */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth size="small">
-              <InputLabel>Tag</InputLabel>
+              <InputLabel sx={{ color: "#fff !important", "& .Mui-focused": { color: '#fff' }}}>Tag</InputLabel>
               <Select
                 value={filters.tag || ""}
                 label="Tag"
                 onChange={(e) => dispatch(setFilterTag(e.target.value || null))}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      backgroundColor: bgOptions[bgOptionIndex],
+                      color: '#fff !important',
+                    },
+                  },
+                  sx: {
+                    // Target all MenuItem components within the Menu
+                    "& .MuiMenuItem-root": {
+                      // Default styles for the menu items
+                      backgroundColor: bgOptions[bgOptionIndex],
+                      backdropFilter: "blur(4px)",
+                      "&:hover": {
+                        backgroundColor: "#ffffff66", // Example hover background color (light red)
+                      },
+                      "&.Mui-selected": {
+                        backgroundColor: "transparent", // Optional: Style for the selected item
+                        "&:hover": {
+                          backgroundColor: "transparent", // Optional: Hover style for selected item
+                        },
+                      },
+                    }
+                  }}
+                }
+                sx={{
+                  backgroundColor: "#ffffff44",
+                  color: "#fff",
+                  border: "1px solid #fff",
+                  "& .MuiSvgIcon-root": {
+                    color: "#fff",
+                  },
+                  "&:hover": {
+                    backgroundColor: "#ffffff66",
+                  },
+                }}
               >
                 <MenuItem value="">All Tags</MenuItem>
                 {allTags.map((tag) => (
@@ -192,7 +274,7 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               flexWrap: "wrap",
             }}
           >
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "#ffffff99" }}>
               Active filters:
             </Typography>
             {filters.category && (
@@ -244,8 +326,15 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       )}
 
       {!isLoading && !error && templates && templates.length === 0 && (
-        <Paper sx={{ p: 4, textAlign: "center" }}>
-          <Typography variant="body1" color="text.secondary">
+        <Paper
+          sx={{
+            p: 4,
+            textAlign: "center",
+            backgroundColor: "#ffffff44",
+            border: "1px solid #fff",
+          }}
+        >
+          <Typography variant="body1" sx={{ color: "#ffffff99" }}>
             No templates found. Try adjusting your filters.
           </Typography>
         </Paper>
@@ -254,14 +343,14 @@ const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       {!isLoading && !error && templates && templates.length > 0 && (
         <>
           <Box sx={{ mb: 2 }}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "#fff" }}>
               Showing {templates.length} template
               {templates.length !== 1 ? "s" : ""}
             </Typography>
           </Box>
           <Grid container spacing={3}>
             {templates.map((template) => (
-              <Grid item xs={12} sm={6} md={4} key={template.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.id}>
                 <TemplateCard
                   template={template}
                   onSelect={handleSelectTemplate}

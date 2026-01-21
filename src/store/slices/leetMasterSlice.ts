@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { csrfService } from "@/services/csrf.service";
 
 // Type definitions
 type TestCase = {
@@ -108,11 +109,8 @@ export const saveAttempt = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      // Get CSRF token
-      const csrfResponse = await fetch("/api/csrf-token", {
-        credentials: "include",
-      });
-      const { csrfToken } = await csrfResponse.json();
+      // Get CSRF token from service (with caching)
+      const csrfToken = await csrfService.getToken();
 
       const response = await fetch("/api/leetmaster/attempts", {
         method: "POST",
@@ -130,6 +128,33 @@ export const saveAttempt = createAsyncThunk(
 
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // If CSRF validation failed, refresh token and retry once
+        if (response.status === 403 && errorData.code === "CSRF_VALIDATION_FAILED") {
+          const newToken = await csrfService.refreshToken();
+          
+          const retryResponse = await fetch("/api/leetmaster/attempts", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": newToken,
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              problem_id: problemId,
+              rating,
+              user_solution: userSolution || null,
+            }),
+          });
+          
+          if (!retryResponse.ok) {
+            const retryError = await retryResponse.json();
+            throw new Error(retryError.error || "Failed to save attempt");
+          }
+          
+          return await retryResponse.json();
+        }
+        
         throw new Error(errorData.error || "Failed to save attempt");
       }
 

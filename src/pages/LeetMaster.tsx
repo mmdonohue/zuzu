@@ -18,6 +18,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 
 import masterLogo from "../assets/img/zuzu-master.png";
 import LeetMasterCodeEditor from "../components/LeetMasterCodeEditor";
+import { COLORS } from "@/styles/themes";
 
 import { AppDispatch, RootState } from "../store";
 import {
@@ -467,11 +468,11 @@ const LeetMaster: React.FC = () => {
         <Card
           sx={{
             p: 2,
-            border: "2px solid",
-            borderColor: "divider",
+            border: `1px solid ${COLORS.borderWhite}`,
             textAlign: "center",
             minWidth: 200,
-            backgroundColor: "#f7e9cd",
+            backgroundColor: COLORS.transparentWhite,
+            color: COLORS.textPrimary,
           }}
         >
           <Typography
@@ -482,6 +483,8 @@ const LeetMaster: React.FC = () => {
               letterSpacing: "0.1em",
               fontSize: "0.75rem",
               mb: 1,
+              color: COLORS.textPrimary,
+              backdropFilter: "blur(2px)"
             }}
           >
             CURRENT BELT
@@ -489,7 +492,7 @@ const LeetMaster: React.FC = () => {
           <Box sx={{ display: "flex", justifyContent: "center", my: 1 }}>
             {getBelt()}
           </Box>
-          <Typography variant="body2" sx={{ fontWeight: 500, mt: 1 }}>
+          <Typography variant="body2" sx={{ fontWeight: 500, mt: 1, color: COLORS.textPrimary }}>
             6th KYU
           </Typography>
         </Card>
@@ -497,14 +500,13 @@ const LeetMaster: React.FC = () => {
           <Typography
             variant="h3"
             component="h1"
-            sx={{ mb: 0.5, fontWeight: 600, letterSpacing: "-0.02em" }}
+            sx={{ mb: 0.5, fontWeight: 600, letterSpacing: "-0.02em", color: COLORS.textPrimary }}
           >
             Leet Master
           </Typography>
           <Typography
             variant="body2"
-            color="text.secondary"
-            sx={{ fontWeight: 400 }}
+            sx={{ fontWeight: 400, color: COLORS.textSecondary }}
           >
             <p>
               Your journey begins not when you step onto the mat or write your
@@ -525,7 +527,11 @@ const LeetMaster: React.FC = () => {
       {error && (
         <Alert
           severity="error"
-          sx={{ mb: 3 }}
+          sx={{ 
+            mb: 3,
+            backgroundColor: COLORS.transparentWhite,
+            border: `1px solid ${COLORS.borderWhite}`,
+          }}
           onClose={() => dispatch(clearError())}
         >
           {error}
@@ -542,15 +548,17 @@ const LeetMaster: React.FC = () => {
           flexWrap: "wrap",
         }}
       >
-        <Box sx={{ flex: 1, minWidth: "400px" }}>
+        <Box sx={{ flex: 1, p: 1, minWidth: "400px" , maxWidth: "500px", backdropFilter: "blur(2px)", backgroundColor: COLORS.transparentWhite, border: `1px solid ${COLORS.borderWhite}` }}>
           <Typography
             variant="overline"
             sx={{
+              minWidth: "200px",
               fontWeight: 600,
               letterSpacing: "0.1em",
               fontSize: "0.75rem",
               mb: 1,
               display: "block",
+              color: COLORS.textPrimary,
             }}
           >
             Focus Area
@@ -559,13 +567,15 @@ const LeetMaster: React.FC = () => {
             {FOCUS_AREAS.map((area) => (
               <Button
                 key={area.id}
-                variant={
-                  selectedFocusArea === area.id ? "contained" : "outlined"
-                }
+                variant={"outlined"}
                 onClick={() => handleFocusAreaSelect(area.id)}
                 sx={{
                   textTransform: "none",
-                  fontWeight: selectedFocusArea === area.id ? 600 : 400,
+                  fontWeight: selectedFocusArea === area.id ? 500 : 400,
+                  color: selectedFocusArea === area.id ? "#000" : COLORS.transparentBlackDark,
+                  backgroundColor: selectedFocusArea === area.id ? COLORS.transparentBlack : COLORS.transparent,
+                  backdropFilter: "blur(2px)",
+                  border: "#000 1px solid"
                 }}
               >
                 {area.name}
@@ -574,7 +584,7 @@ const LeetMaster: React.FC = () => {
           </Box>
         </Box>
 
-        <Box sx={{ minWidth: "200px" }}>
+        <Box sx={{ p: 1 , backdropFilter: "blur(2px)", backgroundColor: COLORS.transparentWhite, border: `1px solid ${COLORS.borderWhite}`}}>
           <Typography
             variant="overline"
             sx={{
@@ -583,6 +593,7 @@ const LeetMaster: React.FC = () => {
               fontSize: "0.75rem",
               mb: 1,
               display: "block",
+              color: COLORS.textPrimary,
             }}
           >
             Difficulty
@@ -614,20 +625,18 @@ const LeetMaster: React.FC = () => {
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>
-
-        {selectedFocusArea && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleGenerateProblem}
-            disabled={isGenerating}
-            startIcon={
-              isGenerating ? <CircularProgress size={20} /> : <RefreshIcon />
-            }
-          >
-            {isGenerating ? "Generating..." : "Generate Problem"}
-          </Button>
-        )}
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleGenerateProblem}
+          disabled={isGenerating}
+          startIcon={
+            isGenerating ? <CircularProgress size={20} /> : <RefreshIcon />
+          }
+          sx={{ border: `1px solid ${COLORS.transparentBlackDark}`, backgroundColor: COLORS.transparentBlack, color: "#fff", "&:hover": { backgroundColor: COLORS.transparentBlackDark } }}
+        >
+          {isGenerating ? "Generating..." : "Generate Problem"}
+        </Button>
       </Box>
 
       {/* Problem Display */}
@@ -637,24 +646,30 @@ const LeetMaster: React.FC = () => {
             sx={{
               p: 6,
               textAlign: "center",
-              backgroundColor: "background.default",
+              backgroundColor: COLORS.transparentWhite,
+              border: `1px solid ${COLORS.borderWhite}`,
             }}
           >
-            <CodeIcon sx={{ fontSize: 60, color: "text.secondary", mb: 2 }} />
-            <Typography variant="h5" color="text.secondary" gutterBottom>
+            <CodeIcon sx={{ fontSize: 60, color: COLORS.textSecondary, mb: 2 }} />
+            <Typography variant="h5" sx={{ color: COLORS.textSecondary }} gutterBottom>
               Select a focus area and generate a problem to get started
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: COLORS.textSecondary }}>
               Choose from Arrays, Strings, Hash Tables, Linked Lists, or Trees
             </Typography>
           </Paper>
         )}
 
         {isGenerating && (
-          <Paper sx={{ p: 6, textAlign: "center" }}>
-            <CircularProgress size={60} sx={{ mb: 2 }} />
-            <Typography variant="h6">Generating your problem...</Typography>
-            <Typography variant="body2" color="text.secondary">
+          <Paper sx={{ 
+            p: 6, 
+            textAlign: "center",
+            backgroundColor: COLORS.transparentWhite,
+            border: `1px solid ${COLORS.borderWhite}`,
+          }}>
+            <CircularProgress size={60} sx={{ mb: 2, color: COLORS.textPrimary }} />
+            <Typography variant="h6" sx={{ color: COLORS.textPrimary }}>Generating your problem...</Typography>
+            <Typography variant="body2" sx={{ color: COLORS.textSecondary }}>
               This may take a few moments
             </Typography>
           </Paper>
@@ -678,7 +693,7 @@ const LeetMaster: React.FC = () => {
               }}
             >
               <Box>
-                <Typography variant="body2" gutterBottom>
+                <Typography variant="body2" gutterBottom sx={{ color: COLORS.textPrimary }}>
                   Rate this problem:
                 </Typography>
                 <Rating
@@ -686,12 +701,12 @@ const LeetMaster: React.FC = () => {
                   onChange={handleRatingChange}
                   disabled={isSavingAttempt}
                   size="large"
+                  sx={{ color: COLORS.accentBlue }}
                 />
                 {isSavingAttempt && (
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    sx={{ ml: 1 }}
+                    sx={{ ml: 1, color: COLORS.textSecondary }}
                   >
                     Saving...
                   </Typography>

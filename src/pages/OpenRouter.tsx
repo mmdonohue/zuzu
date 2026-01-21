@@ -32,6 +32,7 @@ import {
   Collapse,
   Rating,
 } from "@mui/material";
+
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import {
   RefreshRounded,
@@ -71,6 +72,19 @@ import {
   DialogTitle,
   DialogContentText,
 } from "@mui/material";
+import Zoom from "@mui/material/Zoom";
+import { BACKGROUND_COLORS } from "@/context/BackgroundContext";
+import { ThemeProvider } from '@mui/material/styles';
+import { COLORS, darkTheme } from "@/styles/themes";
+
+// Dialog Paper styling for transparent white backgrounds
+const dialogPaperProps = {
+  sx: {
+    backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
+    border: "1px solid #fff",
+    color: "#fff",
+  },
+};
 
 // Define types
 type Conversation = {
@@ -174,6 +188,18 @@ const OpenRouterComponent = () => {
   const createTemplateMutation = useCreateTemplate();
   const updateTemplateMutation = useUpdateTemplate();
   const deleteTemplateMutation = useDeleteTemplate();
+
+  // remove later
+
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   // State for tabs
   const [tabValue, setTabValue] = useState(0);
@@ -292,9 +318,9 @@ const OpenRouterComponent = () => {
   const [systemMessage, setSystemMessage] = useState("");
 
   // State for conversation history
-  const [historyTimeframe, setHistoryTimeframe] = useState<"day" | "week">(
-    "day",
-  );
+  const [historyTimeframe, setHistoryTimeframe] = useState<
+    "day" | "week" | "all"
+  >("day");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
@@ -338,11 +364,11 @@ const OpenRouterComponent = () => {
     {
       field: "created",
       headerName: "Date",
-      width: 170,
+      width: 80,
       valueFormatter: (value: string | Date | number | undefined) => {
         if (!value) return "N/A";
         try {
-          return format(new Date(value), "MMM d, yyyy h:mm a");
+          return format(new Date(value), "MMM d, yy h:mm a");
         } catch (error) {
           console.error("Error formatting date:", error, value);
           return String(value);
@@ -352,7 +378,7 @@ const OpenRouterComponent = () => {
     {
       field: "user_id",
       headerName: "User",
-      width: 130,
+      width: 60,
       renderCell: (params: GridRenderCellParams) => {
         const firstName = params.row.first_name;
         const lastName = params.row.last_name;
@@ -360,10 +386,14 @@ const OpenRouterComponent = () => {
 
         // Display full name if available, otherwise show user_id
         const displayText =
-          firstName && lastName ? `${firstName} ${lastName}` : userId || "N/A";
+          firstName && lastName
+            ? `${firstName[0]}${lastName[0]}`
+            : userId || "N/A";
 
         return (
-          <Typography sx={{ fontSize: "0.875rem" }}>{displayText}</Typography>
+          <Typography sx={{ fontSize: "0.875rem", color: "#fff" }}>
+            {displayText}
+          </Typography>
         );
       },
     },
@@ -377,6 +407,11 @@ const OpenRouterComponent = () => {
           <Chip
             size="small"
             label={modelName}
+            sx={{
+              color: "#fff",
+              border: "1px solid #fff",
+              borderRadius: "5px",
+            }}
             onClick={() => {
               setModel(modelName);
               setTabValue(0);
@@ -388,12 +423,12 @@ const OpenRouterComponent = () => {
     {
       field: "template_id",
       headerName: "Template",
-      width: 150,
+      width: 60,
       renderCell: (params: GridRenderCellParams) => {
         const template = params.row.prompt_templates;
         if (!template)
           return (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: "#ffffff99" }}>
               -
             </Typography>
           );
@@ -426,8 +461,33 @@ const OpenRouterComponent = () => {
       renderCell: (params: GridRenderCellParams) => {
         const text = params.value as string;
         return (
-          <Tooltip title={text} placement="top">
-            <Typography>
+          <Tooltip
+            title={text.split("\n").join("<br>")}
+            placement="right"
+            slots={{
+              transition: Zoom,
+            }}
+            slotProps={{
+              tooltip: {
+                sx: {
+                  color: "#fff",
+                  backgroundColor: "#000",
+                  padding: 2, // 'p: 1' shorthand works here too
+                },
+              },
+            }}
+          >
+            <Typography
+              sx={{
+                color: "#fff",
+                lineHeight: 1.2,
+                fontSize: "12px",
+                maxWidth: 300,
+                backgroundColor: "#0000003f",
+                p: "5px",
+                borderRadius: "5px",
+              }}
+            >
               {text.length > 60 ? text.substring(0, 60) + "..." : text}
             </Typography>
           </Tooltip>
@@ -437,13 +497,38 @@ const OpenRouterComponent = () => {
     {
       field: "response",
       headerName: "Response",
-      width: 320,
+      width: 200,
       flex: 1,
       renderCell: (params: GridRenderCellParams) => {
         const text = params.value as string;
         return (
-          <Tooltip title={text} placement="top">
-            <Typography>
+          <Tooltip
+            title={text.split("\n").join("<br>")}
+            placement="right"
+            slots={{
+              transition: Zoom,
+            }}
+            slotProps={{
+              tooltip: {
+                sx: {
+                  color: "#fff",
+                  backgroundColor: "#000000",
+                  padding: 2, // 'p: 1' shorthand works here too
+                },
+              },
+            }}
+          >
+            <Typography
+              sx={{
+                color: "#fff",
+                lineHeight: 1.2,
+                fontSize: "12px",
+                maxWidth: 300,
+                backgroundColor: "#0000003f",
+                p: "5px",
+                borderRadius: "5px",
+              }}
+            >
               {text.length > 100 ? text.substring(0, 100) + "..." : text}
             </Typography>
           </Tooltip>
@@ -469,6 +554,7 @@ const OpenRouterComponent = () => {
         return (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Rating
+              sx={{ "& .MuiRating-iconEmpty": { color: "#ffffff99" } }}
               value={rating === -1 ? null : rating}
               onChange={(_event, newValue) => {
                 if (newValue !== null && eventId) {
@@ -1216,7 +1302,8 @@ const OpenRouterComponent = () => {
             justifyContent: "space-between",
             px: 2,
             py: 1,
-            bgcolor: "background.paper",
+            color: "#fff",
+            backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
             borderRadius: 1,
             cursor: "pointer",
             "&:hover": {
@@ -1240,14 +1327,66 @@ const OpenRouterComponent = () => {
       <Tabs
         value={tabValue}
         onChange={(_, newValue) => setTabValue(newValue)}
-        sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
+        sx={{
+          mb: 3,
+          borderBottom: 1,
+          borderColor: "#fff",
+          backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
+        }}
       >
-        <Tab label="Chat" />
-        <Tab label="History" />
-        <Tab label="Templates" />
-        <Tab label="Activity" />
+        <Tab
+          label="Chat"
+          sx={{
+            color: "#ffffff99",
+            backgroundColor: "#0000002a",
+            m: 0.5,
+            "&.Mui-selected": {
+              backgroundColor: "#ffffff34",
+              color: "#fff",
+              fontWeight: 600,
+            },
+          }}
+        />
+        <Tab
+          label="History"
+          sx={{
+            color: "#ffffff99",
+            backgroundColor: "#0000002a",
+            m: 0.5,
+            "&.Mui-selected": {
+              backgroundColor: "#ffffff34",
+              color: "#fff",
+              fontWeight: 600,
+            },
+          }}
+        />
+        <Tab
+          label="Templates"
+          sx={{
+            color: "#ffffff99",
+            backgroundColor: "#0000002a",
+            m: 0.5,
+            "&.Mui-selected": {
+              backgroundColor: "#ffffff34",
+              color: "#fff",
+              fontWeight: 600,
+            },
+          }}
+        />
+        <Tab
+          label="Activity"
+          sx={{
+            color: "#ffffff99",
+            backgroundColor: "#0000002a",
+            m: 0.5,
+            "&.Mui-selected": {
+              backgroundColor: "#ffffff34",
+              color: "#fff",
+              fontWeight: 600,
+            },
+          }}
+        />
       </Tabs>
-
       {/* Chat Tab */}
       {tabValue === 0 && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -1292,8 +1431,7 @@ const OpenRouterComponent = () => {
                     mb: 2,
                     p: 2,
                     borderRadius: 1,
-                    bgcolor:
-                      msg.role === "user" ? "primary.50" : "background.paper",
+                    bgcolor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
                     border: 1,
                     borderColor: "divider",
                   }}
@@ -1325,19 +1463,31 @@ const OpenRouterComponent = () => {
               }
               label={
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <SettingsOutlined fontSize="small" sx={{ mr: 0.5 }} />
-                  <Typography variant="body2">Advanced settings</Typography>
+                  <SettingsOutlined
+                    fontSize="small"
+                    sx={{ mr: 0.5, color: "#fff" }}
+                  />
+                  <Typography sx={{ color: "#fff" }} variant="body2">
+                    Advanced settings
+                  </Typography>
                 </Box>
               }
             />
           </Box>
 
           {showAdvanced && (
-            <Paper sx={{ p: 2, mb: 2 }}>
+            <Paper
+              sx={{
+                p: 2,
+                mb: 2,
+                borderRadius: 1,
+                borderColor: "#fff",
+                backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
+              }}
+            >
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <TextField
-                    label="System Message"
                     multiline
                     rows={2}
                     value={systemMessage}
@@ -1345,13 +1495,36 @@ const OpenRouterComponent = () => {
                     placeholder="Optional instructions for the AI"
                     fullWidth
                     helperText="Sets the behavior and capabilities of the assistant"
+                    FormHelperTextProps={{
+                      style: {
+                        color: "#ffffff99",
+                        fontSize: "10px",
+                        fontStyle: "italic",
+                      },
+                    }}
+                    InputLabelProps={{
+                      sx: {
+                        color: "#ffffff99", // Default label color
+                      },
+                    }}
+                    sx={{
+                      color: "#ffffff99",
+                      backgroundColor: "#00000044",
+                      border: "1px solid #fff",
+                      "& .MuiInputBase-input::placeholder": {
+                        color: "#ffffff99",
+                        fontStyle: "italic",
+                        opacity: 1, // Fixes low opacity in Firefox
+                      },
+                    }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" gutterBottom>
+                <Grid size={{ xs: 12, sm: 6 }} mr={1}>
+                  <Typography variant="body2" gutterBottom color="#fff">
                     Temperature: {temperature}
                   </Typography>
                   <Slider
+                    sx={{ color: "#fff" }}
                     value={temperature}
                     onChange={(_, value) => setTemperature(value as number)}
                     min={model_temp_min}
@@ -1373,18 +1546,18 @@ const OpenRouterComponent = () => {
                       },
                     ]}
                   />
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption">
                     Lower for more deterministic results, higher for more
                     creative responses
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" gutterBottom>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography gutterBottom color="#fff">
                     Max Tokens: <b>{displayTokenCost(maxTokens)}</b> | Current
                     Tokens: <b>{displayTokenCost(currTokens)}</b>
                   </Typography>
                   <Slider
-                    sx={{ mb: 2 }}
+                    sx={{ mb: 2, color: "#fff" }}
                     value={
                       currTokens ? currTokens : Math.floor(maxTokens * 0.8)
                     }
@@ -1412,7 +1585,7 @@ const OpenRouterComponent = () => {
                 </Grid>
 
                 {/* Token Counter */}
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Box
                     sx={{ mt: 2, p: 2, bgcolor: "grey.50", borderRadius: 1 }}
                   >
@@ -1462,10 +1635,21 @@ const OpenRouterComponent = () => {
             </Paper>
           )}
           <TextField
-            label="Enter your prompt"
             multiline
             rows={5}
             value={prompt}
+            sx={{
+              color: "#fff",
+              borderRadius: 1,
+              border: "1px solid #fff",
+              "& .MuiInputBase-input::placeholder": {
+                color: "#ffffff88",
+                fontStyle: "italic",
+                opacity: 1, // Fixes low opacity in Firefox
+              },
+              backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
+              backdropFilter: "blur(2px)",
+            }}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Enter your prompt here..."
             fullWidth
@@ -1475,22 +1659,33 @@ const OpenRouterComponent = () => {
             sx={{ mt: 1, mb: 2, display: "flex", justifyContent: "flex-end" }}
           >
             <Button
-              variant="outlined"
               size="small"
-              startIcon={<EnhanceIcon />}
+              startIcon={<EnhanceIcon sx={{ color: "#fff" }} />}
               onClick={handleOpenEnhancer}
               disabled={!prompt.trim()}
+              sx={{
+                color: "#fff",
+                border: "1px solid #fff",
+                backgroundColor: "#ffffff44",
+                "&.Mui-disabled": {
+                  WebkitTextFillColor: "#ffffff88", // Forces color in all browsers
+                  color: "#ffffff88", // Fallback
+                },
+              }}
             >
               Enhance Prompt
             </Button>
           </Box>
           <FormControl fullWidth>
-            <InputLabel id="model-select-label">Model</InputLabel>
+            <InputLabel id="model-select-label" sx={{ color: "#fff" }}>
+              Model
+            </InputLabel>
             <Select
               inputRef={selectRef}
               labelId="model-select-label"
               value={model}
               label="Model"
+              sx={{ backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", color: "#fff" }}
               renderValue={(selected) => {
                 // if(selected !== model){
                 // console.log('Rendering selected model:', selected);
@@ -1737,8 +1932,15 @@ const OpenRouterComponent = () => {
 
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
-              variant="contained"
-              color="primary"
+              sx={{
+                color: "#fff",
+                backgroundColor: "#504d4d42",
+                border: "1px solid #fff",
+                "&.Mui-disabled": {
+                  WebkitTextFillColor: "#ffffff88", // Forces color in all browsers
+                  color: "#ffffff88", // Fallback
+                },
+              }}
               onClick={streamCompletion}
               disabled={isStreaming || !prompt.trim() || !!apiKeyError}
               startIcon={
@@ -1855,15 +2057,24 @@ const OpenRouterComponent = () => {
 
       {/* History Tab */}
       {tabValue === 1 && (
-        <Box sx={{ height: 600, width: "100%" }}>
+        <Box sx={{ width: "100%" }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
             <Box>
               <Button
                 variant="outlined"
                 size="small"
                 onClick={() => setHistoryTimeframe("day")}
-                color={historyTimeframe === "day" ? "primary" : "inherit"}
-                sx={{ mr: 1 }}
+                sx={{
+                  mr: 1,
+                  color: "#fff",
+                  borderColor: "#fff",
+                  backgroundColor:
+                    historyTimeframe === "day" ? "#10a1f291" : "#ffffff44",
+                  "&:hover": {
+                    backgroundColor: "#ffffff66",
+                    borderColor: "#fff",
+                  },
+                }}
               >
                 Last 24 Hours
               </Button>
@@ -1871,9 +2082,36 @@ const OpenRouterComponent = () => {
                 variant="outlined"
                 size="small"
                 onClick={() => setHistoryTimeframe("week")}
-                color={historyTimeframe === "week" ? "primary" : "inherit"}
+                sx={{
+                  mr: 1,
+                  color: "#fff",
+                  borderColor: "#fff",
+                  backgroundColor:
+                    historyTimeframe === "week" ? "#10a1f291" : "#ffffff44",
+                  "&:hover": {
+                    backgroundColor: "#ffffff66",
+                    borderColor: "#fff",
+                  },
+                }}
               >
                 Last Week
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => setHistoryTimeframe("all")}
+                sx={{
+                  color: "#fff",
+                  borderColor: "#fff",
+                  backgroundColor:
+                    historyTimeframe === "all" ? "#10a1f291" : "#ffffff44",
+                  "&:hover": {
+                    backgroundColor: "#ffffff66",
+                    borderColor: "#fff",
+                  },
+                }}
+              >
+                All Time
               </Button>
             </Box>
             <Button
@@ -1882,21 +2120,103 @@ const OpenRouterComponent = () => {
               startIcon={<RefreshRounded />}
               onClick={loadHistory}
               disabled={isLoadingHistory}
+              sx={{
+                color: "#fff",
+                borderColor: "#fff",
+                backgroundColor: "#ffffff44",
+                "&:hover": {
+                  backgroundColor: "#ffffff66",
+                  borderColor: "#fff",
+                },
+                "&.Mui-disabled": {
+                  color: "#ffffff88",
+                  borderColor: "#ffffff44",
+                },
+              }}
             >
               Refresh
             </Button>
           </Box>
 
+          {conversations.length === 0 && !isLoadingHistory && (
+            <Box
+              sx={{
+                p: 4,
+                textAlign: "center",
+                backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
+                borderRadius: 1,
+                mb: 2,
+              }}
+            >
+              <Typography variant="h6" sx={{ color: "#fff", mb: 1 }}>
+                No conversations found
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#ffffff99" }}>
+                {historyTimeframe === "day" &&
+                  "No conversations in the last 24 hours. Try selecting a different timeframe."}
+                {historyTimeframe === "week" &&
+                  "No conversations in the last week. Try selecting 'All Time' to see older conversations."}
+                {historyTimeframe === "all" &&
+                  "No conversations yet. Start chatting to build your history!"}
+              </Typography>
+            </Box>
+          )}
+
           <DataGrid
             rows={conversations}
             columns={columns}
             loading={isLoadingHistory}
+            autoHeight
             getRowHeight={() => "auto"}
             sx={{
+              color: "#fff",
+              border: "1px solid #fff",
+              fontSize: "12px",
+              backgroundColor: "transparent",
+              backdropFilter: "blur(2px)",
+              "--DataGrid-pinnedBackground": "transparent",
+              "--DataGrid-containerBackground": "#00000044",
+              borderRadius: 1,
+              "& .MuiDataGrid-cellContent": {
+                maxHeight: "80px", // Set your desired max height
+                minHeight: "40px", // Optional: set a minimum height
+                whiteSpace: "normal", // Allows text to wrap
+              },
+              // Optional: ensure rows do not exceed max height if content is smaller
+              "& .MuiDataGrid-row": {
+                maxHeight: "80px !important",
+                "&:hover": {
+                  backgroundColor: COLORS.transparentBlackDark,
+                },
+              },
               "& .MuiDataGrid-cell": {
                 py: 1,
+                color: "#fff",
+                borderColor: "#ffffff44",
               },
-              height: "100%", // Make DataGrid fill available space
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "#00000044",
+                color: "#fff",
+                borderColor: "#ffffff44",
+              },
+              "& .MuiDataGrid-columnHeaderTitle": {
+                color: "#fff",
+                fontWeight: 600,
+              },
+              "& .MuiDataGrid-footerContainer": {
+                backgroundColor: "#ffffff44",
+                color: "#fff",
+                borderColor: "#ffffff44",
+              },
+              "& .MuiTablePagination-root": {
+                color: "#fff",
+              },
+              "& .MuiIconButton-root": {
+                color: "#fff",
+              },
+              "& .MuiDataGrid-overlay": {
+                backgroundColor: "#ffffff34",
+              },
               width: "100%",
             }}
           />
@@ -1908,9 +2228,18 @@ const OpenRouterComponent = () => {
         <Box>
           <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
             <Button
-              variant="contained"
+              variant="outlined"
               startIcon={<AddIcon />}
               onClick={handleCreateTemplate}
+              sx={{
+                color: "#fff",
+                borderColor: "#fff",
+                backgroundColor: "#10a1f291",
+                "&:hover": {
+                  backgroundColor: "#ffffff66",
+                  borderColor: "#fff",
+                },
+              }}
             >
               Create Template
             </Button>
@@ -1931,21 +2260,42 @@ const OpenRouterComponent = () => {
       )}
 
       {/* Template Form Dialog */}
-      <Dialog
-        open={templateFormOpen}
-        onClose={handleTemplateFormCancel}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogContent>
-          <TemplateForm
-            template={editingTemplate}
-            onSubmit={handleTemplateFormSubmit}
-            onCancel={handleTemplateFormCancel}
-            isSubmitting={isSubmittingTemplate}
-          />
-        </DialogContent>
-      </Dialog>
+      <ThemeProvider theme={darkTheme}>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          // open={templateFormOpen}
+          // onClose={handleTemplateFormCancel}
+        >
+          <DialogContent>
+            {/*
+            <TemplateForm
+              template={editingTemplate}
+              onSubmit={handleTemplateFormSubmit}
+              onCancel={handleTemplateFormCancel}
+              isSubmitting={isSubmittingTemplate}
+            />
+            */}
+            <DialogContentText>
+            To subscribe to this website, please enter your email address here. We
+            will send updates occasionally.
+          </DialogContentText>
+          <form id="subscription-form">
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="name"
+              name="email"
+              label="Email Address"
+              type="email"
+              fullWidth
+              variant="standard"
+            />
+          </form>
+          </DialogContent>
+        </Dialog>
+      </ThemeProvider>
 
       {/* Prompt Enhancer Dialog */}
       <Dialog
@@ -1953,6 +2303,7 @@ const OpenRouterComponent = () => {
         onClose={handleCloseEnhancer}
         maxWidth="md"
         fullWidth
+        PaperProps={dialogPaperProps}
       >
         <DialogContent>
           <PromptEnhancer
@@ -1967,23 +2318,43 @@ const OpenRouterComponent = () => {
         open={deleteConfirmOpen}
         onClose={handleDeleteCancel}
         maxWidth="sm"
+        PaperProps={dialogPaperProps}
       >
-        <DialogTitle>Delete Template</DialogTitle>
+        <DialogTitle sx={{ color: "#fff" }}>Delete Template</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText sx={{ color: "#ffffff99" }}>
             Are you sure you want to delete "{templateToDelete?.name}"? This
             action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDeleteCancel} color="inherit">
+          <Button
+            onClick={handleDeleteCancel}
+            sx={{
+              color: "#fff",
+              borderColor: "#fff",
+              "&:hover": {
+                backgroundColor: "#ffffff22",
+              },
+            }}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleDeleteConfirm}
-            color="error"
             variant="contained"
             disabled={deleteTemplateMutation.isLoading}
+            sx={{
+              backgroundColor: "#d32f2f",
+              color: "#fff",
+              "&:hover": {
+                backgroundColor: "#b71c1c",
+              },
+              "&.Mui-disabled": {
+                backgroundColor: "#d32f2f88",
+                color: "#ffffff88",
+              },
+            }}
           >
             {deleteTemplateMutation.isLoading ? "Deleting..." : "Delete"}
           </Button>

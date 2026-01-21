@@ -1,21 +1,14 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link as RouterLink } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Grid,
-  Link,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { Box, Button, Card, CardContent, Container, Grid, Link, Typography, Paper } from '@mui/material';
 import { fetchHello } from "../services/api";
 
 import logo from "../assets/img/zuzu-logo.png";
 import { GoTrueClient } from "@supabase/supabase-js";
+import { CustomBackgroundPage } from "@/components/Layout.example";
+import { COLORS } from "@/styles/themes";
+import { BACKGROUND_COLORS } from "@/context/BackgroundContext";
 
 function Logo() {
   return <img src={logo} alt="Logo" className="w-32 sm:w-14 md:w-32 lg:w-32" />;
@@ -222,12 +215,15 @@ const Home: React.FC<appProps> = ({ message }) => {
       {/* Hero section */}
       <Box
         sx={{
-          py: 8,
+          p: 2,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
+          backdropFilter: "blur(2px)",
+ 
         }}
-        className="bg-gradient-to-r from-zuzu-primary to-zuzu-secondary rounded-lg text-white mb-8"
+        className="rounded-lg text-white mb-8"
       >
         <Container maxWidth="md">
           <Box
@@ -257,17 +253,18 @@ const Home: React.FC<appProps> = ({ message }) => {
 
             {/* Text content on the right */}
             <Box
-              sx={{ textAlign: { xs: "center", md: "center" }, flexGrow: 1 }}
+              sx={{ textAlign: { xs: "center", md: "center"}, flexGrow: 1 }}
             >
               <Typography
                 variant="h2"
                 component="h1"
                 gutterBottom
                 fontWeight="bold"
+                sx={{ borderRadius: "4px", textShadow: "1px 1px 2px rgba(153, 145, 145, 0.34)" }}
               >
                 Welcome to ZuZu
               </Typography>
-              <Typography variant="h5" paragraph>
+              <Typography variant="h5" paragraph sx={{ backgroundColor: "transparent", color: COLORS.textSecondary }}>
                 A React scaffold application for integrating multiple tech
                 stacks
               </Typography>
@@ -281,12 +278,13 @@ const Home: React.FC<appProps> = ({ message }) => {
                 }}
               >
                 <Button
-                  variant="contained"
-                  color="secondary"
+                  variant="outlined"
+                  color="inherit"
                   size="large"
                   component={RouterLink}
                   to="/dashboard"
-                  className="btn-secondary"
+                  className="border-white text-white hover:bg-white hover:bg-opacity-10"
+                  sx={{ color: COLORS.textPrimary, backgroundColor: COLORS.transparentBlackDark }}
                 >
                   Dashboard
                 </Button>
@@ -301,11 +299,12 @@ const Home: React.FC<appProps> = ({ message }) => {
                   Learn More
                 </Button>
                 <Button
-                  variant="contained"
-                  color="secondary"
+                  variant="outlined"
+                  color="inherit"
                   size="large"
                   onClick={openModal}
-                  className="btn-secondary"
+                  className="border-white text-white hover:bg-white hover:bg-opacity-10"
+                  sx={{ color: COLORS.textPrimary, backgroundColor: COLORS.transparentBlackDark }}
                 >
                   Messages
                 </Button>
@@ -329,12 +328,12 @@ const Home: React.FC<appProps> = ({ message }) => {
       {/* API response example */}
       <Paper
         elevation={0}
-        sx={{ p: 3, mb: 6 }}
-        className="border border-gray-200 bg-gray-50"
+        sx={{ p: 3, mb: 6, backgroundColor: "#00000066", color: "#f8d99dde"}}
+        className="border border-gray-200"
       >
         <>
           {/* lazy load example */}
-          <Typography variant="h6" color="text.primary">
+          <Typography variant="h6">
             <Suspense fallback={"loading messages..."}>
               {showModal && <Modal onClose={closeModal} message={message} />}
             </Suspense>
@@ -354,13 +353,13 @@ const Home: React.FC<appProps> = ({ message }) => {
 
       {/* Technologies grid */}
       <Box>
-        <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+        <Typography variant="h5" gutterBottom sx={{ pl: 2, mt: 4, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}>
           Frontend Technologies
         </Typography>
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid container spacing={3} sx={{ mb: 4}}>
           {frontendTech.map((tech) => (
-            <Grid item xs={12} sm={6} md={4} key={tech.name}>
-              <Card className="h-full hover:shadow-md transition-shadow">
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
+              <Card className="h-full hover:shadow-md transition-shadow"  sx={{ backgroundColor: "#ffffff8f" }}>
                 <CardContent>
                   <Typography variant="h6" component="h3" gutterBottom>
                     {tech.name}
@@ -374,13 +373,13 @@ const Home: React.FC<appProps> = ({ message }) => {
           ))}
         </Grid>
 
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{ pl: 2, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}>
           Backend Technologies
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {backendTech.map((tech) => (
-            <Grid item xs={12} sm={6} md={4} key={tech.name}>
-              <Card className="h-full hover:shadow-md transition-shadow">
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
+              <Card className="h-full hover:shadow-md transition-shadow" sx={{ backgroundColor: "#ffffff8f" }}>
                 <CardContent>
                   <Typography variant="h6" component="h3" gutterBottom>
                     {tech.name}
@@ -394,13 +393,13 @@ const Home: React.FC<appProps> = ({ message }) => {
           ))}
         </Grid>
 
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom sx={{ pl: 2, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}>
           Development Tools
         </Typography>
         <Grid container spacing={3}>
           {devTools.map((tech) => (
-            <Grid item xs={12} sm={6} md={4} key={tech.name}>
-              <Card className="h-full hover:shadow-md transition-shadow">
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
+              <Card className="h-full hover:shadow-md transition-shadow" sx={{ backgroundColor: "#ffffff8f" }}>
                 <CardContent>
                   <Typography variant="h6" component="h3" gutterBottom>
                     {tech.name}

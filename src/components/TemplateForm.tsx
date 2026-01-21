@@ -1,24 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Typography,
-  Paper,
-  Chip,
-  Grid,
-  Switch,
-  FormControlLabel,
-  IconButton,
-  Divider,
-  Alert,
-  Autocomplete,
-  FormLabel,
-} from "@mui/material";
+import { Box, Button, TextField, FormControl, InputLabel, Select, MenuItem, Typography, Paper, Chip, Switch, FormControlLabel, IconButton, Divider, Alert, Autocomplete, FormLabel, Grid } from '@mui/material';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -176,7 +157,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ color: "#fff", backgroundColor: "#ffffff44", borderRadius: "5px" }}>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>
           {template ? "Edit Template" : "Create New Template"}
@@ -186,7 +167,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
 
         <Grid container spacing={3}>
           {/* Name */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <TextField
               fullWidth
               required
@@ -200,7 +181,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
           </Grid>
 
           {/* Category */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth required>
               <InputLabel>Category</InputLabel>
               <Select
@@ -221,7 +202,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
           </Grid>
 
           {/* Description */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               multiline
@@ -235,7 +216,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
           </Grid>
 
           {/* Content - Monaco Editor */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Box>
               <FormLabel required error={!!errors.content}>
                 Template Content
@@ -289,7 +270,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
           </Grid>
 
           {/* Variables */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Box
               sx={{
                 mb: 2,
@@ -319,7 +300,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                 {variables.map((variable, index) => (
                   <Paper key={index} variant="outlined" sx={{ p: 2 }}>
                     <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12} sm={3}>
+                      <Grid size={{ xs: 12, sm: 3 }}>
                         <TextField
                           fullWidth
                           size="small"
@@ -334,7 +315,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                           placeholder="e.g., topic"
                         />
                       </Grid>
-                      <Grid item xs={12} sm={3}>
+                      <Grid size={{ xs: 12, sm: 3 }}>
                         <TextField
                           fullWidth
                           size="small"
@@ -349,7 +330,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                           placeholder="e.g., Topic"
                         />
                       </Grid>
-                      <Grid item xs={12} sm={2}>
+                      <Grid size={{ xs: 12, sm: 2 }}>
                         <FormControl fullWidth size="small">
                           <InputLabel>Type</InputLabel>
                           <Select
@@ -371,7 +352,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                           </Select>
                         </FormControl>
                       </Grid>
-                      <Grid item xs={12} sm={2}>
+                      <Grid size={{ xs: 12, sm: 2 }}>
                         <FormControlLabel
                           control={
                             <Switch
@@ -389,7 +370,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
                           label="Required"
                         />
                       </Grid>
-                      <Grid item xs={12} sm={2}>
+                      <Grid size={{ xs: 12, sm: 2 }}>
                         <IconButton
                           color="error"
                           onClick={() => handleRemoveVariable(index)}
@@ -407,7 +388,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
           </Grid>
 
           {/* Style Guide */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <StyleGuideSelector
               value={styleGuideId}
               onChange={(id, styleGuide) => setStyleGuideId(id)}
@@ -417,7 +398,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
           </Grid>
 
           {/* Tags */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Autocomplete
               multiple
               freeSolo
@@ -445,7 +426,7 @@ const TemplateForm: React.FC<TemplateFormProps> = ({
           </Grid>
 
           {/* Public Toggle */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <FormControlLabel
               control={
                 <Switch

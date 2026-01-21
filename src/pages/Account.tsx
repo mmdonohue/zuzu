@@ -1,13 +1,6 @@
 // src/pages/Account.tsx
 import React from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Grid,
-  Divider,
-  Chip,
-} from '@mui/material';
+import { Box, Paper, Typography, Grid, Divider, Chip } from '@mui/material';
 import { useAuth } from '@/context/AuthContext';
 
 const Account: React.FC = () => {
@@ -34,7 +27,7 @@ const Account: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="subtitle2" color="text.secondary">
               First Name
             </Typography>
@@ -43,7 +36,7 @@ const Account: React.FC = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="subtitle2" color="text.secondary">
               Last Name
             </Typography>
@@ -52,7 +45,7 @@ const Account: React.FC = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Typography variant="subtitle2" color="text.secondary">
               Email Address
             </Typography>
@@ -61,7 +54,7 @@ const Account: React.FC = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="subtitle2" color="text.secondary">
               User ID
             </Typography>
@@ -70,7 +63,7 @@ const Account: React.FC = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="subtitle2" color="text.secondary">
               Role
             </Typography>

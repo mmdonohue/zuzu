@@ -17,22 +17,21 @@ import {
   Chip,
 } from "@mui/material";
 import { format } from "date-fns";
+import { COLORS } from "@/styles/themes";
 
 type ActivityRequest = {
-  id: string;
-  created_at: string;
+  date: string; // Format: "2026-01-16 00:00:00"
+  model_permaslug: string;
   model: string;
+  provider_name: string;
+  endpoint_id: string;
+  usage: number; // Cost in credits
+  byok_usage_inference: number;
+  requests: number;
   prompt_tokens: number;
   completion_tokens: number;
-  total_tokens: number;
-  native_tokens_prompt: number;
-  native_tokens_completion: number;
-  num_media_generations?: number;
-  app_id?: number;
-  total_cost: number;
-  finish_reason: string;
-  generation_time?: number;
-  tokens_per_second?: number;
+  reasoning_tokens: number;
+  byok_requests: number;
 };
 
 type ActivitySummary = {
@@ -46,6 +45,20 @@ type ActivitySummary = {
 
 type ActivityData = {
   data: ActivityRequest[];
+};
+
+// Helper function to derive provider name from model when provider_name is unknown
+const deriveProviderName = (activity: ActivityRequest): string => {
+  if (activity.provider_name && activity.provider_name.toLowerCase() !== "unknown") {
+    return activity.provider_name;
+  }
+  
+  // Try to extract provider from model field (format: "provider/model-name")
+  if (activity.model && activity.model.includes("/")) {
+    return activity.model.split("/")[0];
+  }
+  
+  return "unknown";
 };
 
 const OpenRouterActivity: React.FC = () => {
@@ -79,45 +92,48 @@ const OpenRouterActivity: React.FC = () => {
         }
 
         const data: ActivityData = await response.json();
-        console.log("Activity API response:", data);
         setActivityData(data.data || []);
 
         // Calculate summary statistics
         if (data.data && data.data.length > 0) {
           const now = new Date();
-          const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
           const oneMonthAgo = new Date(
             now.getTime() - 30 * 24 * 60 * 60 * 1000,
           );
 
-          const dailyRequests = data.data.filter((r) => {
-            const date = new Date(r.created_at);
-            return !isNaN(date.getTime()) && date >= oneDayAgo;
-          });
           const monthlyRequests = data.data.filter((r) => {
-            const date = new Date(r.created_at);
+            const date = new Date(r.date.replace(" ", "T"));
             return !isNaN(date.getTime()) && date >= oneMonthAgo;
           });
 
+          // Calculate totals for the past month from aggregated daily data
+          const monthSpend = monthlyRequests.reduce(
+            (sum, r) => sum + (r.usage || 0),
+            0,
+          );
+          const monthTokens = monthlyRequests.reduce(
+            (sum, r) =>
+              sum + (r.prompt_tokens || 0) + (r.completion_tokens || 0),
+            0,
+          );
+          const monthCount = monthlyRequests.reduce(
+            (sum, r) => sum + (r.requests || 0),
+            0,
+          );
+
+          // Calculate daily averages (divide monthly total by 30)
+          const DAYS_IN_MONTH = 30;
+          const avgDailySpend = monthSpend / DAYS_IN_MONTH;
+          const avgDailyTokens = monthTokens / DAYS_IN_MONTH;
+          const avgDailyRequests = monthCount / DAYS_IN_MONTH;
+
           setSummary({
-            avg_daily_spend: dailyRequests.reduce(
-              (sum, r) => sum + (r.total_cost || 0),
-              0,
-            ),
-            past_month_spend: monthlyRequests.reduce(
-              (sum, r) => sum + (r.total_cost || 0),
-              0,
-            ),
-            avg_daily_tokens: dailyRequests.reduce(
-              (sum, r) => sum + (r.total_tokens || 0),
-              0,
-            ),
-            past_month_tokens: monthlyRequests.reduce(
-              (sum, r) => sum + (r.total_tokens || 0),
-              0,
-            ),
-            avg_daily_requests: dailyRequests.length,
-            past_month_requests: monthlyRequests.length,
+            avg_daily_spend: avgDailySpend,
+            past_month_spend: monthSpend,
+            avg_daily_tokens: avgDailyTokens,
+            past_month_tokens: monthTokens,
+            avg_daily_requests: avgDailyRequests,
+            past_month_requests: monthCount,
           });
         }
       } catch (err) {
@@ -135,14 +151,21 @@ const OpenRouterActivity: React.FC = () => {
 
   if (loading) {
     return (
-      <Paper sx={{ p: 3 }}>
+      <Paper
+        sx={{
+          p: 3,
+          backgroundColor: COLORS.transparentWhite,
+          border: `1px solid ${COLORS.borderWhite}`,
+          color: COLORS.textPrimary,
+        }}
+      >
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
           minHeight="200px"
         >
-          <CircularProgress />
+          <CircularProgress sx={{ color: COLORS.textPrimary }} />
         </Box>
       </Paper>
     );
@@ -150,22 +173,33 @@ const OpenRouterActivity: React.FC = () => {
 
   if (error) {
     return (
-      <Paper sx={{ p: 3 }}>
-        <Alert severity="error">{error}</Alert>
+      <Paper
+        sx={{
+          p: 3,
+          backgroundColor: COLORS.transparentWhite,
+          border: `1px solid ${COLORS.borderWhite}`,
+          color: COLORS.textPrimary,
+        }}
+      >
+        <Alert
+          severity="error"
+          sx={{ backgroundColor: COLORS.transparentWhite }}
+        >
+          {error}
+        </Alert>
       </Paper>
     );
   }
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" gutterBottom sx={{ color: COLORS.textPrimary }}>
         Your Activity
       </Typography>
       <Typography
         variant="body2"
-        color="text.secondary"
         gutterBottom
-        sx={{ mb: 3 }}
+        sx={{ mb: 3, color: COLORS.textSecondary, backdropFilter: 'blur(2px)' }}
       >
         Usage across models on OpenRouter
       </Typography>
@@ -174,10 +208,21 @@ const OpenRouterActivity: React.FC = () => {
       {summary && (
         <Grid container spacing={2} sx={{ mb: 4 }}>
           {/* Spend Card */}
-          <Grid item xs={12} md={4}>
-            <Card variant="outlined">
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card
+              variant="outlined"
+              sx={{
+                backgroundColor: COLORS.transparentBlackDark,
+                border: `1px solid ${COLORS.borderWhite}`,
+                color: COLORS.textPrimary,
+              }}
+            >
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{ color: COLORS.textPrimary }}
+                >
                   Spend
                 </Typography>
                 <Box
@@ -188,18 +233,24 @@ const OpenRouterActivity: React.FC = () => {
                   }}
                 >
                   <Box>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.textSecondary }}
+                    >
                       Avg Day
                     </Typography>
-                    <Typography variant="h5">
+                    <Typography variant="h5" sx={{ color: COLORS.textPrimary }}>
                       ${(summary.avg_daily_spend || 0).toFixed(2)}
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.textSecondary }}
+                    >
                       Past Month
                     </Typography>
-                    <Typography variant="h5">
+                    <Typography variant="h5" sx={{ color: COLORS.textPrimary }}>
                       ${(summary.past_month_spend || 0).toFixed(2)}
                     </Typography>
                   </Box>
@@ -209,10 +260,21 @@ const OpenRouterActivity: React.FC = () => {
           </Grid>
 
           {/* Tokens Card */}
-          <Grid item xs={12} md={4}>
-            <Card variant="outlined">
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card
+              variant="outlined"
+              sx={{
+                backgroundColor: COLORS.transparentBlackDark,
+                border: `1px solid ${COLORS.borderWhite}`,
+                color: COLORS.textPrimary,
+              }}
+            >
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{ color: COLORS.textPrimary }}
+                >
                   Tokens
                 </Typography>
                 <Box
@@ -223,18 +285,24 @@ const OpenRouterActivity: React.FC = () => {
                   }}
                 >
                   <Box>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.textSecondary }}
+                    >
                       Avg Day
                     </Typography>
-                    <Typography variant="h5">
+                    <Typography variant="h5" sx={{ color: COLORS.textPrimary }}>
                       {(summary.avg_daily_tokens || 0).toLocaleString()}
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.textSecondary }}
+                    >
                       Past Month
                     </Typography>
-                    <Typography variant="h5">
+                    <Typography variant="h5" sx={{ color: COLORS.textPrimary }}>
                       {((summary.past_month_tokens || 0) / 1000).toFixed(1)}K
                     </Typography>
                   </Box>
@@ -244,10 +312,21 @@ const OpenRouterActivity: React.FC = () => {
           </Grid>
 
           {/* Requests Card */}
-          <Grid item xs={12} md={4}>
-            <Card variant="outlined">
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card
+              variant="outlined"
+              sx={{
+                backgroundColor: COLORS.transparentBlackDark,
+                border: `1px solid ${COLORS.borderWhite}`,
+                color: COLORS.textPrimary,
+              }}
+            >
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{ color: COLORS.textPrimary }}
+                >
                   Requests
                 </Typography>
                 <Box
@@ -258,18 +337,24 @@ const OpenRouterActivity: React.FC = () => {
                   }}
                 >
                   <Box>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.textSecondary }}
+                    >
                       Avg Day
                     </Typography>
-                    <Typography variant="h5">
-                      {(summary.avg_daily_requests || 0).toFixed(3)}
+                    <Typography variant="h5" sx={{ color: COLORS.textPrimary }}>
+                      {(summary.avg_daily_requests || 0).toFixed(1)}
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.textSecondary }}
+                    >
                       Past Month
                     </Typography>
-                    <Typography variant="h5">
+                    <Typography variant="h5" sx={{ color: COLORS.textPrimary }}>
                       {summary.past_month_requests || 0}
                     </Typography>
                   </Box>
@@ -281,79 +366,177 @@ const OpenRouterActivity: React.FC = () => {
       )}
 
       {/* Activity Table */}
-      <TableContainer component={Paper} variant="outlined">
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{
+          backgroundColor: COLORS.transparent,
+          border: `1px solid ${COLORS.borderWhite}`,
+        }}
+      >
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>Timestamp</TableCell>
-              <TableCell>Provider / Model</TableCell>
-              <TableCell align="right">Tokens</TableCell>
-              <TableCell align="right">Cost</TableCell>
-              <TableCell align="right">Speed</TableCell>
-              <TableCell>Finish</TableCell>
+            <TableRow sx={{ backgroundColor: COLORS.transparentBlackDark }}>
+              <TableCell
+                sx={{
+                  color: COLORS.textPrimary,
+                  borderColor: COLORS.transparentWhite,
+                }}
+              >
+                Date
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: COLORS.textPrimary,
+                  borderColor: COLORS.transparentWhite,
+                }}
+              >
+                Provider / Model
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  color: COLORS.textPrimary,
+                  borderColor: COLORS.transparentWhite,
+                }}
+              >
+                Requests
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  color: COLORS.textPrimary,
+                  borderColor: COLORS.transparentWhite,
+                }}
+              >
+                Tokens
+              </TableCell>
+              <TableCell
+                align="right"
+                sx={{
+                  color: COLORS.textPrimary,
+                  borderColor: COLORS.transparentWhite,
+                }}
+              >
+                Cost
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {activityData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell 
+                  colSpan={5} 
+                  align="center"
+                  sx={{
+                    borderColor: COLORS.transparentWhite,
+                  }}
+                >
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    sx={{ py: 3 }}
+                    sx={{ py: 3, color: COLORS.textSecondary }}
                   >
                     No activity data available
                   </Typography>
                 </TableCell>
               </TableRow>
             ) : (
-              activityData.slice(0, 50).map((activity) => {
-                const createdDate = new Date(activity.created_at);
-                const isValidDate = !isNaN(createdDate.getTime());
+              activityData.slice(0, 50).map((activity, index) => {
+                const activityDate = new Date(activity.date.replace(" ", "T"));
+                const isValidDate = !isNaN(activityDate.getTime());
+
+                // Format date with error handling
+                const formattedDate = isValidDate
+                  ? format(activityDate, "MMM d, yyyy")
+                  : activity.date || "N/A";
+
+                const totalTokens =
+                  (activity.prompt_tokens || 0) +
+                  (activity.completion_tokens || 0);
 
                 return (
-                  <TableRow key={activity.id} hover>
-                    <TableCell>
+                  <TableRow
+                    key={`${activity.endpoint_id}-${activity.date}-${index}`}
+                    hover
+                    sx={{
+                      "&.MuiTableRow-root:hover": {
+                        backgroundColor: COLORS.transparentBlackDark,
+                      },
+                    }}
+                  >
+                    <TableCell
+                      sx={{
+                        color: COLORS.textPrimary,
+                        borderColor: COLORS.transparentWhite,
+                      }}
+                    >
+                      <Typography variant="body2">{formattedDate}</Typography>
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        color: COLORS.textPrimary,
+                        borderColor: COLORS.transparentWhite,
+                      }}
+                    >
+                      <Box>
+                        <Chip
+                          label={activity.model.split("/").pop()}
+                          size="small"
+                          sx={{
+                            color: COLORS.textPrimary,
+                            border: `1px solid ${COLORS.borderWhite}`,
+                            backgroundColor: COLORS.accentBlue,
+                            fontWeight: 600,
+                          }}
+                        />
+                        <Typography
+                          variant="caption"
+                          display="block"
+                          sx={{ mt: 0.5, color: COLORS.textSecondary, fontWeight: 600 }}
+                        >
+                          {deriveProviderName(activity)}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell
+                      align="right"
+                      sx={{
+                        color: COLORS.textPrimary,
+                        borderColor: COLORS.transparentWhite,
+                      }}
+                    >
                       <Typography variant="body2">
-                        {isValidDate
-                          ? format(createdDate, "MMM d, h:mm a")
-                          : activity.created_at || "N/A"}
+                        {activity.requests || 0}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={activity.model.split("/").pop()}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell align="right">
+                    <TableCell
+                      align="right"
+                      sx={{
+                        color: COLORS.textPrimary,
+                        borderColor: COLORS.transparentWhite,
+                      }}
+                    >
                       <Typography variant="body2">
-                        {activity.prompt_tokens || 0} →{" "}
-                        {activity.completion_tokens || 0}
+                        {activity.prompt_tokens?.toLocaleString() || 0} →{" "}
+                        {activity.completion_tokens?.toLocaleString() || 0}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: COLORS.textSecondary }}
+                      >
+                        {totalTokens.toLocaleString()} total
                       </Typography>
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell
+                      align="right"
+                      sx={{
+                        color: COLORS.textPrimary,
+                        borderColor: COLORS.transparentWhite,
+                      }}
+                    >
                       <Typography variant="body2">
-                        ${(activity.total_cost || 0).toFixed(4)}
+                        ${(activity.usage || 0).toFixed(4)}
                       </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography variant="body2">
-                        {activity.generation_time && activity.completion_tokens
-                          ? `${((activity.completion_tokens || 0) / (activity.generation_time || 1)).toFixed(1)} tps`
-                          : activity.tokens_per_second
-                            ? `${activity.tokens_per_second.toFixed(1)} tps`
-                            : "-"}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={activity.finish_reason || "stop"}
-                        size="small"
-                        variant="outlined"
-                      />
                     </TableCell>
                   </TableRow>
                 );
@@ -366,8 +549,7 @@ const OpenRouterActivity: React.FC = () => {
       {activityData.length > 50 && (
         <Typography
           variant="caption"
-          color="text.secondary"
-          sx={{ mt: 2, display: "block" }}
+          sx={{ mt: 2, display: "block", color: COLORS.textSecondary }}
         >
           Showing 50 most recent activities
         </Typography>

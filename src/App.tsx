@@ -1,10 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { Box, Container } from "@mui/material";
 
 // Import components
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Import pages
@@ -21,89 +19,74 @@ import Account from "./pages/Account";
 
 const App: React.FC = () => {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-      }}
-    >
-      <Header />
-      <Container
-        component="main"
-        maxWidth="lg"
-        sx={{ flexGrow: 1, py: 4 }}
-        className="container-custom"
-      >
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Home message={"welcome to zuzu"} />} />
-          <Route path="/about" element={<About />} />
+    <Layout>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Home message={"welcome to zuzu"} />} />
+        <Route path="/about" element={<About />} />
 
-          {/* Auth routes (redirect to dashboard if already logged in) */}
-          <Route
-            path="/login"
-            element={
-              <ProtectedRoute requireAuth={false}>
-                <Login />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <ProtectedRoute requireAuth={false}>
-                <Signup />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/auth/verify" element={<VerifyCode />} />
+        {/* Auth routes (redirect to dashboard if already logged in) */}
+        <Route
+          path="/login"
+          element={
+            <ProtectedRoute requireAuth={false}>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <ProtectedRoute requireAuth={false}>
+              <Signup />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/auth/verify" element={<VerifyCode />} />
 
-          {/* Protected routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/openrouter"
-            element={
-              <ProtectedRoute>
-                <OpenRouterComponent />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/leet-master"
-            element={
-              <ProtectedRoute>
-                <LeetMaster />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/logs"
-            element={
-              <ProtectedRoute>
-                <Logs />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account"
-            element={
-              <ProtectedRoute>
-                <Account />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Container>
-      <Footer />
-    </Box>
+        {/* Protected routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/openrouter"
+          element={
+            <ProtectedRoute>
+              <OpenRouterComponent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leet-master"
+          element={
+            <ProtectedRoute>
+              <LeetMaster />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/logs"
+          element={
+            <ProtectedRoute>
+              <Logs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <Account />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Layout>
   );
 };
 

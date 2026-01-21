@@ -19,6 +19,8 @@ import type {
   Template,
   TemplateVariable,
 } from "../store/slices/templatesSlice";
+import { ThemeProvider } from '@mui/material/styles';
+import { darkTheme } from "@/styles/themes";
 
 type TemplateVariableSubstitutionProps = {
   template: Template | null;
@@ -93,6 +95,32 @@ const TemplateVariableSubstitution: React.FC<
     const value = values[variable.name] || "";
     const error = errors[variable.name];
 
+    const textFieldStyles = {
+      backgroundColor: "#00000044",
+      border: "1px solid #fff",
+      borderRadius: 1,
+      "& .MuiInputBase-input": {
+        color: "#fff",
+      },
+      "& .MuiInputLabel-root": {
+        color: "#fff",
+      },
+      "& .MuiInputLabel-root.Mui-focused": {
+        color: "#10a1f2",
+      },
+      "& .MuiOutlinedInput-root": {
+        "& fieldset": {
+          borderColor: "transparent",
+        },
+        "&:hover fieldset": {
+          borderColor: "#ffffff44",
+        },
+        "&.Mui-focused fieldset": {
+          borderColor: "#10a1f2",
+        },
+      },
+    };
+
     switch (variable.type) {
       case "textarea":
         return (
@@ -107,6 +135,7 @@ const TemplateVariableSubstitution: React.FC<
             error={!!error}
             helperText={error}
             required={variable.required}
+            sx={textFieldStyles}
           />
         );
 
@@ -118,13 +147,21 @@ const TemplateVariableSubstitution: React.FC<
             error={!!error}
             required={variable.required}
           >
-            <InputLabel>{variable.label}</InputLabel>
+            <InputLabel sx={{ color: "#fff" }}>{variable.label}</InputLabel>
             <Select
               value={value}
               label={variable.label}
               onChange={(e) =>
                 handleValueChange(variable.name, e.target.value as string)
               }
+              sx={{
+                backgroundColor: "#ffffff44",
+                color: "#fff",
+                border: "1px solid #fff",
+                "& .MuiSvgIcon-root": {
+                  color: "#fff",
+                },
+              }}
             >
               {(variable as any).options?.map((option: string) => (
                 <MenuItem key={option} value={option}>
@@ -156,6 +193,7 @@ const TemplateVariableSubstitution: React.FC<
             error={!!error}
             helperText={error}
             required={variable.required}
+            sx={textFieldStyles}
           />
         );
 
@@ -171,16 +209,39 @@ const TemplateVariableSubstitution: React.FC<
             error={!!error}
             helperText={error}
             required={variable.required}
+            sx={textFieldStyles}
           />
         );
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Fill Template Variables</DialogTitle>
+    <ThemeProvider theme={darkTheme}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          backgroundColor: "#ffffff44",
+          border: "1px solid #fff",
+          color: "#fff",
+        },
+      }}
+    >
+      <DialogTitle sx={{ color: "#fff" }}>Fill Template Variables</DialogTitle>
       <DialogContent>
-        <Alert severity="info" sx={{ mb: 3, mt: 1 }}>
+        <Alert
+          severity="info"
+          sx={{
+            mb: 3,
+            mt: 1,
+            backgroundColor: "#10a1f244",
+            color: "#fff",
+            border: "1px solid #10a1f2",
+          }}
+        >
           Please provide values for the template variables below.
         </Alert>
 
@@ -191,19 +252,38 @@ const TemplateVariableSubstitution: React.FC<
         </Box>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} startIcon={<CancelIcon />} color="inherit">
+        <Button
+          onClick={onClose}
+          startIcon={<CancelIcon />}
+          sx={{
+            color: "#fff",
+            borderColor: "#fff",
+            "&:hover": {
+              backgroundColor: "#ffffff22",
+            },
+          }}
+        >
           Cancel
         </Button>
         <Button
           onClick={handleApply}
           startIcon={<CheckIcon />}
-          variant="contained"
-          color="primary"
+          variant="outlined"
+          sx={{
+            color: "#fff",
+            borderColor: "#fff",
+            backgroundColor: "#10a1f291",
+            "&:hover": {
+              backgroundColor: "#ffffff66",
+              borderColor: "#fff",
+            },
+          }}
         >
           Apply
         </Button>
       </DialogActions>
     </Dialog>
+    </ThemeProvider>
   );
 };
 

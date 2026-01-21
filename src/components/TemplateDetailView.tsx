@@ -1,20 +1,5 @@
 import React from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Typography,
-  Chip,
-  Divider,
-  Paper,
-  Grid,
-  IconButton,
-  Tooltip,
-  Alert,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typography, Chip, Divider, Paper, Grid, IconButton, Tooltip, Alert } from '@mui/material';
 import {
   Close as CloseIcon,
   Code as CodeIcon,
@@ -36,6 +21,9 @@ import {
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import type { Template } from "../store/slices/templatesSlice";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { darkTheme, lightTheme, transparentTheme } from "@/styles/themes";
+import { useBackground } from "@/context/BackgroundContext";
 
 type TemplateDetailViewProps = {
   template: Template | null;
@@ -79,6 +67,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
 
   const categoryIcon = categoryIcons[template.category] || <ExtensionIcon />;
   const categoryColor = categoryColors[template.category] || "default";
+  const { backgroundColor, ditherEnabled } = useBackground();
 
   const handleCopyContent = () => {
     navigator.clipboard.writeText(template.content);
@@ -155,6 +144,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
   };
 
   return (
+    <ThemeProvider theme={lightTheme}>
     <Dialog
       open={open}
       onClose={onClose}
@@ -163,6 +153,22 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
       PaperProps={{
         sx: { minHeight: "600px" },
       }}
+      sx={{
+        "&::after": {
+          content: '""',
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: backgroundColor,
+          backgroundBlendMode: "overlay",
+          zIndex: -1,
+          pointerEvents: "none",
+          transition:
+            "background-color 0.6s ease-in-out, opacity 0.6s ease-in-out",
+        },
+      }}
     >
       <DialogTitle>
         <Box
@@ -170,6 +176,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
+            color: "#fff"
           }}
         >
           <Box sx={{ flex: 1 }}>
@@ -178,7 +185,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
                 icon={categoryIcon}
                 label={template.category}
                 size="small"
-                color={categoryColor}
+                color={"secondary"}
                 sx={{ textTransform: "capitalize" }}
               />
               {template.is_system && (
@@ -187,7 +194,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
                     icon={<VerifiedUserIcon />}
                     label="System"
                     size="small"
-                    color="primary"
+                    color="secondary"
                     variant="outlined"
                   />
                 </Tooltip>
@@ -213,7 +220,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
         </Box>
       </DialogTitle>
 
-      <DialogContent dividers>
+      <DialogContent dividers sx={{backgroundColor: '#ffffff44'}}>
         {/* Description */}
         {template.description && (
           <Box sx={{ mb: 3 }}>
@@ -225,7 +232,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
 
         {/* Metadata Grid */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
               <TrendingUpIcon color="action" sx={{ mb: 1 }} />
               <Typography variant="h6" color="primary">
@@ -236,7 +243,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
               <ExtensionIcon color="action" sx={{ mb: 1 }} />
               <Typography variant="h6" color="primary">
@@ -247,7 +254,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
               <CalendarIcon color="action" sx={{ mb: 1 }} />
               <Typography variant="caption" color="text.secondary">
@@ -258,7 +265,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid size={{ xs: 6, sm: 3 }}>
             <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
               <CalendarIcon color="action" sx={{ mb: 1 }} />
               <Typography variant="caption" color="text.secondary">
@@ -279,7 +286,7 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               {template.tags.map((tag, index) => (
-                <Chip key={index} label={tag} size="small" variant="outlined" />
+                <Chip key={index} label={tag} size="small" variant="outlined" sx={{ backgroundColor: "#fff" }} />
               ))}
             </Box>
           </Box>
@@ -472,12 +479,13 @@ const TemplateDetailView: React.FC<TemplateDetailViewProps> = ({
           variant="contained"
           startIcon={<PlayArrowIcon />}
           onClick={handleUseTemplate}
-          color="primary"
+          color="secondary"
         >
           Use Template
         </Button>
       </DialogActions>
     </Dialog>
+    </ThemeProvider>
   );
 };
 

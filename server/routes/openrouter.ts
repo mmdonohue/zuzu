@@ -24,7 +24,9 @@ router.get(
   authenticateToken,
   async (req: Request, res: Response) => {
     const { timeframe } = req.query;
-    const days = timeframe === "week" ? 7 : 1; // Default to 1 day if not specified
+    const days = timeframe === "week" ? 7 : timeframe === "all" ? null : 1; // Default to 1 day if not specified
+
+    logger.info(`Fetching history for user ${req.user?.userId}, timeframe: ${timeframe}`);
 
     try {
       // Build query with user name and template joins
@@ -43,11 +45,13 @@ router.get(
         )
       `,
         )
-        .eq("active", true)
-        .gte(
-          "created",
-          new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString(),
-        );
+        .eq("active", true);
+
+      // Add date filter only if not "all"
+      if (days !== null) {
+        const dateThreshold = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+        query = query.gte("created", dateThreshold);
+      }
 
       // Filter by user_id unless user is ADMIN or SUPER_ADMIN
       const userRole = req.user?.role;
@@ -59,7 +63,10 @@ router.get(
         ascending: false,
       });
 
-      if (error) throw error;
+      if (error) {
+        logger.error("Supabase error fetching history:", error);
+        throw error;
+      }
 
       // Flatten the user data into the response
       const formattedData = data?.map((event) => ({
@@ -69,9 +76,10 @@ router.get(
         users: undefined, // Remove nested users object
       }));
 
+      logger.info(`Returning ${formattedData?.length || 0} conversations`);
       res.json(formattedData);
     } catch (error) {
-      console.error("Error fetching conversation history:", error);
+      logger.error("Error fetching conversation history:", error);
       res.status(500).json({ error: "Failed to fetch conversation history" });
     }
   },

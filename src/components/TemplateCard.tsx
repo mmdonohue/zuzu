@@ -59,9 +59,12 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
         flexDirection: "column",
         transition: "all 0.2s ease-in-out",
         cursor: "pointer",
+        backgroundColor: "#ffffff44",
+        border: "1px solid #fff",
         "&:hover": {
           transform: "translateY(-4px)",
           boxShadow: 4,
+          backgroundColor: "#ffffff66",
         },
       }}
       onClick={() => onSelect(template)}
@@ -80,13 +83,13 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
             icon={categoryIcon}
             label={template.category}
             size="small"
-            color={categoryColor}
+            color={"secondary"}
             sx={{ textTransform: "capitalize" }}
           />
-          <Box sx={{ display: "flex", gap: 0.5 }}>
+          <Box sx={{ display: "flex", gap: 0.5, backgroundColor:"#ffffff34", borderRadius: "5px", p: "2px"}}>
             {template.is_system && (
               <Tooltip title="System Template">
-                <VerifiedUserIcon fontSize="small" color="primary" />
+                <VerifiedUserIcon fontSize="small" color="secondary" />
               </Tooltip>
             )}
             {template.is_public && (
@@ -107,6 +110,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
             fontSize: "1.1rem",
             lineHeight: 1.3,
             mb: 1,
+            color: "#fff",
           }}
         >
           {template.name}
@@ -115,7 +119,6 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
         {/* Description */}
         <Typography
           variant="body2"
-          color="text.secondary"
           sx={{
             mb: 1.5,
             display: "-webkit-box",
@@ -124,6 +127,8 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
             overflow: "hidden",
             textOverflow: "ellipsis",
             minHeight: "40px",
+            color: "#ffffff99",
+            fontWeight: 500,
           }}
         >
           {template.description || "No description provided"}
@@ -138,7 +143,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
                 label={tag}
                 size="small"
                 variant="outlined"
-                sx={{ fontSize: "0.7rem", height: "20px" }}
+                sx={{ fontSize: "0.7rem", height: "20px", backgroundColor: "#ffffff34", borderColor: "#ffffff66", color: "#ffffffcc" }}
               />
             ))}
             {template.tags.length > 3 && (
@@ -146,7 +151,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
                 label={`+${template.tags.length - 3}`}
                 size="small"
                 variant="outlined"
-                sx={{ fontSize: "0.7rem", height: "20px" }}
+                sx={{ fontSize: "0.7rem", height: "20px", backgroundColor: "#ffffff34", borderColor: "#ffffff66", color: "#ffffffcc" }}
               />
             )}
           </Box>
@@ -161,11 +166,11 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
             mt: "auto",
           }}
         >
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "#ffffff99", fontWeight: 500 }}>
             {template.variables?.length || 0} variable
             {template.variables?.length !== 1 ? "s" : ""}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" sx={{ color: "#ffffff99", fontWeight: 500 }}>
             Used {template.usage_count} time
             {template.usage_count !== 1 ? "s" : ""}
           </Typography>
@@ -176,12 +181,11 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect }) => {
         <Tooltip title="View template details">
           <IconButton
             size="small"
-            color="primary"
             onClick={(e) => {
               e.stopPropagation();
               onSelect(template);
             }}
-            sx={{ ml: "auto" }}
+            sx={{ ml: "auto", color: "#fff" }}
           >
             <VisibilityIcon fontSize="small" />
           </IconButton>

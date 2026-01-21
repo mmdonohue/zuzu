@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Paper,
-  Box,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CircularProgress,
-  Alert,
-  Chip,
-  Divider,
-} from "@mui/material";
+import { Paper, Box, Typography, Grid, Card, CardContent, CircularProgress, Alert, Chip, Divider } from '@mui/material';
 import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
@@ -123,7 +112,7 @@ const OpenRouterDashboard: React.FC = () => {
 
       <Grid container spacing={2}>
         {/* API Key Label */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card variant="outlined">
             <CardContent>
               <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -148,7 +137,7 @@ const OpenRouterDashboard: React.FC = () => {
         </Grid>
 
         {/* Usage */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card variant="outlined">
             <CardContent>
               <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -168,7 +157,7 @@ const OpenRouterDashboard: React.FC = () => {
         </Grid>
 
         {/* Credit Limit */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card variant="outlined">
             <CardContent>
               <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -192,7 +181,7 @@ const OpenRouterDashboard: React.FC = () => {
         </Grid>
 
         {/* Rate Limit */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card variant="outlined">
             <CardContent>
               <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -226,7 +215,7 @@ const OpenRouterDashboard: React.FC = () => {
         </Typography>
         <Grid container spacing={2}>
           {/* Daily Usage */}
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Card variant="outlined" sx={{ bgcolor: "background.default" }}>
               <CardContent>
                 <Typography variant="caption" color="text.secondary">
@@ -240,7 +229,7 @@ const OpenRouterDashboard: React.FC = () => {
           </Grid>
 
           {/* Weekly Usage */}
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Card variant="outlined" sx={{ bgcolor: "background.default" }}>
               <CardContent>
                 <Typography variant="caption" color="text.secondary">
@@ -254,7 +243,7 @@ const OpenRouterDashboard: React.FC = () => {
           </Grid>
 
           {/* Monthly Usage */}
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Card variant="outlined" sx={{ bgcolor: "background.default" }}>
               <CardContent>
                 <Typography variant="caption" color="text.secondary">

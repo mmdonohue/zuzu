@@ -75,6 +75,18 @@ npm run test:open
   - Tailwind CSS for utility classes
   - Global styles in `src/styles/globals.css`
 
+- **Layout Component**: `src/components/Layout.tsx` - Site-wide wrapper providing consistent structure:
+  - Wraps Header, main content area, and Footer
+  - Provides site-wide background image support (configurable opacity and fixed positioning)
+  - Supports flexible container widths: `xs`, `sm`, `md`, `lg` (default), `xl`, or `false` for full width
+  - Props:
+    - `maxWidth`: Container max-width (default: `'lg'`)
+    - `fullWidth`: Skip container wrapper for full-width pages (default: `false`)
+    - `disableGutters`: Remove container padding (default: `false`)
+  - **Usage**: All routes automatically wrapped in `App.tsx`
+  - **Background Image**: Configure in Layout.tsx line 34, adjust opacity on line 39
+  - See `src/components/Layout.example.tsx` for usage patterns
+
 - **Path Aliases**: `@/*` maps to `src/*` (configured in tsconfig.json and webpack)
 
 - **Environment Detection**: `src/utils/environment.ts` provides utilities to detect runtime environment:
