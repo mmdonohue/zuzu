@@ -13,9 +13,10 @@ const COLORS = {
   transparent: "transparent",
   transparentWhite: "#ffffff44",
   transparentWhiteDark: "#ffffff36",
-  transparentWhiteLight: "#ffffff66",
+  transparentWhiteLight: "#ffffff99",
   transparentBlack: "#00000044",
   transparentBlackDark: "#00000066",
+    transparentBlackLight: "#00000022",
 
   buttonWhite: "#ffffff88",
 

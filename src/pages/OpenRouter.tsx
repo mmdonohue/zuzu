@@ -1638,10 +1638,12 @@ const OpenRouterComponent = () => {
             multiline
             rows={5}
             value={prompt}
+            color= "primary"
             sx={{
-              color: "#fff",
+              color: "#fff !important",
               borderRadius: 1,
               border: "1px solid #fff",
+              "& .MuiInputBase-input": { color: "#fff !important" },
               "& .MuiInputBase-input::placeholder": {
                 color: "#ffffff88",
                 fontStyle: "italic",

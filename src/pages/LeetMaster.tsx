@@ -548,7 +548,7 @@ const LeetMaster: React.FC = () => {
           flexWrap: "wrap",
         }}
       >
-        <Box sx={{ flex: 1, p: 1, minWidth: "400px" , maxWidth: "500px", backdropFilter: "blur(2px)", backgroundColor: COLORS.transparentWhite, border: `1px solid ${COLORS.borderWhite}` }}>
+        <Box sx={{ flex: 1, p: 1, minWidth: "600px" , maxWidth: "500px", backdropFilter: "blur(2px)", backgroundColor: COLORS.transparentBlack, border: `1px solid ${COLORS.borderWhite}` }}>
           <Typography
             variant="overline"
             sx={{
@@ -571,9 +571,9 @@ const LeetMaster: React.FC = () => {
                 onClick={() => handleFocusAreaSelect(area.id)}
                 sx={{
                   textTransform: "none",
-                  fontWeight: selectedFocusArea === area.id ? 500 : 400,
-                  color: selectedFocusArea === area.id ? "#000" : COLORS.transparentBlackDark,
-                  backgroundColor: selectedFocusArea === area.id ? COLORS.transparentBlack : COLORS.transparent,
+                  fontWeight: 600,
+                  color: selectedFocusArea === area.id ? "#000" : COLORS.transparentWhiteLight,
+                  backgroundColor: selectedFocusArea === area.id ? COLORS.transparentWhiteLight : COLORS.transparent,
                   backdropFilter: "blur(2px)",
                   border: "#000 1px solid"
                 }}
@@ -584,7 +584,7 @@ const LeetMaster: React.FC = () => {
           </Box>
         </Box>
 
-        <Box sx={{ p: 1 , backdropFilter: "blur(2px)", backgroundColor: COLORS.transparentWhite, border: `1px solid ${COLORS.borderWhite}`}}>
+        <Box sx={{ p: 1 , backdropFilter: "blur(2px)", backgroundColor: COLORS.transparentBlack, border: `1px solid ${COLORS.borderWhite}`}}>
           <Typography
             variant="overline"
             sx={{
@@ -604,22 +604,23 @@ const LeetMaster: React.FC = () => {
             onChange={handleDifficultyChange}
             fullWidth
             size="small"
+            sx={{ backgroundColor: "transparent", border: `1px solid ${COLORS.borderWhite}` }}
           >
             <ToggleButton
               value="easy"
-              sx={{ textTransform: "none", fontWeight: 500 }}
+              sx={{ fontWeight: 500, color: selectedDifficulty === "easy" ? "#fff" : COLORS.transparentWhiteLight }}
             >
               Easy
             </ToggleButton>
             <ToggleButton
               value="medium"
-              sx={{ textTransform: "none", fontWeight: 500 }}
+              sx={{ fontWeight: 500, color: selectedDifficulty === "medium" ? "#fff" : COLORS.transparentWhiteLight }}
             >
               Medium
             </ToggleButton>
             <ToggleButton
               value="hard"
-              sx={{ textTransform: "none", fontWeight: 500 }}
+              sx={{ fontWeight: 500, color: selectedDifficulty === "hard" ? "#fff" : COLORS.transparentWhiteLight }}
             >
               Hard
             </ToggleButton>
@@ -646,7 +647,7 @@ const LeetMaster: React.FC = () => {
             sx={{
               p: 6,
               textAlign: "center",
-              backgroundColor: COLORS.transparentWhite,
+              backgroundColor: COLORS.transparentBlack,
               border: `1px solid ${COLORS.borderWhite}`,
             }}
           >
