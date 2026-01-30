@@ -211,7 +211,7 @@ const Home: React.FC<appProps> = ({ message }) => {
   ];
 
   return (
-    <Box>
+    <Box >
       {/* Hero section */}
       <Box
         sx={{
@@ -221,6 +221,8 @@ const Home: React.FC<appProps> = ({ message }) => {
           alignItems: "center",
           backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
           backdropFilter: "blur(2px)",
+          border: "1px solid white",
+          borderRadius: "8px",
  
         }}
         className="rounded-lg text-white mb-8"
@@ -260,7 +262,7 @@ const Home: React.FC<appProps> = ({ message }) => {
                 component="h1"
                 gutterBottom
                 fontWeight="bold"
-                sx={{ borderRadius: "4px", textShadow: "1px 1px 2px rgba(153, 145, 145, 0.34)" }}
+                sx={{ borderRadius: "4px", borderTextShadow: "1px 1px 2px rgba(153, 145, 145, 0.34)" }}
               >
                 Welcome to ZuZu
               </Typography>
@@ -328,7 +330,7 @@ const Home: React.FC<appProps> = ({ message }) => {
       {/* API response example */}
       <Paper
         elevation={0}
-        sx={{ p: 3, mb: 6, backgroundColor: "#00000066", color: "#f8d99dde"}}
+        sx={{ p: 3, mb: 6, border: "1px solid white", borderRadius: "8px", backgroundColor: "#00000066", color: "#f8d99dde"}}
         className="border border-gray-200"
       >
         <>
@@ -353,7 +355,7 @@ const Home: React.FC<appProps> = ({ message }) => {
 
       {/* Technologies grid */}
       <Box>
-        <Typography variant="h5" gutterBottom sx={{ pl: 2, mt: 4, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}>
+        <Typography variant="h5" gutterBottom sx={{ pl: 2, mt: 4, fontWeight: 500, backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", border: "1px solid #fff", color: "#f8d99d", borderRadius: "8px", p: 1 }}>
           Frontend Technologies
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4}}>
@@ -373,7 +375,7 @@ const Home: React.FC<appProps> = ({ message }) => {
           ))}
         </Grid>
 
-        <Typography variant="h5" gutterBottom sx={{ pl: 2, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}>
+        <Typography variant="h5" gutterBottom sx={{ pl: 2, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", border: "1px solid #fff", borderRadius: "8px", p: 1 }}>
           Backend Technologies
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -393,7 +395,7 @@ const Home: React.FC<appProps> = ({ message }) => {
           ))}
         </Grid>
 
-        <Typography variant="h5" gutterBottom sx={{ pl: 2, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}>
+        <Typography variant="h5" gutterBottom sx={{ pl: 2, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", border: "1px solid #fff", borderRadius: "8px", p: 1 }}>
           Development Tools
         </Typography>
         <Grid container spacing={3}>

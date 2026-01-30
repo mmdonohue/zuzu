@@ -41,15 +41,27 @@ type UserProgress = {
   };
 };
 
+type ProblemSummary = {
+  attempt_id: string;
+  problem_id: string;
+  title: string;
+  difficulty: string;
+  rating: number;
+  created_at: string;
+};
+
 type LeetMasterState = {
   currentProblem: Problem | null;
   isGenerating: boolean;
   isSavingAttempt: boolean;
   isLoadingProgress: boolean;
+  isLoadingProblems: boolean;
+  isLoadingProblem: boolean;
   error: string | null;
   selectedFocusArea: string | null;
   selectedDifficulty: "easy" | "medium" | "hard";
   userProgress: UserProgress | null;
+  problemsList: ProblemSummary[];
   showHints: boolean;
   showSolution: boolean;
 };
@@ -59,10 +71,13 @@ const initialState: LeetMasterState = {
   isGenerating: false,
   isSavingAttempt: false,
   isLoadingProgress: false,
+  isLoadingProblems: false,
+  isLoadingProblem: false,
   error: null,
   selectedFocusArea: null,
   selectedDifficulty: "medium",
   userProgress: null,
+  problemsList: [],
   showHints: false,
   showSolution: false,
 };
@@ -128,11 +143,14 @@ export const saveAttempt = createAsyncThunk(
 
       if (!response.ok) {
         const errorData = await response.json();
-        
+
         // If CSRF validation failed, refresh token and retry once
-        if (response.status === 403 && errorData.code === "CSRF_VALIDATION_FAILED") {
+        if (
+          response.status === 403 &&
+          errorData.code === "CSRF_VALIDATION_FAILED"
+        ) {
           const newToken = await csrfService.refreshToken();
-          
+
           const retryResponse = await fetch("/api/leetmaster/attempts", {
             method: "POST",
             headers: {
@@ -146,15 +164,15 @@ export const saveAttempt = createAsyncThunk(
               user_solution: userSolution || null,
             }),
           });
-          
+
           if (!retryResponse.ok) {
             const retryError = await retryResponse.json();
             throw new Error(retryError.error || "Failed to save attempt");
           }
-          
+
           return await retryResponse.json();
         }
-        
+
         throw new Error(errorData.error || "Failed to save attempt");
       }
 
@@ -187,6 +205,57 @@ export const loadProgress = createAsyncThunk(
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to load progress";
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const fetchProblemsByFocusArea = createAsyncThunk(
+  "leetMaster/fetchProblemsByFocusArea",
+  async (focusArea: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        `/api/leetmaster/attempts/by-focus-area/${focusArea}`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch problems");
+      }
+
+      const data = await response.json();
+      return data as ProblemSummary[];
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to fetch problems";
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const loadProblemById = createAsyncThunk(
+  "leetMaster/loadProblemById",
+  async (problemId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/leetmaster/problems/${problemId}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to load problem");
+      }
+
+      const data = await response.json();
+      return data as Problem;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to load problem";
       return rejectWithValue(message);
     }
   },
@@ -275,6 +344,38 @@ export const leetMasterSlice = createSlice({
     });
     builder.addCase(loadProgress.rejected, (state, action) => {
       state.isLoadingProgress = false;
+      state.error = action.payload as string;
+    });
+
+    // Fetch problems by focus area cases
+    builder.addCase(fetchProblemsByFocusArea.pending, (state) => {
+      state.isLoadingProblems = true;
+      state.error = null;
+    });
+    builder.addCase(fetchProblemsByFocusArea.fulfilled, (state, action) => {
+      state.isLoadingProblems = false;
+      state.problemsList = action.payload;
+      state.error = null;
+    });
+    builder.addCase(fetchProblemsByFocusArea.rejected, (state, action) => {
+      state.isLoadingProblems = false;
+      state.error = action.payload as string;
+    });
+
+    // Load problem by ID cases
+    builder.addCase(loadProblemById.pending, (state) => {
+      state.isLoadingProblem = true;
+      state.error = null;
+      state.showHints = false;
+      state.showSolution = false;
+    });
+    builder.addCase(loadProblemById.fulfilled, (state, action) => {
+      state.isLoadingProblem = false;
+      state.currentProblem = action.payload;
+      state.error = null;
+    });
+    builder.addCase(loadProblemById.rejected, (state, action) => {
+      state.isLoadingProblem = false;
       state.error = action.payload as string;
     });
   },

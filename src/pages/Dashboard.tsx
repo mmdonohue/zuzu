@@ -267,9 +267,11 @@ const Dashboard: React.FC = () => {
           alignItems: "center",
           mb: 1,
           p: 2,
-          borderRadius: "8px",
           maxHeight: "130px",
-          backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", backdropFilter: "blur(2px)"
+          backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", 
+          backdropFilter: "blur(2px)",
+          border: "1px solid #fff",
+          borderRadius: "8px"
         }}
       >
         <Box>
@@ -277,7 +279,9 @@ const Dashboard: React.FC = () => {
             variant="h4"
             component="h1"
             gutterBottom
-            sx={{ p: 2, color: "#fff", display: "flex", alignItems: "center" }}
+            sx={{ p: 2, color: "#fff", display: "flex", alignItems: "center",      
+            border: "1px solid #fff",
+            borderRadius: "8px"}}
           >
             <img width="50" src="/images/ying_yang.png" alt="ZuZu Logo" />
             Code Health Dashboard
@@ -377,7 +381,7 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Overall Health Score Card */}
-      <Card sx={{ mb: 1, backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", backdropFilter: "blur(2px)" }}>
+      <Card sx={{ mb: 1, backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", backdropFilter: "blur(2px)", border: "1px solid #fff", borderRadius: "8px" }}>
         <CardContent sx={{ pt: 2, pb: 0, "&:last-child": { pb: 0 } }}>
           <Grid container spacing={3} alignItems="flex-start">
             {/* ZuZu Logo */}
@@ -688,7 +692,8 @@ const Dashboard: React.FC = () => {
         Review Categories
       </Typography>
        */}
-      <Grid container spacing={0} sx={{ gap: "0px" }}>
+      <Grid container spacing={0} sx={{ gap: "0px", border: "1px solid #fff",
+            borderRadius: "8px" }}>
         {data.reviews.map((review) => (
           <Grid
             size={{ xs: 12, sm: 6, md: 2, lg: 2, xl: 2 }}
@@ -759,6 +764,8 @@ const Dashboard: React.FC = () => {
                         color: getStatusColor(review.status),
                         display: "flex",
                         flexShrink: 0,
+                        p: 1,
+                      fontSize: "1.5rem",
                       }}
                     >
                       {categoryIcons[review.category] || <CodeIcon />}
@@ -896,6 +903,7 @@ const Dashboard: React.FC = () => {
             backgroundColor: "#ffffff55",
             borderRadius: 2,
             p: 1,
+            border: "1px solid #fff",
           }}
         >
           {selectedCategory
@@ -910,7 +918,7 @@ const Dashboard: React.FC = () => {
           )}
         </Typography>
 
-        <Paper sx={{ p: 3, color: "#fff", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}>
+        <Paper sx={{ p: 3, color: "#fff", border: "1px solid #fff", borderRadius: 2, backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}>
           <Box
             sx={{ mb: 3, border: "1px solid #fff", borderRadius: 2, p: "2px" }}
           >
@@ -959,7 +967,7 @@ const Dashboard: React.FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell
-                    sx={{ color: "#fff", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}
+                    sx={{ color: "#fff", border: "1px solid #fff", borderRadius: "8px", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent" }}
                   >
                     <TableSortLabel
                       active={orderBy === "severity"}

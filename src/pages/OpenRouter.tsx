@@ -75,16 +75,8 @@ import {
 import Zoom from "@mui/material/Zoom";
 import { BACKGROUND_COLORS } from "@/context/BackgroundContext";
 import { ThemeProvider } from '@mui/material/styles';
-import { COLORS, darkTheme } from "@/styles/themes";
+import { COLORS, darkTheme, dialogPaperProps  } from "@/styles/themes";
 
-// Dialog Paper styling for transparent white backgrounds
-const dialogPaperProps = {
-  sx: {
-    backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
-    border: "1px solid #fff",
-    color: "#fff",
-  },
-};
 
 // Define types
 type Conversation = {

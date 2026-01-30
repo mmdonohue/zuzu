@@ -187,6 +187,43 @@ router.get(
 );
 
 /**
+ * GET /api/leetmaster/problems/:id
+ * Get a specific problem by ID
+ */
+router.get(
+  "/problems/:id",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+    const { id } = req.params;
+
+    if (!userId) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+
+    if (!id) {
+      return res.status(400).json({ error: "Problem ID is required" });
+    }
+
+    try {
+      const problem = await LeetMasterService.getProblemById(id);
+
+      if (!problem) {
+        return res.status(404).json({ error: "Problem not found" });
+      }
+
+      res.json(problem);
+    } catch (error) {
+      logger.error("Error fetching problem:", error);
+      res.status(500).json({
+        error:
+          error instanceof Error ? error.message : "Failed to fetch problem",
+      });
+    }
+  },
+);
+
+/**
  * GET /api/leetmaster/attempts/by-focus-area/:focusArea
  * Get user's attempted problems for a specific focus area
  */

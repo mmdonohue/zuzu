@@ -532,6 +532,33 @@ CRITICAL CONSTRAINTS:
   }
 
   /**
+   * Get a specific problem by ID
+   */
+  static async getProblemById(problemId: string): Promise<Problem | null> {
+    try {
+      const { data, error } = await supabase
+        .from("problems")
+        .select("*")
+        .eq("id", problemId)
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          // No rows returned
+          return null;
+        }
+        logger.error("Error fetching problem by ID:", error);
+        throw error;
+      }
+
+      return data as Problem;
+    } catch (error) {
+      logger.error("Error in getProblemById:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Get user progress statistics
    */
   static async getUserProgress(userId: number): Promise<UserProgress> {
