@@ -620,7 +620,8 @@ CRITICAL CONSTRAINTS:
   }
 
   /**
-   * Get user's attempted problems for a specific focus area
+   * Get last 5 or fewer problems for a specific focus area
+   * Returns problems from the problems table (not limited to user's attempts)
    */
   static async getUserAttemptsByFocusArea(
     userId: number,
@@ -636,55 +637,39 @@ CRITICAL CONSTRAINTS:
     }>
   > {
     try {
-      const { data: attempts, error } = await supabase
-        .from("attempts")
-        .select(
-          "id, problem_id, rating, created_at, problems(id, focus_area, difficulty, problem_json)",
-        )
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+      const { data: problems, error } = await supabase
+        .from("problems")
+        .select("id, focus_area, difficulty, problem_json, created_at")
+        .eq("focus_area", focusArea)
+        .eq("active", true)
+        .order("created_at", { ascending: false })
+        .limit(5);
 
       if (error) {
-        logger.error("Error querying user attempts by focus area:", error);
+        logger.error("Error querying problems by focus area:", error);
         throw error;
       }
 
-      if (!attempts || attempts.length === 0) {
+      if (!problems || problems.length === 0) {
         return [];
       }
 
-      // Filter by focus area and extract problem titles
-      const result = attempts
-        .filter((attempt) => {
-          const problemArray = attempt.problems as Array<{
-            focus_area?: string;
-            difficulty?: string;
-            problem_json?: { title?: string };
-          }>;
-          const problem = problemArray?.[0];
-          return problem?.focus_area === focusArea;
-        })
-        .map((attempt) => {
-          const problemArray = attempt.problems as Array<{
-            id: string;
-            focus_area: string;
-            difficulty: string;
-            problem_json: { title?: string };
-          }>;
-          const problem = problemArray[0];
-
-          return {
-            attempt_id: attempt.id,
-            problem_id: problem.id,
-            title: problem.problem_json?.title || "Untitled Problem",
-            difficulty: problem.difficulty,
-            rating: attempt.rating,
-            created_at: attempt.created_at,
-          };
-        });
+      // Map problems to expected format
+      const result = problems.map((problem) => {
+        const problemJson = problem.problem_json as { title?: string };
+        
+        return {
+          attempt_id: "", // Not applicable since we're not querying attempts
+          problem_id: problem.id,
+          title: problemJson?.title || "Untitled Problem",
+          difficulty: problem.difficulty,
+          rating: 0, // Not applicable since we're not querying attempts
+          created_at: problem.created_at,
+        };
+      });
 
       logger.info(
-        `Found ${result.length} attempts for user ${userId} in ${focusArea}`,
+        `Found ${result.length} problems in ${focusArea}`,
       );
       return result;
     } catch (error) {

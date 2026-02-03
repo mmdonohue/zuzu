@@ -144,11 +144,18 @@ export const saveAttempt = createAsyncThunk(
       if (!response.ok) {
         const errorData = await response.json();
 
-        // If CSRF validation failed, refresh token and retry once
-        if (
+        // Check for CSRF validation failure (multiple possible indicators)
+        const isCsrfError =
           response.status === 403 &&
-          errorData.code === "CSRF_VALIDATION_FAILED"
-        ) {
+          (errorData.code === "CSRF_VALIDATION_FAILED" ||
+            errorData.message?.toLowerCase().includes("csrf") ||
+            errorData.error?.toLowerCase().includes("csrf"));
+
+        // If CSRF validation failed, refresh token and retry once
+        if (isCsrfError) {
+          console.log(
+            "CSRF validation failed, refreshing token and retrying...",
+          );
           const newToken = await csrfService.refreshToken();
 
           const retryResponse = await fetch("/api/leetmaster/attempts", {
@@ -167,13 +174,18 @@ export const saveAttempt = createAsyncThunk(
 
           if (!retryResponse.ok) {
             const retryError = await retryResponse.json();
-            throw new Error(retryError.error || "Failed to save attempt");
+            throw new Error(
+              retryError.error || "Failed to save attempt after token refresh",
+            );
           }
 
+          console.log("Retry successful after CSRF token refresh");
           return await retryResponse.json();
         }
 
-        throw new Error(errorData.error || "Failed to save attempt");
+        throw new Error(
+          errorData.error || errorData.message || "Failed to save attempt",
+        );
       }
 
       const data = await response.json();

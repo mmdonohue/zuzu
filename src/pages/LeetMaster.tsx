@@ -20,6 +20,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import masterLogo from "../assets/img/zuzu-master.png";
 import LeetMasterCodeEditor from "../components/LeetMasterCodeEditor";
 import { COLORS } from "@/styles/themes";
+import { csrfService } from "@/services/csrf.service";
 
 import { AppDispatch, RootState } from "../store";
 import {
@@ -417,9 +418,13 @@ const LeetMaster: React.FC = () => {
 
   const [userRating, setUserRating] = React.useState<number>(0);
 
-  // Load user progress on mount
+  // Load user progress and refresh CSRF token on mount
   useEffect(() => {
     dispatch(loadProgress());
+    // Proactively refresh CSRF token to ensure we have a valid one
+    csrfService.refreshToken().catch((err) => {
+      console.warn("Failed to refresh CSRF token on mount:", err);
+    });
   }, [dispatch]);
 
   const handleFocusAreaSelect = (focusAreaId: string) => {
@@ -475,7 +480,18 @@ const LeetMaster: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ mt: 0, mb: 4 }}>
       {/* Horizontal Header */}
-      <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 3 }}>
+      <Box
+        sx={{
+          mb: 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 3,
+          backdropFilter: "blur(2px)",
+          backgroundColor: COLORS.transparentBlack,
+          p: 2,
+          border: `1px solid ${COLORS.borderWhite}`,
+        }}
+      >
         {Logo()}
         <Card
           sx={{
@@ -526,7 +542,16 @@ const LeetMaster: React.FC = () => {
           </Typography>
           <Typography
             variant="body2"
-            sx={{ fontWeight: 400, color: COLORS.textSecondary }}
+            sx={{
+              pl: 2,
+              pt: 2,
+              pr: 2,
+              pb: 1,
+              fontWeight: 400,
+              color: COLORS.textSecondary,
+              backdropFilter: "blur(2px)",
+              backgroundColor: COLORS.transparentBlack,
+            }}
           >
             <p>
               Your journey begins not when you step onto the mat or write your
@@ -845,11 +870,7 @@ const LeetMaster: React.FC = () => {
               }}
             >
               <Box>
-                <Typography
-                  variant="body2"
-                  gutterBottom
-                  sx={{ color: COLORS.textPrimary }}
-                >
+                <Typography variant="body2" gutterBottom sx={{ color: "#fff" }}>
                   Rate this problem:
                 </Typography>
                 <Rating
@@ -857,13 +878,10 @@ const LeetMaster: React.FC = () => {
                   onChange={handleRatingChange}
                   disabled={isSavingAttempt}
                   size="large"
-                  sx={{ color: COLORS.accentBlue }}
+                  sx={{ color: "#fff" }}
                 />
                 {isSavingAttempt && (
-                  <Typography
-                    variant="caption"
-                    sx={{ ml: 1, color: COLORS.textSecondary }}
-                  >
+                  <Typography variant="caption" sx={{ ml: 1, color: "#fff" }}>
                     Saving...
                   </Typography>
                 )}

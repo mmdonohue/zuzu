@@ -22,6 +22,8 @@
 AI assited leet code training using Sandpack React powered by CodeSandbox
 ![alt text](leet_master.png)
 
+## [Demo site](https://zuzu-frontend.onrender.com)
+
 ## Tech Stack
 
 This project integrates the following technologies:

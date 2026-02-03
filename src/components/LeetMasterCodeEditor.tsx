@@ -37,6 +37,115 @@ type CodeEditorProps = {
 
 const NODE_VERSION = "20.15.0";
 
+/**
+ * Parse a test case input string that may contain multiple parameters.
+ * Examples:
+ *   "[10,5,2,6], 100" -> { declarations: "const nums = [10,5,2,6];\n  const k = 100;", args: "nums, k" }
+ *   "[1,2,3]" -> { declarations: "const input = [1,2,3];", args: "input" }
+ *   '"hello", "world"' -> { declarations: "const s1 = \"hello\";\n  const s2 = \"world\";", args: "s1, s2" }
+ */
+const parseTestCaseInput = (
+  input: string,
+): { declarations: string; args: string; inputDisplay: string } => {
+  // Try to parse the input as multiple top-level values
+  // We need to be careful with arrays that contain commas
+  const parts: string[] = [];
+  let current = "";
+  let depth = 0; // Track bracket/brace depth
+  let inString = false;
+  let stringChar = "";
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    const prevChar = i > 0 ? input[i - 1] : "";
+
+    // Handle string detection
+    if ((char === '"' || char === "'") && prevChar !== "\\") {
+      if (!inString) {
+        inString = true;
+        stringChar = char;
+      } else if (char === stringChar) {
+        inString = false;
+      }
+    }
+
+    // Track depth of brackets/braces (only when not in string)
+    if (!inString) {
+      if (char === "[" || char === "{" || char === "(") {
+        depth++;
+      } else if (char === "]" || char === "}" || char === ")") {
+        depth--;
+      }
+
+      // Split on comma at depth 0 (top level)
+      if (char === "," && depth === 0) {
+        parts.push(current.trim());
+        current = "";
+        continue;
+      }
+    }
+
+    current += char;
+  }
+
+  // Don't forget the last part
+  if (current.trim()) {
+    parts.push(current.trim());
+  }
+
+  // If only one part, use simple input variable
+  if (parts.length === 1) {
+    return {
+      declarations: `const input = ${parts[0]};`,
+      args: "input",
+      inputDisplay: parts[0],
+    };
+  }
+
+  // Multiple parts - assign meaningful variable names
+  const varNames: string[] = [];
+  const declarations: string[] = [];
+
+  parts.forEach((part, index) => {
+    let varName: string;
+
+    // Try to assign meaningful names based on type/position
+    if (part.startsWith("[")) {
+      // Array - use nums, arr, or indexed name
+      if (index === 0) {
+        varName = "nums";
+      } else {
+        varName = `arr${index + 1}`;
+      }
+    } else if (part.startsWith('"') || part.startsWith("'")) {
+      // String
+      varName = index === 0 ? "s" : `s${index + 1}`;
+    } else if (part === "true" || part === "false") {
+      // Boolean
+      varName = "flag";
+    } else if (!isNaN(Number(part))) {
+      // Number - common names: k, target, n, m
+      const numNames = ["k", "target", "n", "m", "val"];
+      const numIndex = parts
+        .slice(0, index)
+        .filter((p) => !isNaN(Number(p))).length;
+      varName = numNames[numIndex] || `num${index + 1}`;
+    } else {
+      // Default
+      varName = `param${index + 1}`;
+    }
+
+    varNames.push(varName);
+    declarations.push(`const ${varName} = ${part};`);
+  });
+
+  return {
+    declarations: declarations.join("\n  "),
+    args: varNames.join(", "),
+    inputDisplay: parts.join(", "),
+  };
+};
+
 const RunButton: React.FC = () => {
   const { sandpack } = useSandpack();
   const [isRunning, setIsRunning] = useState(false);
@@ -75,18 +184,19 @@ const LeetMasterCodeEditor: React.FC<CodeEditorProps> = ({
   const generateTestCode = (): string => {
     const testCasesCode = problemJson.test_cases
       .map((tc, index) => {
+        const parsed = parseTestCaseInput(tc.input);
         return `  // Test Case ${index + 1}
   try {
-    const input = ${tc.input};
+    ${parsed.declarations}
     const expected = ${tc.expected_output};
-    const result = runSolution(input);
+    const result = runSolution(${parsed.args});
 
     if (JSON.stringify(result) === JSON.stringify(expected)) {
       console.log('✅ Test Case ${index + 1}: PASSED');
       passed++;
     } else {
       console.log('❌ Test Case ${index + 1}: FAILED');
-      console.log('  Input:', JSON.stringify(input));
+      console.log('  Input: ${parsed.inputDisplay.replace(/'/g, "\\'")}');
       console.log('  Expected:', JSON.stringify(expected));
       console.log('  Got:', JSON.stringify(result));
       failed++;
@@ -97,6 +207,11 @@ const LeetMasterCodeEditor: React.FC<CodeEditorProps> = ({
   }`;
       })
       .join("\n\n");
+
+    // Parse first test case to show function signature
+    const firstTestParsed = parseTestCaseInput(
+      problemJson.test_cases[0]?.input || "",
+    );
 
     // Build problem header comments (without solution)
     const headerComments = `/*
@@ -117,6 +232,9 @@ ${problemJson.constraints.map((c) => ` * - ${c}`).join("\n")}
  *
  * KEYWORDS:
  * ${problemJson.keywords.join(", ")}
+ *
+ * FUNCTION SIGNATURE:
+ * runSolution(${firstTestParsed.args}) -> expected output
  *
  * TEST CASES:
 ${problemJson.test_cases.map((tc, i) => ` * ${i + 1}. Input: ${tc.input} | Expected: ${tc.expected_output}`).join("\n")}
@@ -214,6 +332,7 @@ ${solutionComments}
           border: "1px solid",
           borderColor: "divider",
           overflow: "hidden",
+          height: "500px",
         }}
       >
         <SandpackProvider
@@ -227,21 +346,21 @@ ${solutionComments}
             autorun: false,
           }}
         >
-          <SandpackLayout>
+          <SandpackLayout style={{ flexWrap: "nowrap", height: "100%" }}>
             <SandpackCodeEditor
               style={{
                 height: "500px",
                 fontSize: "14px",
-                width: "50%",
-                flex: "0 0 50%",
+                width: "60%",
+                flex: "0 0 60%",
               }}
               showTabs={false}
               showLineNumbers={true}
             />
             <Box
               sx={{
-                width: "50%",
-                flex: "0 0 50%",
+                width: "40%",
+                flex: "0 0 40%",
                 display: "flex",
                 flexDirection: "column",
                 backgroundColor: "#1e1e1e",
@@ -284,8 +403,16 @@ ${solutionComments}
         </SandpackProvider>
       </Paper>
 
-      <Box sx={{ mt: 2, display: "flex", gap: 2, alignItems: "center" }}>
-        <Typography variant="caption" color="text.secondary">
+      <Box
+        sx={{
+          backdropFilter: "blur(2px)",
+          mt: 2,
+          display: "flex",
+          gap: 2,
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="caption" sx={{ color: "#fff" }}>
           Edit the <code>runSolution()</code> function above and click "Run
           Tests" to execute.
         </Typography>
