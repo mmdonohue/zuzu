@@ -5,6 +5,8 @@
  * The token is required for all state-changing operations (POST, PUT, DELETE, PATCH).
  */
 
+import { API_CONFIG } from "../config/api";
+
 class CsrfService {
   private csrfToken: string | null = null;
   private fetchPromise: Promise<string> | null = null;
@@ -18,9 +20,9 @@ class CsrfService {
    */
   private async fetchToken(): Promise<string> {
     try {
-      // Use relative URL to go through webpack dev server proxy
-      // This ensures the CSRF cookie is set on the same domain as our requests
-      const response = await fetch("/api/csrf-token", {
+      // Use the absolute backend URL so this works in production when the
+      // frontend is served from a different domain than the API server
+      const response = await fetch(`${API_CONFIG.API_URL}/csrf-token`, {
         method: "GET",
         credentials: "include", // Important: include cookies
         headers: {
