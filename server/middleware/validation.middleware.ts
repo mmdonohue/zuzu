@@ -24,8 +24,8 @@ export const handleValidationErrors = (
 export const validateSignup = [
   body("email")
     .isEmail()
-    .normalizeEmail()
-    .withMessage("Valid email is required"),
+    .withMessage("Valid email is required")
+    .customSanitizer((val) => val.trim().toLowerCase()),
   body("password")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters")
@@ -46,8 +46,8 @@ export const validateSignup = [
 export const validateLogin = [
   body("email")
     .isEmail()
-    .normalizeEmail()
-    .withMessage("Valid email is required"),
+    .withMessage("Valid email is required")
+    .customSanitizer((val) => val.trim().toLowerCase()),
   body("password").notEmpty().withMessage("Password is required"),
   handleValidationErrors,
 ];
@@ -71,8 +71,8 @@ export const validateResendCode = [
 export const validatePasswordResetRequest = [
   body("email")
     .isEmail()
-    .normalizeEmail()
-    .withMessage("Valid email is required"),
+    .withMessage("Valid email is required")
+    .customSanitizer((val) => val.trim().toLowerCase()),
   handleValidationErrors,
 ];
 
