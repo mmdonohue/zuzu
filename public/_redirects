@@ -1,2 +1,16 @@
-/assets/* /assets/:splat 200
+# Don't redirect files with extensions
+/*.js /*.js 200
+/*.css /*.css 200
+/*.png /*.png 200
+/*.jpg /*.jpg 200
+/*.jpeg /*.jpeg 200
+/*.JPEG /*.JPEG 200
+/*.gif /*.gif 200
+/*.svg /*.svg 200
+/*.wasm /*.wasm 200
+/*.html /*.html 200
+/*.json /*.json 200
+/*.ico /*.ico 200
+
+# Catch-all for React Router
 /* /index.html 200
