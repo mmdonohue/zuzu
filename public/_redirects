@@ -1,16 +1,17 @@
-# Don't redirect files with extensions
-/*.js /*.js 200
-/*.css /*.css 200
-/*.png /*.png 200
-/*.jpg /*.jpg 200
-/*.jpeg /*.jpeg 200
-/*.JPEG /*.JPEG 200
-/*.gif /*.gif 200
-/*.svg /*.svg 200
-/*.wasm /*.wasm 200
-/*.html /*.html 200
-/*.json /*.json 200
-/*.ico /*.ico 200
+# Serve static files as-is (no redirect)
+/assets/* 200
+/images/* 200
+/*.js 200
+/*.css 200
+/*.wasm 200
+/*.json 200
+/*.ico 200
+/*.png 200
+/*.jpg 200
+/*.jpeg 200
+/*.JPEG 200
+/*.gif 200
+/*.svg 200
 
-# Catch-all for React Router
+# Catch-all for React Router (must be last)
 /* /index.html 200
