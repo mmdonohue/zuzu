@@ -1,7 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const Portfolio: React.FC = () => {
   const [desertModalOpen, setDesertModalOpen] = useState(false);
+
+  useEffect(() => {
+    // Load Google Fonts
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Patrick+Hand&family=Amatic+SC:wght@400;700&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, []);
 
   return (
     <div className="text-zinc-200 antialiased selection:text-indigo-200 relative min-h-screen flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -101,10 +113,34 @@ const Portfolio: React.FC = () => {
             <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
-                  <h4 className="text-xl font-normal tracking-tight text-zinc-100 mb-4" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Seravanna – Wellness Services</h4>
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Seravanna – Wellness Services</h4>
+                    <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
+                    <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
+                  </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
                     Comprehensive wellness services framework featuring seamless booking workflows, intelligent chatbot integration, and complete administrative controls.
                   </p>
+                  
+                  <ul className="space-y-3 text-base text-zinc-200 mb-8">
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>Fully integrated Stripe booking workflows</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>Multi-tenant design with Admin control</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>Meta Ads integration</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>RAG enabled HBOT chat bot using free LLM models</span>
+                    </li>
+                  </ul>
+
                   <div className="mb-6">
                     <a href="https://www.seravanna.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
                       🌐 www.seravanna.com
@@ -123,10 +159,30 @@ const Portfolio: React.FC = () => {
             <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
-                  <h4 className="text-xl font-normal tracking-tight text-zinc-100 mb-4" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Mahoraga – Trading Bot</h4>
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Mahoraga – Trading Bot</h4>
+                    <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
+                    <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
+                  </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
                     Cloudflare Workers-based algorithmic trading bot featuring a comprehensive MCP server, real-time React dashboard, and strict automated safety layers.
                   </p>
+                  
+                  <ul className="space-y-3 text-base text-zinc-200 mb-8">
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>MCP Server exposing 40+ tools for trading, analysis, and risk management</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>Two-phase order execution with policy engine validation</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>React dashboard polling real-time status every 5 seconds</span>
+                    </li>
+                  </ul>
+
                   <div>
                     <a href="mailto:donohue.matt@gmail.com?subject=Mahoraga Repo Request" className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
                       🔒 Repo on request
@@ -145,19 +201,37 @@ const Portfolio: React.FC = () => {
             <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
-                  <h4 className="text-xl font-normal tracking-tight text-zinc-100 mb-4" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>ZuZu Scaffold</h4>
+                  <div className="flex items-center gap-3 mb-4">
+                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>ZuZu Scaffold</h4>
+                  </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
                     Production-ready full-stack application scaffold focused on security, maintainability, and scalable team workflows. Built with React/TypeScript and Node/Express.
                   </p>
+                  
+                  <ul className="space-y-3 text-base text-zinc-200 mb-8">
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>Production-grade auth (JWT, CSRF, rate limiting)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>AI-driven workflow automation hooks</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <span>Cypress E2E testing integrated</span>
+                    </li>
+                  </ul>
+
                   <div>
                     <a href="https://github.com/mmdonohue/zuzu" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
                       📦 View Repository
                     </a>
                   </div>
                 </div>
-                <div className="pl-8 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
-                  <div className="relative z-10 w-full max-w-sm aspect-[4/3] bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl shadow-2xl flex flex-col items-center justify-center text-center p-6">
-                    <span className="text-base font-normal text-zinc-300">Architecture Diagram</span>
+                <div className="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                  <div className="relative z-10 w-full h-full">
+                    <img src="/assets/img/zuzu_splash.png" alt="ZuZu Scaffold" className="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />
                   </div>
                 </div>
               </div>
