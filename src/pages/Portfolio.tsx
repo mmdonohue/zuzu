@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Portfolio: React.FC = () => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [htmlContent, setHtmlContent] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -15,15 +15,7 @@ const Portfolio: React.FC = () => {
         }
         
         const html = await response.text();
-        
-        if (iframeRef.current) {
-          const iframeDoc = iframeRef.current.contentDocument;
-          if (iframeDoc) {
-            iframeDoc.open();
-            iframeDoc.write(html);
-            iframeDoc.close();
-          }
-        }
+        setHtmlContent(html);
       } catch (error) {
         console.error("Error loading portfolio HTML:", error);
         setError(error instanceof Error ? error.message : "Unknown error");
@@ -53,8 +45,8 @@ const Portfolio: React.FC = () => {
   return (
     <div style={{ width: "100%", height: "100vh", overflow: "hidden" }}>
       <iframe
-        ref={iframeRef}
         title="Portfolio"
+        srcDoc={htmlContent}
         sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
         style={{
           width: "100%",
