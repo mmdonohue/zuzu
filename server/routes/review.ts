@@ -20,6 +20,8 @@ router.get("/summary", (req: Request, res: Response) => {
     const possiblePaths = [
       path.join(process.cwd(), ".claude", "review", "results", fileName),
       path.join(process.cwd(), "server", "data", fileName),
+      path.join(process.cwd(), "data", fileName), // For deployed server
+      path.join(process.cwd(), "dist", "data", fileName), // For built server
       path.join(process.cwd(), "public", ".claude", "review", "results", fileName),
     ];
 
@@ -64,6 +66,8 @@ router.get("/details/:category", (req: Request, res: Response) => {
     const possiblePaths = [
       path.join(process.cwd(), ".claude", "review", "results", "codebase_review.json"),
       path.join(process.cwd(), "server", "data", "codebase_review.json"),
+      path.join(process.cwd(), "data", "codebase_review.json"), // For deployed server
+      path.join(process.cwd(), "dist", "data", "codebase_review.json"), // For built server
       path.join(process.cwd(), "public", ".claude", "review", "results", "codebase_review.json"),
     ];
 

@@ -4,7 +4,7 @@
   "description": "ZuZu Backend Server",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && mkdir -p dist/data && cp data/*.json dist/data/",
     "start": "node dist/index.js",
     "clean": "rm -rf node_modules package-lock.json",
     "reinstall": "npm run clean && npm install",
