@@ -69,6 +69,14 @@ module.exports = {
             ignore: ['**/index.html', '**/favicon.ico'], // Already handled by HtmlWebpackPlugin
           },
         },
+        {
+          from: 'src/assets/html',
+          to: 'assets/html',
+        },
+        {
+          from: 'src/assets/img',
+          to: 'assets/img',
+        },
       ],
     }),
   ],

@@ -16,77 +16,86 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VerifyCode from "./pages/VerifyCode";
 import Account from "./pages/Account";
+import Portfolio from "./pages/Portfolio";
 
 const App: React.FC = () => {
   return (
-    <Layout>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Home message={"welcome to zuzu"} />} />
-        <Route path="/about" element={<About />} />
+    <Routes>
+      {/* Full-screen routes (without Layout) */}
+      <Route path="/portfolio" element={<Portfolio />} />
 
-        {/* Auth routes (redirect to dashboard if already logged in) */}
-        <Route
-          path="/login"
-          element={
-            <ProtectedRoute requireAuth={false}>
-              <Login />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <ProtectedRoute requireAuth={false}>
-              <Signup />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/auth/verify" element={<VerifyCode />} />
+      {/* Routes with Layout */}
+      <Route path="*" element={
+        <Layout>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home message={"welcome to zuzu"} />} />
+            <Route path="/about" element={<About />} />
 
-        {/* Protected routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/openrouter"
-          element={
-            <ProtectedRoute>
-              <OpenRouterComponent />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/leet-master"
-          element={
-            <ProtectedRoute>
-              <LeetMaster />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/logs"
-          element={
-            <ProtectedRoute>
-              <Logs />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/account"
-          element={
-            <ProtectedRoute>
-              <Account />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </Layout>
+            {/* Auth routes (redirect to dashboard if already logged in) */}
+            <Route
+              path="/login"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Login />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Signup />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/auth/verify" element={<VerifyCode />} />
+
+            {/* Protected routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/openrouter"
+              element={
+                <ProtectedRoute>
+                  <OpenRouterComponent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leet-master"
+              element={
+                <ProtectedRoute>
+                  <LeetMaster />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/logs"
+              element={
+                <ProtectedRoute>
+                  <Logs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Layout>
+      } />
+    </Routes>
   );
 };
 

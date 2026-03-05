@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Box,
@@ -28,6 +28,8 @@ import {
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import SecurityIcon from "@mui/icons-material/Security";
 import CodeIcon from "@mui/icons-material/Code";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -46,6 +48,7 @@ import {
 } from "../types/review";
 import zuzuLogo from "../assets/img/zuzu-logo.png";
 import { isLocalEnvironment } from "../utils/environment";
+import { useTonePlayer } from "@/hooks/useTonePlayer";
 
 import { BACKGROUND_COLORS } from "@/context/BackgroundContext";
 import { COLORS } from "@/styles/themes";
@@ -70,6 +73,8 @@ const getShortDisplayName = (displayName: string): string => {
 };
 
 const Dashboard: React.FC = () => {
+  const { playPreset } = useTonePlayer();
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -79,15 +84,51 @@ const Dashboard: React.FC = () => {
   const [showExample, setShowExample] = useState(false);
   const [isRunningReview, setIsRunningReview] = useState(false);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [audioEnabled, setAudioEnabled] = useState(true);
+
+  // Helper to play tones only when audio is enabled
+  const playTone = (preset: Parameters<typeof playPreset>[0]) => {
+    if (audioEnabled) {
+      playPreset(preset);
+    }
+  };
 
   const MAX_DESCRIPTION_LENGTH = 150;
   const RESET_INTERVAL_MS = 30000;
+  const previousHealthScore = useRef<number | null>(null);
+  
   // Fetch code review data
   const { data, isLoading, error, refetch } = useQuery<CodeReviewSummary>({
     queryKey: ["codeReview", showExample],
     queryFn: () => fetchCodeReviewSummary(showExample),
     refetchInterval: RESET_INTERVAL_MS, // Refetch every 30 seconds
   });
+
+  // Play tones based on health score changes
+  useEffect(() => {
+    if (data?.overallHealthScore !== undefined) {
+      const currentScore = data.overallHealthScore;
+      
+      // Only play tones on score changes, not initial load
+      if (previousHealthScore.current !== null && previousHealthScore.current !== currentScore) {
+        if (currentScore >= 80 && previousHealthScore.current < 80) {
+          // Crossed into good health territory
+          playTone('profit');
+        } else if (currentScore < 50 && previousHealthScore.current >= 50) {
+          // Dropped into warning territory
+          playTone('warning');
+        } else if (currentScore > previousHealthScore.current) {
+          // Score improved
+          playTone('success');
+        } else if (currentScore < previousHealthScore.current) {
+          // Score decreased
+          playTone('info');
+        }
+      }
+      
+      previousHealthScore.current = currentScore;
+    }
+  }, [data?.overallHealthScore]);
 
   // Filter and sort findings
   const filteredFindings = useMemo(() => {
@@ -156,6 +197,7 @@ const Dashboard: React.FC = () => {
   const handleRunReview = async () => {
     setIsRunningReview(true);
     setReviewError(null);
+    playTone('info'); // Play info tone when starting review
 
     const CSRF_RETRY_DELAY_MS = 100;
 
@@ -186,6 +228,7 @@ const Dashboard: React.FC = () => {
 
           if (!retryResponse.ok) {
             const retryErrorData = await retryResponse.json().catch(() => null);
+            playTone('loss'); // Play loss tone on error
             throw new Error(
               retryErrorData?.message ||
                 "Failed to run code review after retry",
@@ -196,11 +239,13 @@ const Dashboard: React.FC = () => {
 
           // Refetch the review data to show updated results
           await refetch();
+          playTone('success'); // Play success tone on completion
 
           console.log("Code review completed after retry:", retryResult);
           return; // Success on retry
         }
 
+        playTone('loss'); // Play loss tone on error
         throw new Error(errorData?.message || "Failed to run code review");
       }
 
@@ -208,12 +253,14 @@ const Dashboard: React.FC = () => {
 
       // Refetch the review data to show updated results
       await refetch();
+      playTone('success'); // Play success tone on completion
 
       console.log("Code review completed:", result);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Unknown error occurred";
       setReviewError(errorMessage);
+      playTone('warning'); // Play warning tone for errors
       console.error("Error running code review:", err);
     } finally {
       setIsRunningReview(false);
@@ -355,15 +402,33 @@ const Dashboard: React.FC = () => {
             <IconButton
               aria-label="refresh"
               sx={{ color: "#b1c6f5" }}
-              onClick={() => {
+              onClick={async () => {
                 try {
-                  refetch();
+                  playTone('info'); // Play info tone on refresh
+                  await refetch();
+                  playTone('success'); // Play success tone after successful refresh
                 } catch (error) {
+                  playTone('warning'); // Play warning tone on error
                   console.error("Error refreshing data:", error);
                 }
               }}
             >
               <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={audioEnabled ? "Mute audio feedback" : "Enable audio feedback"}>
+            <IconButton
+              aria-label="toggle audio"
+              sx={{ color: "#b1c6f5" }}
+              onClick={() => {
+                const newState = !audioEnabled;
+                setAudioEnabled(newState);
+                if (newState) {
+                  playPreset('info'); // Test tone when enabling
+                }
+              }}
+            >
+              {audioEnabled ? <VolumeUpIcon /> : <VolumeOffIcon />}
             </IconButton>
           </Tooltip>
         </Box>

@@ -1,0 +1,707 @@
+<html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matt Donohue | Senior Software Engineer &amp; Solution Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Patrick+Hand&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="text-zinc-200 antialiased  selection:text-indigo-200 relative min-h-screen flex flex-col" style="font-family: 'Inter', sans-serif;">
+
+    <!-- Fixed Background Image -->
+    <div class="fixed inset-0 z-[-2] bg-[url('/assets/img/foggy_coast.png')] bg-cover bg-center"></div>
+    
+    <!-- Glass/Dark Overlay -->
+    <div class="fixed inset-0 z-[-1]"></div>
+
+    <!-- Desert Images Modal -->
+    <div id="desert-modal" class="fixed top-0 right-0 bottom-0 z-50 hidden items-center justify-end bg-[transparent]">
+        <div class="relative max-w-3xl mr-8 p-8">
+            <button id="close-modal" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/50 flex items-center justify-center text-zinc-200 hover:text-zinc-100 transition-colors z-10">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="grid grid-cols-2 gap-4 opacity-75 transition-opacity duration-300">
+                <div class="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
+                    <img src="/assets/img/desert_2135.JPEG" alt="Desert Hot Springs View 1" class="w-full h-full object-cover aspect-[4/3]" />
+                </div>
+                <div class="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
+                    <img src="/assets/img/desert_2699.JPEG" alt="Desert Hot Springs View 2" class="w-full h-full object-cover aspect-[4/3]" />
+                </div>
+                <div class="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
+                    <img src="/assets/img/desert_4776.JPEG" alt="Desert Hot Springs View 3" class="w-full h-full object-cover aspect-[4/3]" />
+                </div>
+                <div class="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
+                    <img src="/assets/img/desert_3993.JPEG" alt="Desert Hot Springs View 4" class="w-full h-full object-cover aspect-[4/3]" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Profile ASCII Art -->
+    <div id='me-box' class="hidden lg:block bg-[#7aa5ba87] fixed left-6 top-24 z-40">
+        <img src="/assets/img/profile_ascii.png" alt="Matthew Donohue ASCII Portrait" class="w-48 backdrop-blur-md p-3 shadow-2xl hover:border-zinc-700/70 transition-all" />
+    </div>
+
+    <!-- Top Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800/50 bg-zinc-950/60 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto pl-6 h-16 flex items-center justify-between">
+            <div class="text-zinc-100 font-normal text-lg tracking-tight">MD.</div>
+            <nav class="hidden md:flex items-center gap-6 text-base font-normal text-zinc-200">
+                <a href="#about" class="hover:text-zinc-100 transition-colors">About</a>
+                <a href="#skills" class="hover:text-zinc-100 transition-colors">Expertise</a>
+                <a href="#experience" class="hover:text-zinc-100 transition-colors">Experience</a>
+                <a href="#projects" class="hover:text-zinc-100 transition-colors">Projects</a>
+            </nav>
+            <a href="mailto:donohue.matt@gmail.com" class="text-base font-normal text-zinc-100 bg-zinc-800/80 backdrop-blur-sm hover:bg-zinc-700 px-4 py-2 rounded-full transition-colors border border-zinc-700/50">
+                Get in touch
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 flex-grow max-w-8xl mx-auto pl-6 lg:pl-64 lg:pr-4 pt-32 pb-24 space-y-32">
+
+        <!-- Hero Section -->
+        <section id="about" class="max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6992aa] border border-indigo-500/20 text-indigo-100 text-sm font-normal mb-8 backdrop-blur-sm">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-[#3acbf0]"></span>
+                </span>
+                Available for new opportunities
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl font-medium tracking-tight text-zinc-100 mb-6 bg-gradient-to-br from-zinc-100 to-zinc-500 bg-clip-text text-transparent">
+                Matt Donohue
+            </h1>
+            <h2 class="text-xl md:text-2xl font-normal tracking-tight text-zinc-300 mb-6">
+                Senior Software Engineer &amp; Solution Architect
+            </h2>
+            
+            <p class="text-lg md:text-xl leading-relaxed text-zinc-200 mb-10 max-w-2xl">
+                15+ years of experience building and operating mission-critical production systems. Expertise in distributed architecture, full-stack development, and technical leadership. Proven ability to deliver scalable platforms and drive measurable business outcomes.
+            </p>
+
+            <!-- Contact & Social Links -->
+            <div class="flex flex-wrap items-center gap-4 text-base font-normal">
+                <a href="https://www.linkedin.com/in/matt-donohue-609b084/" target="_blank" class="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                    LinkedIn
+                </a>
+                <a href="https://github.com/mmdonohue" target="_blank" class="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700">
+                    <i data-lucide="code" class="w-5 h-5"></i>
+                    GitHub
+                </a>
+                <a href="mailto:donohue.matt@gmail.com" class="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700">
+                    <i data-lucide="mail" class="w-5 h-5"></i>
+                    Email
+                </a>
+                <div class="flex items-center gap-2 text-indiglo-300 px-4 py-2 cursor-pointer hover:text-indigo-200 transition-colors" id="location-trigger">
+                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    Desert Hot Springs, CA
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Strengths & Skills -->
+        <section id="skills" class="space-y-8">
+            <h3 class="text-2xl font-medium tracking-tight text-zinc-100">Technical Expertise</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Skill Card 1 -->
+                <div id="skill-card-1" class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-indigo-500/30 group-hover:text-indigo-200 transition-colors">
+                        <i data-lucide="layers" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="text-zinc-100 text-lg font-normal tracking-tight mb-2">Full-Stack Architecture</h4>
+                    <p class="text-base text-zinc-200 mb-4 leading-relaxed">React, Next.js, TypeScript, MUI, Tailwind CSS, Node.js, Express, Python Flask/FastAPI.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">React</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Node.js</span>
+                         <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Flask</span>
+                         <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">FastAPI</span>
+                    </div>
+                </div>
+
+                <!-- Skill Card 2 -->
+                <div id="skill-card-2" class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-emerald-500/30 group-hover:text-emerald-200 transition-colors">
+                        <i data-lucide="server" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="text-zinc-100 text-lg font-normal tracking-tight mb-2">Distributed Systems</h4>
+                    <p class="text-base text-zinc-200 mb-4 leading-relaxed">Microservices, Event-Driven Messaging, High-throughput data services.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Kafka</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">RabbitMQ</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">AWS/GCP</span>
+                    </div>
+                </div>
+
+                <!-- Skill Card 3 -->
+                <div id="skill-card-3" class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-blue-500/30 group-hover:text-blue-200 transition-colors">
+                        <i data-lucide="database" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="text-zinc-100 text-lg font-normal tracking-tight mb-2">Data &amp; ML Operations</h4>
+                    <p class="text-base text-zinc-200 mb-4 leading-relaxed">Airflow, PostgreSQL, MongoDB, Redis, Python/Pandas, Jupyter.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">PostgreSQL</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Airflow</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
+                    </div>
+                </div>
+
+                <!-- Skill Card 4 -->
+                <div id="skill-card-4" class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-amber-500/30 group-hover:text-amber-200 transition-colors">
+                        <i data-lucide="cpu" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="text-zinc-100 text-lg font-normal tracking-tight mb-2">AI &amp; Automation</h4>
+                    <p class="text-base text-zinc-200 mb-4 leading-relaxed">LLM integration, agent-based workflows, AI-assisted code review pipelines.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">LLM Inference</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Automation</span>
+                    </div>
+                </div>
+
+                <!-- Skill Card 5 -->
+                <div id="skill-card-5" class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-rose-500/30 group-hover:text-rose-200 transition-colors">
+                        <i data-lucide="video" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="text-zinc-100 text-lg font-normal tracking-tight mb-2">Streaming &amp; Media</h4>
+                    <p class="text-base text-zinc-200 mb-4 leading-relaxed">High-volume live streaming workflows, asset metadata sync, fingerprinting.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">FFMPEG</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">HLS</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">RTMP</span>
+                    </div>
+                </div>
+
+                <!-- Skill Card 6 -->
+                <div id="skill-card-6" class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-cyan-500/30 group-hover:text-cyan-200 transition-colors">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="text-zinc-100 text-lg font-normal tracking-tight mb-2">DevOps &amp; Reliability</h4>
+                    <p class="text-base text-zinc-200 mb-4 leading-relaxed">Docker, Kubernetes, CI/CD, Observability, and Production Optimization.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Kubernetes</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Docker</span>
+                        <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">CI/CD</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Timeline -->
+        <section id="experience" class="space-y-8">
+            <h3 class="text-2xl font-medium tracking-tight text-zinc-100">Experience</h3>
+            
+            <div class="relative border-l border-zinc-800/50 ml-3 md:ml-4 space-y-12 pb-4">
+                
+                <!-- NBCUniversal -->
+                <div class="relative pl-8 md:pl-10">
+                    <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-900 border-2 border-indigo-200 ring-4 ring-zinc-950/50"></div>
+                    
+                    <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-2">
+                        <h4 class="text-lg font-normal tracking-tight text-zinc-100">Senior Engineer / Solution Architect</h4>
+                        <span class="text-base font-normal text-indiglo-300 md:ml-4">Feb 2022 – Apr 2025</span>
+                    </div>
+                    <div class="text-base font-normal text-indigo-200 mb-4">NBCUniversal</div>
+                    
+                    <ul class="space-y-3 text-base text-zinc-200 leading-relaxed mb-6">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Architected distributed systems for large-scale rights management and live content protection workflows.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Built cross-platform asset metadata sync across YouTube Content ID &amp; Facebook Rights Manager, reducing manual overhead by 50%+.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Designed and operated live streaming infrastructure supporting 20+ concurrent streams with real-time monitoring.</span>
+                        </li>
+                    </ul>
+
+                    <!-- Achievements Box -->
+                    <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-lg p-4">
+                        <h5 class="text-sm font-normal text-zinc-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i>
+                            Major Highlights
+                        </h5>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border-l-2 border-zinc-700/50 pl-3">
+                                <div class="text-zinc-200 text-base font-normal">Olympics 2024 Operations</div>
+                                <div class="text-sm text-indiglo-300 mt-1">70,000+ live fingerprints, 800+ IP sources, 99.9% accuracy. Supported partnership extension.</div>
+                            </div>
+                            <div class="border-l-2 border-zinc-700/50 pl-3">
+                                <div class="text-zinc-200 text-base font-normal">Platform Optimization</div>
+                                <div class="text-sm text-indiglo-300 mt-1">Reduced asset latency by 40%, achieved 100% delivery SLA within year one.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Netrix LLC -->
+                <div class="relative pl-8 md:pl-10">
+                    <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-900 border-2 border-indigo-200 ring-4 ring-zinc-950/50"></div>
+                    
+                    <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-2">
+                        <h4 class="text-lg font-normal tracking-tight text-zinc-100">Senior Developer / Solution Architect</h4>
+                        <span class="text-base font-normal text-indiglo-300 md:ml-4">2005 – 2022</span>
+                    </div>
+                    <div class="text-base font-normal text-indigo-200 mb-4">Netrix LLC</div>
+                    
+                    <ul class="space-y-3 text-base text-zinc-200 leading-relaxed mb-6">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Built multi-cloud platform services across AWS, Azure, GCP, and VMware, supporting recurring revenue products.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Designed Node.js middleware and Python/Flask services for secure API orchestration and long-running workflows.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="chevron-right" class="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Led senior engineering team through major releases, owning architecture decisions and delivery execution.</span>
+                        </li>
+                    </ul>
+
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">CloudHelm</span>
+                        <span class="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">ERP/ETL Pipelines</span>
+                        <span class="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">Rapidata (acquired by Nasdaq)</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Projects & Architecture -->
+        <section id="projects" class="space-y-8">
+            <h3 class="text-2xl font-medium tracking-tight text-zinc-100" style="font-family: 'Amatic SC', cursive; font-weight: 700; font-size: 2rem;">Featured Projects &amp; Architecture</h3>
+            
+            <div class="space-y-6">
+
+                <!-- Project: Seravanna -->
+                <div class="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
+                        <!-- Project Info -->
+                        <div class="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
+                            <div class="flex flex-wrap items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                                    <i data-lucide="leaf" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-xl font-normal tracking-tight text-zinc-100" style="font-family: 'Amatic SC', cursive; font-weight: 700; font-size: 1.75rem;">Seravanna – Wellness Services</h4>
+                                <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
+                                <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
+                            </div>
+                            <p class="text-base text-zinc-200 mb-6 leading-relaxed">
+                                Comprehensive wellness services framework featuring seamless booking workflows, intelligent chatbot integration, and complete administrative controls.
+                            </p>
+                            
+                            <ul class="space-y-3 text-base text-zinc-200 mb-8">
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Fully integrated Stripe booking workflows</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Multi-tenant design with Admin control</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Meta Ads integration</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>RAG enabled HBOT chat bot using free LLM models</span>
+                                </li>
+                            </ul>
+
+                            <div>
+                                <a href="https://www.seravanna.com" target="_blank" class="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
+                                    <i data-lucide="globe" class="w-5 h-5"></i>
+                                    www.seravanna.com
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Diagram Placeholder -->
+                        <div class="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                            <div class="absolute inset-0" style="background-image: radial-gradient(circle, #52525b 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15;"></div>
+                            <div class="relative z-10 w-full h-full">
+                                <img src="/assets/img/seravanna_site.png" alt="Seravanna Platform Interface" class="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Mahoraga -->
+                <div class="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
+                        <!-- Project Info -->
+                        <div class="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
+                            <div class="flex flex-wrap items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                                    <i data-lucide="trending-up" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-xl font-normal tracking-tight text-zinc-100" style="font-family: 'Amatic SC', cursive; font-weight: 700; font-size: 1.75rem;">Mahoraga – Trading Bot</h4>
+                                <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
+                                <span class="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
+                            </div>
+                            <p class="text-base text-zinc-200 mb-6 leading-relaxed">
+                                Cloudflare Workers-based algorithmic trading bot featuring a comprehensive MCP server, real-time React dashboard, and strict automated safety layers.
+                            </p>
+                            
+                            <ul class="space-y-3 text-base text-zinc-200 mb-8">
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>MCP Server exposing 40+ tools for trading, analysis, and risk management</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Two-phase order execution with policy engine validation</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>React dashboard polling real-time status every 5 seconds</span>
+                                </li>
+                            </ul>
+
+                            <div>
+                                <a href="mailto:donohue.matt@gmail.com?subject=Mahoraga Repo Request" class="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
+                                    <i data-lucide="lock" class="w-5 h-5"></i>
+                                    Repo on request
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Diagram Placeholder -->
+                        <div class="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                            <div class="absolute inset-0" style="background-image: radial-gradient(circle, #52525b 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15;"></div>
+                            <div class="relative z-10 w-full h-full">
+                                    <img src="/assets/img/mahoraga_dash.png" alt="Seravanna Platform Interface" class="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: ZuZu Scaffold -->
+                <div class="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
+                        <!-- Project Info -->
+                        <div class="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded bg-indigo-500/10 border border-indigo-200 flex items-center justify-center text-indigo-200">
+                                    <i data-lucide="box" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-xl font-normal tracking-tight text-zinc-100" style="font-family: 'Amatic SC', cursive; font-weight: 700; font-size: 1.75rem;">ZuZu Scaffold</h4>
+                            </div>
+                            <p class="text-base text-zinc-200 mb-6 leading-relaxed">
+                                Production-ready full-stack application scaffold focused on security, maintainability, and scalable team workflows. Built with React/TypeScript and Node/Express.
+                            </p>
+                            
+                            <ul class="space-y-3 text-base text-zinc-200 mb-8">
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Production-grade auth (JWT, CSRF, rate limiting)</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>AI-driven workflow automation hooks</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Cypress E2E testing integrated</span>
+                                </li>
+                            </ul>
+
+                            <div>
+                                <a href="https://github.com/mmdonohue/zuzu" target="_blank" class="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
+                                    <i data-lucide="code" class="w-5 h-5"></i>
+                                    View Repository
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Diagram Placeholder -->
+                        <div class="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                            <div class="absolute inset-0" style="background-image: radial-gradient(circle, #52525b 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15;"></div>
+                            <div class="relative z-10 w-full h-full">
+                                    <img src="/assets/img/zuzu_splash.png" alt="Seravanna Platform Interface" class="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Real-Time Rights Management -->
+                <div class="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
+                        <!-- Project Info -->
+                        <div class="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded bg-emerald-500/10 border border-emerald-200 flex items-center justify-center text-emerald-200">
+                                    <i data-lucide="film" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-xl font-normal tracking-tight text-zinc-100" style="font-family: 'Amatic SC', cursive; font-weight: 700; font-size: 1.75rem;">Real-Time Rights Management</h4>
+                            </div>
+                            <p class="text-base text-zinc-200 mb-6 leading-relaxed">
+                                High-throughput distributed system for live content fingerprinting and rights enforcement across partner social video platforms.
+                            </p>
+                            
+                            <ul class="space-y-3 text-base text-zinc-200 mb-8">
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Event-driven architecture using Apache Kafka</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>FFMPEG integration for live stream processing</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Zero-downtime deployment on Kubernetes</span>
+                                </li>
+                            </ul>
+
+                            <div>
+                                <button class="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50 cursor-pointer">
+                                    <i data-lucide="network" class="w-5 h-5"></i>
+                                    View Architecture
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Diagram Placeholder -->
+                        <div class="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                            <div class="absolute inset-0" style="background-image: radial-gradient(circle, #52525b 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15;"></div>
+                            <div class="relative z-10 w-full h-full">
+                                    <img src="/assets/img/aws_ffmpeg_diagram_v1.png" alt="Seravanna Platform Interface" class="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project: Multi-Cloud Orchestration Portal -->
+                <div class="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
+                        <!-- Project Info -->
+                        <div class="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                                    <i data-lucide="cloud" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-xl font-normal tracking-tight text-zinc-100" style="font-family: 'Amatic SC', cursive; font-weight: 700; font-size: 1.75rem;">Multi-Cloud Orchestration Portal</h4>
+                            </div>
+                            <p class="text-base text-zinc-200 mb-6 leading-relaxed">
+                                Enterprise dashboard for automated infrastructure provisioning, ETL pipeline monitoring, and billing analytics.
+                            </p>
+                            
+                            <ul class="space-y-3 text-base text-zinc-200 mb-8">
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Next.js frontend with complex state management</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Python/Airflow data pipelines for billing ETL</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i data-lucide="check-circle" class="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                                    <span>Robust RBAC and Enterprise SSO integration</span>
+                                </li>
+                            </ul>
+
+                            <div>
+                                <button class="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50 cursor-pointer">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                    View Case Study
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Diagram Placeholder -->
+                        <div class="pl-4 pr-4  py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                            <div class="absolute inset-0" style="background-image: radial-gradient(circle, #52525b 1px, transparent 1px); background-size: 24px 24px; opacity: 0.15;"></div>
+                            <div class="relative z-10 w-full max-w-sm aspect-[4/3] bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl shadow-2xl flex flex-col items-center justify-center text-center p-6 group cursor-pointer hover:border-zinc-700 transition-colors">
+                                <div class="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center text-indiglo-300 mb-4 group-hover:text-blue-400 group-hover:bg-blue-500/10 transition-colors">
+                                    <i data-lucide="image" class="w-6 h-6"></i>
+                                </div>
+                                <span class="text-base font-normal text-zinc-300">Dashboard Interface</span>
+                                <span class="text-sm text-indiglo-300 mt-2">Placeholder for application screenshot</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Footer / Education & Certs -->
+        <footer class="pt-12 border-t border-zinc-800/50 grid grid-cols-1 md:grid-cols-2 gap-12 text-base">
+            <div>
+                <h4 class="font-normal text-lg tracking-tight text-zinc-100 mb-4 flex items-center gap-2">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 text-indiglo-300"></i>
+                    Education
+                </h4>
+                <div class="text-zinc-300 font-normal">Bachelor of Fine Arts (B.F.A.)</div>
+                <div class="text-indiglo-300">School of the Art Institute of Chicago — Chicago, IL</div>
+            </div>
+            <div>
+                <h4 class="font-normal text-lg tracking-tight text-zinc-100 mb-4 flex items-center gap-2">
+                    <i data-lucide="award" class="w-5 h-5 text-indiglo-300"></i>
+                    Certifications
+                </h4>
+                <ul class="space-y-2 text-zinc-200">
+                    <li>• AWS Cloud Technical Essentials</li>
+                    <li>• IBM Machine Learning with Python</li>
+                    <li>• Building Modern Node.js Applications on AWS</li>
+                    <li>• Google Analytics</li>
+                </ul>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Lucide Icons Integration -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons({
+            attrs: {
+                'stroke-width': 1.5
+            }
+        });
+
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+        let isPlaying = false;
+        const toggleBtn = document.getElementById('me-box');
+        const scBox1 = document.getElementById('skill-card-1');
+        const scBox2 = document.getElementById('skill-card-2');
+        const scBox3 = document.getElementById('skill-card-3');
+        const scBox4 = document.getElementById('skill-card-4');
+        const scBox5 = document.getElementById('skill-card-5');
+        const scBox6 = document.getElementById('skill-card-6');
+
+        function playMutedTone() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // 1. Create Nodes
+            oscillator = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
+
+            // 2. Set Waveform to 'triangle' for a more "muted/natural" feel
+            oscillator.type = 'triangle'; 
+            oscillator.detune.value = 2; // Slight detune for a richer sound
+            oscillator.frequency.setValueAtTime(60, audioCtx.currentTime);
+
+            // 3. Set Volume (0.1 is 10% volume, very muted)
+            // We use exponentialRamp to "fade in" smoothly (simulates space)
+            gainNode.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.1, audioCtx.currentTime + 1.5); 
+
+            // 4. Connect and Start
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            isPlaying = true
+        }
+
+        function stopTone() {
+            if (gainNode) {
+                // Fade out slowly to simulate a reverb tail/decay
+                const decayTime = 2.0;
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + decayTime);
+                oscillator.stop(audioCtx.currentTime + decayTime);
+                isPlaying = false;
+            }
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                playMutedTone();
+            } else {
+                stopTone(); 
+            }
+        });
+
+
+        scBox1.addEventListener('mouseover', () => {
+            toggleBtn.click();
+        });
+        scBox1.addEventListener('mouseout', () => {
+            toggleBtn.click();
+        });
+        scBox2.addEventListener('mouseover', () => {
+            toggleBtn.click();
+        });
+        scBox2.addEventListener('mouseout', () => {
+            toggleBtn.click();
+        });
+        scBox3.addEventListener('mouseover', () => {
+            toggleBtn.click();
+        });
+        scBox3.addEventListener('mouseout', () => {
+            toggleBtn.click();
+        });
+        scBox4.addEventListener('mouseover', () => {
+            toggleBtn.click();
+        });
+        scBox4.addEventListener('mouseout', () => {
+            toggleBtn.click();
+        });
+        scBox5.addEventListener('mouseover', () => {
+            toggleBtn.click();
+        });
+        scBox5.addEventListener('mouseout', () => {
+            toggleBtn.click();
+        });
+        scBox6.addEventListener('mouseover', () => {
+            toggleBtn.click();
+        });
+        scBox6.addEventListener('mouseout', () => {
+            toggleBtn.click();
+        });
+
+        // Desert Modal Logic
+        const locationTrigger = document.getElementById('location-trigger');
+        const desertModal = document.getElementById('desert-modal');
+        const closeModal = document.getElementById('close-modal');
+
+        locationTrigger.addEventListener('mouseover', () => {
+            desertModal.classList.remove('hidden');
+            desertModal.classList.add('flex');
+            // Re-initialize icons in modal
+            lucide.createIcons({
+                attrs: {
+                    'stroke-width': 1.5
+                }
+            });
+        });
+
+        locationTrigger.addEventListener('mouseout', () => {
+            desertModal.classList.add('hidden');
+            desertModal.classList.remove('flex');
+        });
+
+        closeModal.addEventListener('click', () => {
+            desertModal.classList.add('hidden');
+            desertModal.classList.remove('flex');
+        });
+
+        // Also close on background click
+        desertModal.addEventListener('click', (e) => {
+            if (e.target === desertModal) {
+                desertModal.classList.add('hidden');
+                desertModal.classList.remove('flex');
+            }
+        });
+
+    </script>
+
+</body></html>

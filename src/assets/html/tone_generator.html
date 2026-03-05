@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>432 Hz Tone Generator</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f0f0f0; }
+        .controls { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        button { padding: 10px 20px; font-size: 1rem; cursor: pointer; border: none; border-radius: 4px; background: #007bff; color: white; transition: background 0.2s; }
+        button:hover { background: #0056b3; }
+        .status { margin-top: 1rem; color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div id='player-box' class="controls">
+        <h1>432 Hz Pure Tone</h1>
+        <button id="toggleBtn">Start Tone</button>
+        <div id="status" class="status">Audio is currently OFF</div>
+    </div>
+
+    <script>
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+        let isPlaying = false;
+        const toggleBtn = document.getElementById('toggleBtn');
+        const statusText = document.getElementById('status');
+        const playerBox = document.getElementById('player-box');
+
+        function playMutedTone() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // 1. Create Nodes
+            oscillator = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
+
+            // 2. Set Waveform to 'triangle' for a more "muted/natural" feel
+            oscillator.type = 'triangle'; 
+            oscillator.detune.value = 2; // Slight detune for a richer sound
+            oscillator.frequency.setValueAtTime(60, audioCtx.currentTime);
+
+            // 3. Set Volume (0.1 is 10% volume, very muted)
+            // We use exponentialRamp to "fade in" smoothly (simulates space)
+            gainNode.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.1, audioCtx.currentTime + 1.5); 
+
+            // 4. Connect and Start
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            isPlaying = true
+        }
+
+        function stopTone() {
+            if (gainNode) {
+                // Fade out slowly to simulate a reverb tail/decay
+                const decayTime = 2.0;
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + decayTime);
+                oscillator.stop(audioCtx.currentTime + decayTime);
+                isPlaying = false;
+            }
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                playMutedTone();
+                toggleBtn.textContent = 'Stop Tone';
+                statusText.textContent = 'Audio is currently ON';
+            } else {
+                stopTone();
+                toggleBtn.textContent = 'Start Tone';
+                statusText.textContent = 'Audio is currently OFF';      
+            }
+        });
+
+
+        playerBox.addEventListener('mouseover', () => {
+            toggleBtn.style.backgroundColor = '#0056b3';
+            toggleBtn.click();
+        });
+
+        playerBox.addEventListener('mouseout', () => {
+            toggleBtn.style.backgroundColor = '#007bff';
+            toggleBtn.click();
+        });
+
+    </script>
+</body>
+</html>

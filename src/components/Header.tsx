@@ -29,6 +29,7 @@ function Logo() {
 const publicPages = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
+  { name: "Portfolio", path: "/portfolio" },
 ];
 
 const protectedPages = [
