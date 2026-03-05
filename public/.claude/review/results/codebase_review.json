@@ -1,0 +1,221 @@
+{
+  "lastUpdated": "2026-02-23 18:27 UTC",
+  "overallStatus": "warning",
+  "overallStatusDisplay": "\u26a0\ufe0f WARNING",
+  "overallHealthScore": 98,
+  "overallMetrics": {
+    "critical": 0,
+    "warnings": 2,
+    "info": 3,
+    "total": 5
+  },
+  "reviews": [
+    {
+      "category": "architecture",
+      "displayName": "Architecture",
+      "lastUpdated": "Not yet reviewed",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    },
+    {
+      "category": "dependencies",
+      "displayName": "Dependencies",
+      "lastUpdated": "Not yet reviewed",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    },
+    {
+      "category": "docs",
+      "displayName": "Docs",
+      "lastUpdated": "2026-02-23 18:27 UTC",
+      "status": "warning",
+      "statusDisplay": "\u26a0\ufe0f WARNING",
+      "healthScore": 91,
+      "metrics": {
+        "critical": 0,
+        "warnings": 2,
+        "info": 3,
+        "total": 5
+      },
+      "findings": [
+        {
+          "severity": "warning",
+          "issue": "Missing AuthProvider in CLAUDE.md provider hierarchy",
+          "file": ".claude/CLAUDE.md",
+          "line": 47,
+          "description": "The provider hierarchy documentation does not mention AuthProvider, but it exists in the code.",
+          "actual": "Provider hierarchy includes: Redux, QueryClient, BrowserRouter, ThemeProvider, CssBaseline, AuthProvider",
+          "documented": "Provider hierarchy lists: Redux, QueryClient, BrowserRouter, ThemeProvider, CssBaseline (missing AuthProvider)",
+          "recommendation": "Add AuthProvider to the provider hierarchy list in CLAUDE.md around line 52",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        },
+        {
+          "severity": "warning",
+          "issue": "Incomplete routing documentation",
+          "file": ".claude/CLAUDE.md",
+          "line": 54,
+          "description": "Documentation lists 0 routes but codebase has 10 routes.",
+          "actual": "10 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
+          "documented": "0 routes: ",
+          "recommendation": "Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        },
+        {
+          "severity": "info",
+          "issue": "Technology stack not fully documented in README.md",
+          "file": "README.md",
+          "description": "Some major dependencies are not mentioned in the README tech stack section.",
+          "actual": "Technologies in use: Material-UI (MUI), React Router",
+          "documented": "Missing from README.md tech stack",
+          "recommendation": "Consider adding: Material-UI (MUI), React Router",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        },
+        {
+          "severity": "info",
+          "issue": "README.md missing npm scripts from CLAUDE.md",
+          "file": "README.md",
+          "description": "Some npm commands documented in CLAUDE.md are not in README.md.",
+          "actual": "CLAUDE.md documents: npm serve",
+          "documented": "Missing from README.md",
+          "recommendation": "Add command documentation to README.md: serve",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        },
+        {
+          "severity": "info",
+          "issue": "README.md missing environment variables from CLAUDE.md",
+          "file": "README.md",
+          "description": "Some environment variables in CLAUDE.md are not documented in README.md.",
+          "actual": "CLAUDE.md documents: REACT_APP_ENVIRONMENT",
+          "documented": "Missing from README.md",
+          "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        }
+      ]
+    },
+    {
+      "category": "quality",
+      "displayName": "Quality",
+      "lastUpdated": "Not yet reviewed",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    },
+    {
+      "category": "security",
+      "displayName": "Security",
+      "lastUpdated": "Not yet reviewed",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    },
+    {
+      "category": "testing",
+      "displayName": "Testing",
+      "lastUpdated": "Not yet reviewed",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    }
+  ],
+  "findings": [
+    {
+      "severity": "warning",
+      "issue": "Missing AuthProvider in CLAUDE.md provider hierarchy",
+      "file": ".claude/CLAUDE.md",
+      "line": 47,
+      "description": "The provider hierarchy documentation does not mention AuthProvider, but it exists in the code.",
+      "actual": "Provider hierarchy includes: Redux, QueryClient, BrowserRouter, ThemeProvider, CssBaseline, AuthProvider",
+      "documented": "Provider hierarchy lists: Redux, QueryClient, BrowserRouter, ThemeProvider, CssBaseline (missing AuthProvider)",
+      "recommendation": "Add AuthProvider to the provider hierarchy list in CLAUDE.md around line 52",
+      "category": "docs",
+      "categoryDisplay": "Docs"
+    },
+    {
+      "severity": "warning",
+      "issue": "Incomplete routing documentation",
+      "file": ".claude/CLAUDE.md",
+      "line": 54,
+      "description": "Documentation lists 0 routes but codebase has 10 routes.",
+      "actual": "10 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
+      "documented": "0 routes: ",
+      "recommendation": "Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account",
+      "category": "docs",
+      "categoryDisplay": "Docs"
+    },
+    {
+      "severity": "info",
+      "issue": "Technology stack not fully documented in README.md",
+      "file": "README.md",
+      "description": "Some major dependencies are not mentioned in the README tech stack section.",
+      "actual": "Technologies in use: Material-UI (MUI), React Router",
+      "documented": "Missing from README.md tech stack",
+      "recommendation": "Consider adding: Material-UI (MUI), React Router",
+      "category": "docs",
+      "categoryDisplay": "Docs"
+    },
+    {
+      "severity": "info",
+      "issue": "README.md missing npm scripts from CLAUDE.md",
+      "file": "README.md",
+      "description": "Some npm commands documented in CLAUDE.md are not in README.md.",
+      "actual": "CLAUDE.md documents: npm serve",
+      "documented": "Missing from README.md",
+      "recommendation": "Add command documentation to README.md: serve",
+      "category": "docs",
+      "categoryDisplay": "Docs"
+    },
+    {
+      "severity": "info",
+      "issue": "README.md missing environment variables from CLAUDE.md",
+      "file": "README.md",
+      "description": "Some environment variables in CLAUDE.md are not documented in README.md.",
+      "actual": "CLAUDE.md documents: REACT_APP_ENVIRONMENT",
+      "documented": "Missing from README.md",
+      "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT",
+      "category": "docs",
+      "categoryDisplay": "Docs"
+    }
+  ]
+}

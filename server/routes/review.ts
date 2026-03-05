@@ -14,28 +14,24 @@ router.get("/summary", (req: Request, res: Response) => {
     // Check if example mode is requested
     const useExample = req.query.example === "true";
 
-    let reviewPath: string;
-    if (useExample) {
-      reviewPath = path.join(
-        process.cwd(),
-        ".claude",
-        "review",
-        "results",
-        "codebase_review_example.json",
-      );
-    } else {
-      // Actual review results are in .claude/review/results/
-      reviewPath = path.join(
-        process.cwd(),
-        ".claude",
-        "review",
-        "results",
-        "codebase_review.json",
-      );
+    const fileName = useExample ? "codebase_review_example.json" : "codebase_review.json";
+    
+    // Try multiple locations for the review file
+    const possiblePaths = [
+      path.join(process.cwd(), ".claude", "review", "results", fileName),
+      path.join(process.cwd(), "public", ".claude", "review", "results", fileName),
+    ];
+
+    let reviewPath: string | null = null;
+    for (const p of possiblePaths) {
+      if (fs.existsSync(p)) {
+        reviewPath = p;
+        break;
+      }
     }
 
     // Check if file exists
-    if (!fs.existsSync(reviewPath)) {
+    if (!reviewPath) {
       return res.status(404).json({
         error: "Code review data not found",
         message: useExample
@@ -63,17 +59,22 @@ router.get("/details/:category", (req: Request, res: Response) => {
     const { category } = req.params;
     const categoryLower = category.toLowerCase();
 
-    // Read from main JSON file
-    const jsonPath = path.join(
-      process.cwd(),
-      ".claude",
-      "review",
-      "results",
-      "codebase_review.json"
-    );
+    // Try multiple locations for the review file
+    const possiblePaths = [
+      path.join(process.cwd(), ".claude", "review", "results", "codebase_review.json"),
+      path.join(process.cwd(), "public", ".claude", "review", "results", "codebase_review.json"),
+    ];
+
+    let jsonPath: string | null = null;
+    for (const p of possiblePaths) {
+      if (fs.existsSync(p)) {
+        jsonPath = p;
+        break;
+      }
+    }
 
     // Check if file exists
-    if (!fs.existsSync(jsonPath)) {
+    if (!jsonPath) {
       return res.status(404).json({
         error: "Code review data not found",
         message: "Run code review to generate data",

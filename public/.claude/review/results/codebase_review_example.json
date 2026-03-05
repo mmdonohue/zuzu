@@ -1,0 +1,1450 @@
+{
+  "lastUpdated": "2026-01-02 11:27 UTC",
+  "overallStatus": "warning",
+  "overallStatusDisplay": "\u26a0\ufe0f WARNING",
+  "overallHealthScore": 81,
+  "overallMetrics": {
+    "critical": 0,
+    "warnings": 21,
+    "info": 46,
+    "total": 67
+  },
+  "reviews": [
+    {
+      "category": "architecture",
+      "displayName": "Architecture",
+      "lastUpdated": "2025-12-30 16:21 UTC",
+      "status": "warning",
+      "statusDisplay": "\u26a0\ufe0f WARNING",
+      "healthScore": 77,
+      "metrics": {
+        "critical": 0,
+        "warnings": 6,
+        "info": 5,
+        "total": 11
+      },
+      "findings": [
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "warning",
+          "issue": "Route handler missing error handling",
+          "file": "server/routes/api.ts",
+          "line": 7,
+          "description": "API route handlers should include error handling",
+          "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "warning",
+          "issue": "Route handler missing error handling",
+          "file": "server/routes/csrf.ts",
+          "line": 18,
+          "description": "API route handlers should include error handling",
+          "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "warning",
+          "issue": "Route handler missing error handling",
+          "file": "server/routes/auth.routes.ts",
+          "line": 22,
+          "description": "API route handlers should include error handling",
+          "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "warning",
+          "issue": "Route handler missing error handling",
+          "file": "server/routes/api.js",
+          "line": 6,
+          "description": "API route handlers should include error handling",
+          "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "warning",
+          "issue": "Route handler missing error handling",
+          "file": "server/routes/api.ts",
+          "line": 7,
+          "description": "API route handlers should include error handling",
+          "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "warning",
+          "issue": "Route handler missing error handling",
+          "file": "server/routes/csrf.ts",
+          "line": 18,
+          "description": "API route handlers should include error handling",
+          "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "warning",
+          "issue": "Route handler missing error handling",
+          "file": "server/routes/auth.routes.ts",
+          "line": 22,
+          "description": "API route handlers should include error handling",
+          "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "warning",
+          "issue": "Route handler missing error handling",
+          "file": "server/routes/api.js",
+          "line": 6,
+          "description": "API route handlers should include error handling",
+          "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "info",
+          "issue": "Multiple styling systems detected",
+          "file": "package.json",
+          "line": null,
+          "description": "Both Material-UI and Tailwind CSS are in use. Ensure consistent styling approach.",
+          "recommendation": "Document when to use MUI components vs Tailwind utilities to avoid styling conflicts"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "info",
+          "issue": "API versioning not detected",
+          "file": "server/routes/csrf.ts",
+          "line": null,
+          "description": "Consider implementing API versioning for future compatibility",
+          "recommendation": "Use versioned routes like /api/v1/ to allow breaking changes without affecting existing clients"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "info",
+          "issue": "API versioning not detected",
+          "file": "server/routes/csrf.ts",
+          "line": null,
+          "description": "Consider implementing API versioning for future compatibility",
+          "recommendation": "Use versioned routes like /api/v1/ to allow breaking changes without affecting existing clients"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "info",
+          "issue": "No Architecture Decision Records found",
+          "file": "",
+          "line": null,
+          "description": "Documenting architectural decisions helps maintain context over time",
+          "recommendation": "Consider creating ADR directory to document key architectural choices"
+        },
+        {
+          "category": "architecture",
+          "categoryDisplay": "Architecture",
+          "severity": "info",
+          "issue": "Architecture documentation not found",
+          "file": "",
+          "line": null,
+          "description": "High-level architecture documentation helps onboard new developers",
+          "recommendation": "Create ARCHITECTURE.md documenting system components and their interactions"
+        }
+      ]
+    },
+    {
+      "category": "dependencies",
+      "displayName": "Dependencies",
+      "lastUpdated": "2025-12-30 16:21 UTC",
+      "status": "warning",
+      "statusDisplay": "\u26a0\ufe0f WARNING",
+      "healthScore": 59,
+      "metrics": {
+        "critical": 0,
+        "warnings": 10,
+        "info": 11,
+        "total": 21
+      },
+      "findings": [
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Duplicate dependency: @types/express",
+          "file": "server/package.json",
+          "line": null,
+          "description": "Package \"@types/express\" appears in both dependencies and devDependencies",
+          "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Duplicate dependency: @types/node",
+          "file": "server/package.json",
+          "line": null,
+          "description": "Package \"@types/node\" appears in both dependencies and devDependencies",
+          "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Duplicate dependency: @types/morgan",
+          "file": "server/package.json",
+          "line": null,
+          "description": "Package \"@types/morgan\" appears in both dependencies and devDependencies",
+          "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Duplicate dependency: ts-node",
+          "file": "server/package.json",
+          "line": null,
+          "description": "Package \"ts-node\" appears in both dependencies and devDependencies",
+          "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Duplicate dependency: @types/cors",
+          "file": "server/package.json",
+          "line": null,
+          "description": "Package \"@types/cors\" appears in both dependencies and devDependencies",
+          "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Duplicate dependency: typescript",
+          "file": "server/package.json",
+          "line": null,
+          "description": "Package \"typescript\" appears in both dependencies and devDependencies",
+          "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Version conflict: @types/express",
+          "file": "",
+          "line": null,
+          "description": "Frontend uses @types/express@^4.17.25 but backend uses @types/express@^4.17.21",
+          "recommendation": "Consider aligning versions for shared packages to avoid compatibility issues"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Version conflict: dotenv",
+          "file": "",
+          "line": null,
+          "description": "Frontend uses dotenv@^17.2.3 but backend uses dotenv@^16.3.1",
+          "recommendation": "Consider aligning versions for shared packages to avoid compatibility issues"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Version conflict: @types/morgan",
+          "file": "",
+          "line": null,
+          "description": "Frontend uses @types/morgan@^1.9.10 but backend uses @types/morgan@^1.9.9",
+          "recommendation": "Consider aligning versions for shared packages to avoid compatibility issues"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "warning",
+          "issue": "Version conflict: morgan",
+          "file": "",
+          "line": null,
+          "description": "Frontend uses morgan@^1.10.1 but backend uses morgan@^1.10.0",
+          "recommendation": "Consider aligning versions for shared packages to avoid compatibility issues"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: @emotion/styled",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"@emotion/styled\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: @hookform/resolvers",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"@hookform/resolvers\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: @openrouter/sdk",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"@openrouter/sdk\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: browser",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"browser\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: crypto-browserify",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"crypto-browserify\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: js-cookie",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"js-cookie\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: node-fetch",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"node-fetch\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: react-fetch",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"react-fetch\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: react-hook-form",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"react-hook-form\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: serve",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"serve\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        },
+        {
+          "category": "dependencies",
+          "categoryDisplay": "Dependencies",
+          "severity": "info",
+          "issue": "Potentially unused dependency: yup",
+          "file": "package.json",
+          "line": null,
+          "description": "Package \"yup\" is listed in dependencies but no imports were found",
+          "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+        }
+      ]
+    },
+    {
+      "category": "docs",
+      "displayName": "Docs",
+      "lastUpdated": "2026-01-02 11:27 UTC",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 97,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 3,
+        "total": 3
+      },
+      "findings": [
+        {
+          "category": "docs",
+          "categoryDisplay": "Docs",
+          "severity": "info",
+          "issue": "Technology stack not fully documented in README.md",
+          "file": "README.md",
+          "line": null,
+          "description": "Some major dependencies are not mentioned in the README tech stack section.\n\n**Actual**: Technologies in use: Material-UI (MUI), React Router\n\n**Documented**: Missing from README.md tech stack",
+          "recommendation": "Consider adding: Material-UI (MUI), React Router"
+        },
+        {
+          "category": "docs",
+          "categoryDisplay": "Docs",
+          "severity": "info",
+          "issue": "README.md missing npm scripts from CLAUDE.md",
+          "file": "README.md",
+          "line": null,
+          "description": "Some npm commands documented in CLAUDE.md are not in README.md.\n\n**Actual**: CLAUDE.md documents: npm serve\n\n**Documented**: Missing from README.md",
+          "recommendation": "Add command documentation to README.md: serve"
+        },
+        {
+          "category": "docs",
+          "categoryDisplay": "Docs",
+          "severity": "info",
+          "issue": "README.md missing environment variables from CLAUDE.md",
+          "file": "README.md",
+          "line": null,
+          "description": "Some environment variables in CLAUDE.md are not documented in README.md.\n\n**Actual**: CLAUDE.md documents: REACT_APP_ENVIRONMENT\n\n**Documented**: Missing from README.md",
+          "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT"
+        }
+      ]
+    },
+    {
+      "category": "quality",
+      "displayName": "Quality",
+      "lastUpdated": "2025-12-30 16:21 UTC",
+      "status": "warning",
+      "statusDisplay": "\u26a0\ufe0f WARNING",
+      "healthScore": 58,
+      "metrics": {
+        "critical": 0,
+        "warnings": 5,
+        "info": 27,
+        "total": 32
+      },
+      "findings": [
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "warning",
+          "issue": "Use of \"any\" type reduces type safety",
+          "file": "src/hooks/useTemplates.ts",
+          "line": 106,
+          "description": "Line 106 uses \"any\" type which defeats TypeScript's type checking.",
+          "recommendation": "Define a proper type or interface instead of using \"any\""
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "warning",
+          "issue": "Use of \"any\" type reduces type safety",
+          "file": "src/services/api.ts",
+          "line": 150,
+          "description": "Line 150 uses \"any\" type which defeats TypeScript's type checking.",
+          "recommendation": "Define a proper type or interface instead of using \"any\""
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "warning",
+          "issue": "Use of \"any\" type reduces type safety",
+          "file": "src/services/api.ts",
+          "line": 177,
+          "description": "Line 177 uses \"any\" type which defeats TypeScript's type checking.",
+          "recommendation": "Define a proper type or interface instead of using \"any\""
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "warning",
+          "issue": "Use of \"any\" type reduces type safety",
+          "file": "src/components/TemplateForm.tsx",
+          "line": 108,
+          "description": "Line 108 uses \"any\" type which defeats TypeScript's type checking.",
+          "recommendation": "Define a proper type or interface instead of using \"any\""
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "warning",
+          "issue": "Use of \"any\" type reduces type safety",
+          "file": "src/pages/OpenRouter.tsx",
+          "line": 453,
+          "description": "Line 453 uses \"any\" type which defeats TypeScript's type checking.",
+          "recommendation": "Define a proper type or interface instead of using \"any\""
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/contexts/SnackbarContext.tsx",
+          "line": 4,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/contexts/SnackbarContext.tsx",
+          "line": 18,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/OpenRouterDashboard.tsx",
+          "line": 21,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/OpenRouterActivity.tsx",
+          "line": 21,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/OpenRouterActivity.tsx",
+          "line": 38,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/OpenRouterActivity.tsx",
+          "line": 47,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/TemplateForm.tsx",
+          "line": 32,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/PromptEnhancer.tsx",
+          "line": 33,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/PromptEnhancer.tsx",
+          "line": 38,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/TemplateVariableSubstitution.tsx",
+          "line": 20,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/TemplateDetailView.tsx",
+          "line": 40,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/TemplateCard.tsx",
+          "line": 24,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/StyleGuideSelector.tsx",
+          "line": 27,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Use \"type\" instead of \"interface\" per project standards",
+          "file": "src/components/TemplateLibrary.tsx",
+          "line": 31,
+          "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+          "recommendation": "Convert interface to type alias"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Magic number \"1000\" should be a named constant",
+          "file": "src/hooks/useTemplates.ts",
+          "line": 55,
+          "description": "Using magic numbers reduces code readability and maintainability.",
+          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Magic number \"1000\" should be a named constant",
+          "file": "src/hooks/useTemplates.ts",
+          "line": 77,
+          "description": "Using magic numbers reduces code readability and maintainability.",
+          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Magic number \"1000\" should be a named constant",
+          "file": "src/hooks/useStyleGuides.ts",
+          "line": 39,
+          "description": "Using magic numbers reduces code readability and maintainability.",
+          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Magic number \"1000\" should be a named constant",
+          "file": "src/hooks/useStyleGuides.ts",
+          "line": 61,
+          "description": "Using magic numbers reduces code readability and maintainability.",
+          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Magic number \"1000\" should be a named constant",
+          "file": "src/components/OpenRouterActivity.tsx",
+          "line": 199,
+          "description": "Using magic numbers reduces code readability and maintainability.",
+          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Magic number \"300\" should be a named constant",
+          "file": "src/components/TemplateLibrary.tsx",
+          "line": 64,
+          "description": "Using magic numbers reduces code readability and maintainability.",
+          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 300"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Magic number \"0.8\" should be a named constant",
+          "file": "src/pages/OpenRouter.tsx",
+          "line": 218,
+          "description": "Using magic numbers reduces code readability and maintainability.",
+          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 0.8"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "Magic number \"0.8\" should be a named constant",
+          "file": "src/pages/OpenRouter.tsx",
+          "line": 218,
+          "description": "Using magic numbers reduces code readability and maintainability.",
+          "recommendation": "Define a named constant: const MEANINGFUL_NAME = 0.8"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "console.log() found in source code",
+          "file": "src/services/auth.service.ts",
+          "line": 112,
+          "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
+          "recommendation": "Remove debug console.log or use a proper logging library"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "console.log() found in source code",
+          "file": "src/components/OpenRouterActivity.tsx",
+          "line": 81,
+          "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
+          "recommendation": "Remove debug console.log or use a proper logging library"
+        },
+        {
+          "category": "quality",
+          "categoryDisplay": "Quality",
+          "severity": "info",
+          "issue": "console.log() found in source code",
+          "file": "src/pages/OpenRouter.tsx",
+          "line": 212,
+          "description": "Found 5 console.log statement(s) which should be removed or replaced with proper logging.",
+          "recommendation": "Remove debug console.log or use a proper logging library"
+        }
+      ]
+    },
+    {
+      "category": "security",
+      "displayName": "Security",
+      "lastUpdated": "2025-12-30 16:21 UTC",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    },
+    {
+      "category": "testing",
+      "displayName": "Testing",
+      "lastUpdated": "2025-12-30 16:21 UTC",
+      "status": "pass",
+      "statusDisplay": "\u2705 PASS",
+      "healthScore": 100,
+      "metrics": {
+        "critical": 0,
+        "warnings": 0,
+        "info": 0,
+        "total": 0
+      },
+      "findings": []
+    }
+  ],
+  "findings": [
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "warning",
+      "issue": "Route handler missing error handling",
+      "file": "server/routes/api.ts",
+      "line": 7,
+      "description": "API route handlers should include error handling",
+      "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "warning",
+      "issue": "Route handler missing error handling",
+      "file": "server/routes/csrf.ts",
+      "line": 18,
+      "description": "API route handlers should include error handling",
+      "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "warning",
+      "issue": "Route handler missing error handling",
+      "file": "server/routes/auth.routes.ts",
+      "line": 22,
+      "description": "API route handlers should include error handling",
+      "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "warning",
+      "issue": "Route handler missing error handling",
+      "file": "server/routes/api.js",
+      "line": 6,
+      "description": "API route handlers should include error handling",
+      "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "warning",
+      "issue": "Route handler missing error handling",
+      "file": "server/routes/api.ts",
+      "line": 7,
+      "description": "API route handlers should include error handling",
+      "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "warning",
+      "issue": "Route handler missing error handling",
+      "file": "server/routes/csrf.ts",
+      "line": 18,
+      "description": "API route handlers should include error handling",
+      "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "warning",
+      "issue": "Route handler missing error handling",
+      "file": "server/routes/auth.routes.ts",
+      "line": 22,
+      "description": "API route handlers should include error handling",
+      "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "warning",
+      "issue": "Route handler missing error handling",
+      "file": "server/routes/api.js",
+      "line": 6,
+      "description": "API route handlers should include error handling",
+      "recommendation": "Wrap route logic in try-catch or use .catch() for promises"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "info",
+      "issue": "Multiple styling systems detected",
+      "file": "package.json",
+      "line": null,
+      "description": "Both Material-UI and Tailwind CSS are in use. Ensure consistent styling approach.",
+      "recommendation": "Document when to use MUI components vs Tailwind utilities to avoid styling conflicts"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "info",
+      "issue": "API versioning not detected",
+      "file": "server/routes/csrf.ts",
+      "line": null,
+      "description": "Consider implementing API versioning for future compatibility",
+      "recommendation": "Use versioned routes like /api/v1/ to allow breaking changes without affecting existing clients"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "info",
+      "issue": "API versioning not detected",
+      "file": "server/routes/csrf.ts",
+      "line": null,
+      "description": "Consider implementing API versioning for future compatibility",
+      "recommendation": "Use versioned routes like /api/v1/ to allow breaking changes without affecting existing clients"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "info",
+      "issue": "No Architecture Decision Records found",
+      "file": "",
+      "line": null,
+      "description": "Documenting architectural decisions helps maintain context over time",
+      "recommendation": "Consider creating ADR directory to document key architectural choices"
+    },
+    {
+      "category": "architecture",
+      "categoryDisplay": "Architecture",
+      "severity": "info",
+      "issue": "Architecture documentation not found",
+      "file": "",
+      "line": null,
+      "description": "High-level architecture documentation helps onboard new developers",
+      "recommendation": "Create ARCHITECTURE.md documenting system components and their interactions"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Duplicate dependency: @types/express",
+      "file": "server/package.json",
+      "line": null,
+      "description": "Package \"@types/express\" appears in both dependencies and devDependencies",
+      "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Duplicate dependency: @types/node",
+      "file": "server/package.json",
+      "line": null,
+      "description": "Package \"@types/node\" appears in both dependencies and devDependencies",
+      "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Duplicate dependency: @types/morgan",
+      "file": "server/package.json",
+      "line": null,
+      "description": "Package \"@types/morgan\" appears in both dependencies and devDependencies",
+      "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Duplicate dependency: ts-node",
+      "file": "server/package.json",
+      "line": null,
+      "description": "Package \"ts-node\" appears in both dependencies and devDependencies",
+      "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Duplicate dependency: @types/cors",
+      "file": "server/package.json",
+      "line": null,
+      "description": "Package \"@types/cors\" appears in both dependencies and devDependencies",
+      "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Duplicate dependency: typescript",
+      "file": "server/package.json",
+      "line": null,
+      "description": "Package \"typescript\" appears in both dependencies and devDependencies",
+      "recommendation": "Remove from devDependencies if needed at runtime, or from dependencies if only needed for development"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Version conflict: @types/express",
+      "file": "",
+      "line": null,
+      "description": "Frontend uses @types/express@^4.17.25 but backend uses @types/express@^4.17.21",
+      "recommendation": "Consider aligning versions for shared packages to avoid compatibility issues"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Version conflict: dotenv",
+      "file": "",
+      "line": null,
+      "description": "Frontend uses dotenv@^17.2.3 but backend uses dotenv@^16.3.1",
+      "recommendation": "Consider aligning versions for shared packages to avoid compatibility issues"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Version conflict: @types/morgan",
+      "file": "",
+      "line": null,
+      "description": "Frontend uses @types/morgan@^1.9.10 but backend uses @types/morgan@^1.9.9",
+      "recommendation": "Consider aligning versions for shared packages to avoid compatibility issues"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "warning",
+      "issue": "Version conflict: morgan",
+      "file": "",
+      "line": null,
+      "description": "Frontend uses morgan@^1.10.1 but backend uses morgan@^1.10.0",
+      "recommendation": "Consider aligning versions for shared packages to avoid compatibility issues"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: @emotion/styled",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"@emotion/styled\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: @hookform/resolvers",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"@hookform/resolvers\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: @openrouter/sdk",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"@openrouter/sdk\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: browser",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"browser\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: crypto-browserify",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"crypto-browserify\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: js-cookie",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"js-cookie\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: node-fetch",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"node-fetch\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: react-fetch",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"react-fetch\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: react-hook-form",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"react-hook-form\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: serve",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"serve\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "dependencies",
+      "categoryDisplay": "Dependencies",
+      "severity": "info",
+      "issue": "Potentially unused dependency: yup",
+      "file": "package.json",
+      "line": null,
+      "description": "Package \"yup\" is listed in dependencies but no imports were found",
+      "recommendation": "Verify if this dependency is needed. Remove if unused to reduce bundle size"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "info",
+      "issue": "Technology stack not fully documented in README.md",
+      "file": "README.md",
+      "line": null,
+      "description": "Some major dependencies are not mentioned in the README tech stack section.\n\n**Actual**: Technologies in use: Material-UI (MUI), React Router\n\n**Documented**: Missing from README.md tech stack",
+      "recommendation": "Consider adding: Material-UI (MUI), React Router"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "info",
+      "issue": "README.md missing npm scripts from CLAUDE.md",
+      "file": "README.md",
+      "line": null,
+      "description": "Some npm commands documented in CLAUDE.md are not in README.md.\n\n**Actual**: CLAUDE.md documents: npm serve\n\n**Documented**: Missing from README.md",
+      "recommendation": "Add command documentation to README.md: serve"
+    },
+    {
+      "category": "docs",
+      "categoryDisplay": "Docs",
+      "severity": "info",
+      "issue": "README.md missing environment variables from CLAUDE.md",
+      "file": "README.md",
+      "line": null,
+      "description": "Some environment variables in CLAUDE.md are not documented in README.md.\n\n**Actual**: CLAUDE.md documents: REACT_APP_ENVIRONMENT\n\n**Documented**: Missing from README.md",
+      "recommendation": "Consider adding to README.md: REACT_APP_ENVIRONMENT"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use of \"any\" type reduces type safety",
+      "file": "src/hooks/useTemplates.ts",
+      "line": 106,
+      "description": "Line 106 uses \"any\" type which defeats TypeScript's type checking.",
+      "recommendation": "Define a proper type or interface instead of using \"any\""
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use of \"any\" type reduces type safety",
+      "file": "src/services/api.ts",
+      "line": 150,
+      "description": "Line 150 uses \"any\" type which defeats TypeScript's type checking.",
+      "recommendation": "Define a proper type or interface instead of using \"any\""
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use of \"any\" type reduces type safety",
+      "file": "src/services/api.ts",
+      "line": 177,
+      "description": "Line 177 uses \"any\" type which defeats TypeScript's type checking.",
+      "recommendation": "Define a proper type or interface instead of using \"any\""
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use of \"any\" type reduces type safety",
+      "file": "src/components/TemplateForm.tsx",
+      "line": 108,
+      "description": "Line 108 uses \"any\" type which defeats TypeScript's type checking.",
+      "recommendation": "Define a proper type or interface instead of using \"any\""
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "warning",
+      "issue": "Use of \"any\" type reduces type safety",
+      "file": "src/pages/OpenRouter.tsx",
+      "line": 453,
+      "description": "Line 453 uses \"any\" type which defeats TypeScript's type checking.",
+      "recommendation": "Define a proper type or interface instead of using \"any\""
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/contexts/SnackbarContext.tsx",
+      "line": 4,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/contexts/SnackbarContext.tsx",
+      "line": 18,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/OpenRouterDashboard.tsx",
+      "line": 21,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/OpenRouterActivity.tsx",
+      "line": 21,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/OpenRouterActivity.tsx",
+      "line": 38,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/OpenRouterActivity.tsx",
+      "line": 47,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/TemplateForm.tsx",
+      "line": 32,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/PromptEnhancer.tsx",
+      "line": 33,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/PromptEnhancer.tsx",
+      "line": 38,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/TemplateVariableSubstitution.tsx",
+      "line": 20,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/TemplateDetailView.tsx",
+      "line": 40,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/TemplateCard.tsx",
+      "line": 24,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/StyleGuideSelector.tsx",
+      "line": 27,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Use \"type\" instead of \"interface\" per project standards",
+      "file": "src/components/TemplateLibrary.tsx",
+      "line": 31,
+      "description": "Project standards prefer \"type\" over \"interface\" for consistency.",
+      "recommendation": "Convert interface to type alias"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Magic number \"1000\" should be a named constant",
+      "file": "src/hooks/useTemplates.ts",
+      "line": 55,
+      "description": "Using magic numbers reduces code readability and maintainability.",
+      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Magic number \"1000\" should be a named constant",
+      "file": "src/hooks/useTemplates.ts",
+      "line": 77,
+      "description": "Using magic numbers reduces code readability and maintainability.",
+      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Magic number \"1000\" should be a named constant",
+      "file": "src/hooks/useStyleGuides.ts",
+      "line": 39,
+      "description": "Using magic numbers reduces code readability and maintainability.",
+      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Magic number \"1000\" should be a named constant",
+      "file": "src/hooks/useStyleGuides.ts",
+      "line": 61,
+      "description": "Using magic numbers reduces code readability and maintainability.",
+      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Magic number \"1000\" should be a named constant",
+      "file": "src/components/OpenRouterActivity.tsx",
+      "line": 199,
+      "description": "Using magic numbers reduces code readability and maintainability.",
+      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 1000"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Magic number \"300\" should be a named constant",
+      "file": "src/components/TemplateLibrary.tsx",
+      "line": 64,
+      "description": "Using magic numbers reduces code readability and maintainability.",
+      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 300"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Magic number \"0.8\" should be a named constant",
+      "file": "src/pages/OpenRouter.tsx",
+      "line": 218,
+      "description": "Using magic numbers reduces code readability and maintainability.",
+      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 0.8"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "Magic number \"0.8\" should be a named constant",
+      "file": "src/pages/OpenRouter.tsx",
+      "line": 218,
+      "description": "Using magic numbers reduces code readability and maintainability.",
+      "recommendation": "Define a named constant: const MEANINGFUL_NAME = 0.8"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "console.log() found in source code",
+      "file": "src/services/auth.service.ts",
+      "line": 112,
+      "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
+      "recommendation": "Remove debug console.log or use a proper logging library"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "console.log() found in source code",
+      "file": "src/components/OpenRouterActivity.tsx",
+      "line": 81,
+      "description": "Found 1 console.log statement(s) which should be removed or replaced with proper logging.",
+      "recommendation": "Remove debug console.log or use a proper logging library"
+    },
+    {
+      "category": "quality",
+      "categoryDisplay": "Quality",
+      "severity": "info",
+      "issue": "console.log() found in source code",
+      "file": "src/pages/OpenRouter.tsx",
+      "line": 212,
+      "description": "Found 5 console.log statement(s) which should be removed or replaced with proper logging.",
+      "recommendation": "Remove debug console.log or use a proper logging library"
+    }
+  ]
+}
