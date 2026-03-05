@@ -702,21 +702,6 @@
             }
         });
 
-        // Fix for iframe navigation - prevent hash links from causing reloads
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const targetId = this.getAttribute('href').substring(1);
-                const target = document.getElementById(targetId);
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-                // Prevent any navigation that might bubble up to parent
-                return false;
-            });
-        });
-
     </script>
 
 </body></html>
