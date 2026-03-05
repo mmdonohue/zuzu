@@ -55,6 +55,7 @@ const Portfolio: React.FC = () => {
       <iframe
         ref={iframeRef}
         title="Portfolio"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
         style={{
           width: "100%",
           height: "100%",
