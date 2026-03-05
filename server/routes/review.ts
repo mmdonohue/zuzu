@@ -19,6 +19,7 @@ router.get("/summary", (req: Request, res: Response) => {
     // Try multiple locations for the review file
     const possiblePaths = [
       path.join(process.cwd(), ".claude", "review", "results", fileName),
+      path.join(process.cwd(), "server", "data", fileName),
       path.join(process.cwd(), "public", ".claude", "review", "results", fileName),
     ];
 
@@ -62,6 +63,7 @@ router.get("/details/:category", (req: Request, res: Response) => {
     // Try multiple locations for the review file
     const possiblePaths = [
       path.join(process.cwd(), ".claude", "review", "results", "codebase_review.json"),
+      path.join(process.cwd(), "server", "data", "codebase_review.json"),
       path.join(process.cwd(), "public", ".claude", "review", "results", "codebase_review.json"),
     ];
 
