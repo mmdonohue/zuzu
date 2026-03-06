@@ -10,8 +10,25 @@ const Portfolio: React.FC = () => {
     link.rel = 'stylesheet';
     document.head.appendChild(link);
 
+    // Load Lucide Icons
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/lucide@latest';
+    script.onload = () => {
+      // @ts-ignore
+      if (window.lucide) {
+        // @ts-ignore
+        window.lucide.createIcons({
+          attrs: {
+            'stroke-width': 1.5
+          }
+        });
+      }
+    };
+    document.body.appendChild(script);
+
     return () => {
       document.head.removeChild(link);
+      document.body.removeChild(script);
     };
   }, []);
 
@@ -86,12 +103,15 @@ const Portfolio: React.FC = () => {
           {/* Contact & Social Links */}
           <div className="flex flex-wrap items-center gap-4 text-base font-normal">
             <a href="https://www.linkedin.com/in/matt-donohue-609b084/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700">
+              <i data-lucide="user" className="w-5 h-5"></i>
               LinkedIn
             </a>
             <a href="https://github.com/mmdonohue" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700">
+              <i data-lucide="code" className="w-5 h-5"></i>
               GitHub
             </a>
             <a href="mailto:donohue.matt@gmail.com" className="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700">
+              <i data-lucide="mail" className="w-5 h-5"></i>
               Email
             </a>
             <div 
@@ -99,7 +119,8 @@ const Portfolio: React.FC = () => {
               onMouseEnter={() => setDesertModalOpen(true)}
               onMouseLeave={() => setDesertModalOpen(false)}
             >
-              📍 Desert Hot Springs, CA
+              <i data-lucide="map-pin" className="w-5 h-5"></i>
+              Desert Hot Springs, CA
             </div>
           </div>
         </section>
@@ -112,7 +133,7 @@ const Portfolio: React.FC = () => {
             {/* Skill Card 1 */}
             <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
               <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-indigo-500/30 group-hover:text-indigo-200 transition-colors">
-                📊
+                <i data-lucide="layers" className="w-5 h-5"></i>
               </div>
               <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">Full-Stack Architecture</h4>
               <p className="text-base text-zinc-200 mb-4 leading-relaxed">React, Next.js, TypeScript, MUI, Tailwind CSS, Node.js, Express, Python Flask/FastAPI.</p>
@@ -128,7 +149,7 @@ const Portfolio: React.FC = () => {
             {/* Skill Card 2 */}
             <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
               <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-emerald-500/30 group-hover:text-emerald-200 transition-colors">
-                🖥️
+                <i data-lucide="server" className="w-5 h-5"></i>
               </div>
               <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">Distributed Systems</h4>
               <p className="text-base text-zinc-200 mb-4 leading-relaxed">Microservices, Event-Driven Messaging, High-throughput data services.</p>
@@ -142,7 +163,7 @@ const Portfolio: React.FC = () => {
             {/* Skill Card 3 */}
             <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
               <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-blue-500/30 group-hover:text-blue-200 transition-colors">
-                💾
+                <i data-lucide="database" className="w-5 h-5"></i>
               </div>
               <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">Data & ML Operations</h4>
               <p className="text-base text-zinc-200 mb-4 leading-relaxed">Airflow, PostgreSQL, MongoDB, Redis, Python/Pandas, Jupyter.</p>
@@ -156,7 +177,7 @@ const Portfolio: React.FC = () => {
             {/* Skill Card 4 */}
             <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
               <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-amber-500/30 group-hover:text-amber-200 transition-colors">
-                🤖
+                <i data-lucide="cpu" className="w-5 h-5"></i>
               </div>
               <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">AI & Automation</h4>
               <p className="text-base text-zinc-200 mb-4 leading-relaxed">LLM integration, agent-based workflows, AI-assisted code review pipelines.</p>
@@ -169,7 +190,7 @@ const Portfolio: React.FC = () => {
             {/* Skill Card 5 */}
             <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
               <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-rose-500/30 group-hover:text-rose-200 transition-colors">
-                🎬
+                <i data-lucide="video" className="w-5 h-5"></i>
               </div>
               <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">Streaming & Media</h4>
               <p className="text-base text-zinc-200 mb-4 leading-relaxed">High-volume live streaming workflows, asset metadata sync, fingerprinting.</p>
@@ -183,7 +204,7 @@ const Portfolio: React.FC = () => {
             {/* Skill Card 6 */}
             <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
               <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-cyan-500/30 group-hover:text-cyan-200 transition-colors">
-                🛡️
+                <i data-lucide="shield-check" className="w-5 h-5"></i>
               </div>
               <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">DevOps & Reliability</h4>
               <p className="text-base text-zinc-200 mb-4 leading-relaxed">Docker, Kubernetes, CI/CD, Observability, and Production Optimization.</p>
@@ -206,6 +227,9 @@ const Portfolio: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                      <i data-lucide="leaf" className="w-4 h-4"></i>
+                    </div>
                     <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Seravanna – Wellness Services</h4>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
@@ -216,26 +240,27 @@ const Portfolio: React.FC = () => {
                   
                   <ul className="space-y-3 text-base text-zinc-200 mb-8">
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>Fully integrated Stripe booking workflows</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>Multi-tenant design with Admin control</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>Meta Ads integration</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>RAG enabled HBOT chat bot using free LLM models</span>
                     </li>
                   </ul>
 
                   <div className="mb-6">
                     <a href="https://www.seravanna.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
-                      🌐 www.seravanna.com
+                      <i data-lucide="globe" className="w-5 h-5"></i>
+                      www.seravanna.com
                     </a>
                   </div>
                 </div>
@@ -252,6 +277,9 @@ const Portfolio: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                      <i data-lucide="trending-up" className="w-4 h-4"></i>
+                    </div>
                     <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Mahoraga – Trading Bot</h4>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
@@ -262,22 +290,23 @@ const Portfolio: React.FC = () => {
                   
                   <ul className="space-y-3 text-base text-zinc-200 mb-8">
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>MCP Server exposing 40+ tools for trading, analysis, and risk management</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>Two-phase order execution with policy engine validation</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>React dashboard polling real-time status every 5 seconds</span>
                     </li>
                   </ul>
 
                   <div>
                     <a href="mailto:donohue.matt@gmail.com?subject=Mahoraga Repo Request" className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
-                      🔒 Repo on request
+                      <i data-lucide="lock" className="w-5 h-5"></i>
+                      Repo on request
                     </a>
                   </div>
                 </div>
@@ -294,6 +323,9 @@ const Portfolio: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded bg-indigo-500/10 border border-indigo-200 flex items-center justify-center text-indigo-200">
+                      <i data-lucide="box" className="w-4 h-4"></i>
+                    </div>
                     <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>ZuZu Scaffold</h4>
                   </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
@@ -302,22 +334,23 @@ const Portfolio: React.FC = () => {
                   
                   <ul className="space-y-3 text-base text-zinc-200 mb-8">
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>Production-grade auth (JWT, CSRF, rate limiting)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>AI-driven workflow automation hooks</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="mt-0.5 text-emerald-500 flex-shrink-0">✓</span>
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>Cypress E2E testing integrated</span>
                     </li>
                   </ul>
 
                   <div>
                     <a href="https://github.com/mmdonohue/zuzu" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
-                      📦 View Repository
+                      <i data-lucide="code" className="w-5 h-5"></i>
+                      View Repository
                     </a>
                   </div>
                 </div>
