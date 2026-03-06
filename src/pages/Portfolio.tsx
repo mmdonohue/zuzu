@@ -361,8 +361,133 @@ const Portfolio: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Project: Real-Time Rights Management */}
+            <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-2">
+                <div className="p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-zinc-800/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded bg-emerald-500/10 border border-emerald-200 flex items-center justify-center text-emerald-200">
+                      <i data-lucide="film" className="w-4 h-4"></i>
+                    </div>
+                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Real-Time Rights Management</h4>
+                  </div>
+                  <p className="text-base text-zinc-200 mb-6 leading-relaxed">
+                    High-throughput distributed system for live content fingerprinting and rights enforcement across partner social video platforms.
+                  </p>
+                  
+                  <ul className="space-y-3 text-base text-zinc-200 mb-8">
+                    <li className="flex items-start gap-2">
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                      <span>Event-driven architecture using Apache Kafka</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                      <span>FFMPEG integration for live stream processing</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                      <span>Zero-downtime deployment on Kubernetes</span>
+                    </li>
+                  </ul>
+
+                  <div>
+                    <button className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50 cursor-pointer">
+                      <i data-lucide="network" className="w-5 h-5"></i>
+                      View Architecture
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="p-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, #52525b 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: 0.15 }}></div>
+                  <div className="relative z-10 w-full max-w-sm aspect-[4/3] bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl shadow-2xl flex flex-col items-center justify-center text-center p-6 group cursor-pointer hover:border-zinc-700 transition-colors">
+                    <div className="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center text-indiglo-300 mb-4 group-hover:text-emerald-400 group-hover:bg-emerald-500/10 transition-colors">
+                      <i data-lucide="image" className="w-6 h-6"></i>
+                    </div>
+                    <span className="text-base font-normal text-zinc-300">Microservices Topology</span>
+                    <span className="text-sm text-indiglo-300 mt-2">Placeholder for Kafka streaming data flow</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Project: Multi-Cloud Orchestration Portal */}
+            <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-2">
+                <div className="p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-zinc-800/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                      <i data-lucide="cloud" className="w-4 h-4"></i>
+                    </div>
+                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Multi-Cloud Orchestration Portal</h4>
+                  </div>
+                  <p className="text-base text-zinc-200 mb-6 leading-relaxed">
+                    Enterprise dashboard for automated infrastructure provisioning, ETL pipeline monitoring, and billing analytics.
+                  </p>
+                  
+                  <ul className="space-y-3 text-base text-zinc-200 mb-8">
+                    <li className="flex items-start gap-2">
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                      <span>Next.js frontend with complex state management</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                      <span>Python/Airflow data pipelines for billing ETL</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                      <span>Robust RBAC and Enterprise SSO integration</span>
+                    </li>
+                  </ul>
+
+                  <div>
+                    <button className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50 cursor-pointer">
+                      <i data-lucide="file-text" className="w-5 h-5"></i>
+                      View Case Study
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="p-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, #52525b 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: 0.15 }}></div>
+                  <div className="relative z-10 w-full max-w-sm aspect-[4/3] bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl shadow-2xl flex flex-col items-center justify-center text-center p-6 group cursor-pointer hover:border-zinc-700 transition-colors">
+                    <div className="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center text-indiglo-300 mb-4 group-hover:text-blue-400 group-hover:bg-blue-500/10 transition-colors">
+                      <i data-lucide="image" className="w-6 h-6"></i>
+                    </div>
+                    <span className="text-base font-normal text-zinc-300">Dashboard Interface</span>
+                    <span className="text-sm text-indiglo-300 mt-2">Placeholder for application screenshot</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
+
+        {/* Footer / Education & Certs */}
+        <footer className="pt-12 border-t border-zinc-800/50 grid grid-cols-1 md:grid-cols-2 gap-12 text-base">
+          <div>
+            <h4 className="font-normal text-lg tracking-tight text-zinc-100 mb-4 flex items-center gap-2">
+              <i data-lucide="graduation-cap" className="w-5 h-5 text-indiglo-300"></i>
+              Education
+            </h4>
+            <div className="text-zinc-300 font-normal">Bachelor of Fine Arts (B.F.A.)</div>
+            <div className="text-indiglo-300">School of the Art Institute of Chicago — Chicago, IL</div>
+          </div>
+          <div>
+            <h4 className="font-normal text-lg tracking-tight text-zinc-100 mb-4 flex items-center gap-2">
+              <i data-lucide="award" className="w-5 h-5 text-indiglo-300"></i>
+              Certifications
+            </h4>
+            <ul className="space-y-2 text-zinc-200">
+              <li>• AWS Cloud Technical Essentials</li>
+              <li>• IBM Machine Learning with Python</li>
+              <li>• Building Modern Node.js Applications on AWS</li>
+              <li>• Google Analytics</li>
+            </ul>
+          </div>
+        </footer>
 
       </main>
     </div>
