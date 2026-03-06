@@ -286,7 +286,7 @@ const Portfolio: React.FC = () => {
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
                   </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
-                    Autonomous LLM-powered intraday trading agent named after the Jujutsu Kaisen mythical beast that adapts to every attack — the system is designed to do the same: learn from its own trade history and adjust behaviour in real-time.
+                    Autonomous LLM-powered intraday trading bot named after the Jujutsu Kaisen mythical beast that adapts to every attack — the system is designed to do the same: learn from its own trade history and adjust behaviour in real-time.
                   </p>
                   
                   <ul className="space-y-3 text-base text-zinc-200 mb-8">
@@ -296,7 +296,7 @@ const Portfolio: React.FC = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
-                      <span>Monitors positions with dynamic TP/SL, trailing stops, LLM re-analysis and trading performance via `PortfolioManager`</span>
+                      <span>Monitors positions with dynamic TP/SL, trailing stops, LLM re-analysis and trading performance via agents Entry/Exit Optimizer, Portfolio Manager and Trade Journal</span>
                     </li>
                   </ul>
 
