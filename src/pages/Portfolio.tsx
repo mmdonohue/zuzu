@@ -280,26 +280,27 @@ const Portfolio: React.FC = () => {
                     <div className="w-8 h-8 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
                       <i data-lucide="trending-up" className="w-4 h-4"></i>
                     </div>
-                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Mahoraga – Trading Bot</h4>
+                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Mahoraga-AHAB – Trading Bot</h4>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
                   </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
-                    Cloudflare Workers-based algorithmic trading bot featuring a comprehensive MCP server, real-time React dashboard, and strict automated safety layers.
+                    Autonomous LLM-powered intraday trading agent. Named after the Jujutsu Kaisen mythical beast that adapts to every attack — the system is designed to do the same: learn from its own trade history and adjust behaviour in real-time.
                   </p>
                   
                   <ul className="space-y-3 text-base text-zinc-200 mb-8">
                     <li className="flex items-start gap-2">
                       <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
-                      <span>MCP Server exposing 40+ tools for trading, analysis, and risk management</span>
+                      <span>MCP Server exposing 40+ tools for trading, analysis, and risk management, yFianace integration, Automated signal gathering and sentiment scoring</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
-                      <span>Two-phase order execution with policy engine validation</span>
+                      <span>Monitors positions with dynamic TP/SL, trailing stops, LLM re-analysis<br/>
+                        Self assesses trading performance via `PortfolioManager` and shifts regimes (PERFORMING → CHOPPY → DAMAGED)</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
-                      <span>React dashboard polling real-time status every 5 seconds</span>
+                      <span>React dashboard polling real-time featuring sci-fi automotive influenced HUD</span>
                     </li>
                   </ul>
 
@@ -312,7 +313,7 @@ const Portfolio: React.FC = () => {
                 </div>
                 <div className="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
                   <div className="relative z-10 w-full h-full">
-                    <img src="/assets/img/mahoraga_dash.png" alt="Mahoraga Dashboard" className="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />
+                    <img src="/assets/img/mahoraga_dash.png" alt="Mahoraga Dashboard" className="w-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />
                   </div>
                 </div>
               </div>
