@@ -352,6 +352,10 @@ const Portfolio: React.FC = () => {
                       <i data-lucide="code" className="w-5 h-5"></i>
                       View Repository
                     </a>
+                    <a href="https://zuzu-frontend.onrender.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50">
+                      <i data-lucide="external-link" className="w-5 h-5"></i>
+                      Website
+                    </a>
                   </div>
                 </div>
                 <div className="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
@@ -399,14 +403,9 @@ const Portfolio: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="p-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
-                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, #52525b 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: 0.15 }}></div>
-                  <div className="relative z-10 w-full max-w-sm aspect-[4/3] bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl shadow-2xl flex flex-col items-center justify-center text-center p-6 group cursor-pointer hover:border-zinc-700 transition-colors">
-                    <div className="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center text-indiglo-300 mb-4 group-hover:text-emerald-400 group-hover:bg-emerald-500/10 transition-colors">
-                      <i data-lucide="image" className="w-6 h-6"></i>
-                    </div>
-                    <span className="text-base font-normal text-zinc-300">Microservices Topology</span>
-                    <span className="text-sm text-indiglo-300 mt-2">Placeholder for Kafka streaming data flow</span>
+                <div className="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
+                  <div className="relative z-10 w-full h-full">
+                    <img src="/assets/img/aws_ffmpeg_diagram_v1.png" alt="Mahoraga Dashboard" className="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />
                   </div>
                 </div>
               </div>
