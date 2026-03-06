@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Icon } from '@iconify-icon/react';
 
 const Portfolio: React.FC = () => {
   const [desertModalOpen, setDesertModalOpen] = useState(false);
@@ -285,7 +286,7 @@ const Portfolio: React.FC = () => {
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
                   </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
-                    Autonomous LLM-powered intraday trading agent. Named after the Jujutsu Kaisen mythical beast that adapts to every attack — the system is designed to do the same: learn from its own trade history and adjust behaviour in real-time.
+                    Autonomous LLM-powered intraday trading agent named after the Jujutsu Kaisen mythical beast that adapts to every attack — the system is designed to do the same: learn from its own trade history and adjust behaviour in real-time.
                   </p>
                   
                   <ul className="space-y-3 text-base text-zinc-200 mb-8">
@@ -295,12 +296,7 @@ const Portfolio: React.FC = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
-                      <span>Monitors positions with dynamic TP/SL, trailing stops, LLM re-analysis<br/>
-                        Self assesses trading performance via `PortfolioManager` and shifts regimes (PERFORMING → CHOPPY → DAMAGED)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
-                      <span>React dashboard polling real-time featuring sci-fi automotive influenced HUD</span>
+                      <span>Monitors positions with dynamic TP/SL, trailing stops, LLM re-analysis and trading performance via `PortfolioManager`</span>
                     </li>
                   </ul>
 
@@ -369,7 +365,7 @@ const Portfolio: React.FC = () => {
 
             {/* Project: Real-Time Rights Management */}
             <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
+              <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded bg-emerald-500/10 border border-emerald-200 flex items-center justify-center text-emerald-200">
@@ -397,16 +393,18 @@ const Portfolio: React.FC = () => {
                   </ul>
 
                   <div>
+                    {/*
                     <button className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50 cursor-pointer">
                       <i data-lucide="network" className="w-5 h-5"></i>
                       View Architecture
                     </button>
+                    */}
                   </div>
                 </div>
                 
                 <div className="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
                   <div className="relative z-10 w-full h-full">
-                    <img src="/assets/img/aws_ffmpeg_diagram_v1.png" alt="Mahoraga Dashboard" className="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />
+                    <img src="/assets/img/nbc_code_tree.png" alt="NBC Diagram" className="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />
                   </div>
                 </div>
               </div>
@@ -414,7 +412,7 @@ const Portfolio: React.FC = () => {
 
             {/* Project: Multi-Cloud Orchestration Portal */}
             <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
+              <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
@@ -442,17 +440,218 @@ const Portfolio: React.FC = () => {
                   </ul>
 
                   <div>
+                    {/* 
                     <button className="inline-flex items-center gap-2 text-base font-normal text-zinc-100 bg-zinc-800/80 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50 cursor-pointer">
                       <i data-lucide="file-text" className="w-5 h-5"></i>
-                      {/* View Case Study */}
+                      View Case Study
                     </button>
+                    */}
                   </div>
                 </div>
                 
                 <div className="pl-4 pr-4 py-8 bg-zinc-950/40 flex flex-col items-center justify-center relative min-h-[300px]">
-                  <div className="relative z-10 w-full h-full">
-                    <img src="/assets/img/cloudhelm.jpg" alt="Mahoraga Dashboard" className="w-full h-full object-cover rounded-xl shadow-2xl border border-zinc-800/50" />
-                  </div>
+                    {/* 5x4 Portfolio Canvas */}
+                    <div className="w-full max-w-[800px] aspect-[5/4] bg-[#09090b] rounded-2xl border border-white/[0.06] flex flex-col overflow-hidden relative" style={{ boxShadow: "0 40px 80px -20px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)" }}>
+                        
+                        {/* Top Navigation */}
+                        <header className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04] bg-white/[0.01] relative z-20">
+                            <div className="flex items-center gap-4">
+                                <div className="w-7 h-7 rounded border border-white/[0.12] bg-white/[0.05] flex items-center justify-center shadow-sm">
+                                    <span className="text-xs font-semibold tracking-tighter text-white">O C</span>
+                                </div>
+                                <div className="h-4 w-[1px] bg-white/[0.1]"></div>
+                                <div className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/[0.03] cursor-pointer transition-colors border border-transparent hover:border-white/[0.04]">
+                                    <span className="text-sm font-medium text-neutral-300">OmniCorp Global</span>
+                                    <Icon icon="solar:alt-arrow-down-linear" className="text-neutral-500" />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button className="w-8 h-8 rounded-full border border-white/[0.06] flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/[0.04] transition-colors relative">
+                                    <Icon icon="solar:bell-linear" />
+                                    <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-rose-500 rounded-full border border-[#09090b]"></div>
+                                </button>
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-600 border border-white/[0.1] p-[2px]">
+                                    <div className="w-full h-full rounded-full bg-neutral-900 border border-white/[0.05]"></div>
+                                </div>
+                            </div>
+                        </header>
+
+                        {/* Main Orthographic Content */}
+                        <main className="flex-1 relative overflow-hidden bg-neutral-950 flex items-center justify-center">
+                            
+                            {/* Floating Abstract UI: Top Left */}
+                            <div className="absolute top-6 left-6 z-20 flex flex-col gap-1.5 pointer-events-none">
+                                <div className="flex items-center gap-2">
+                                    <Icon icon="solar:layers-linear" className="text-neutral-400 text-lg" />
+                                    <h2 className="text-sm font-medium text-white tracking-tight">Topology</h2>
+                                </div>
+                                <p className="text-xs text-neutral-500">Global Infrastructure Tree</p>
+                            </div>
+
+                            {/* Floating Abstract UI: Bottom Right Telemetry */}
+                            <div className="absolute bottom-6 right-6 z-20 w-56 p-4 bg-[#09090b]/80 backdrop-blur-md border border-white/[0.04] rounded-xl flex flex-col gap-3 shadow-2xl">
+                                <div className="flex items-center gap-2 text-xs font-medium text-white tracking-wide">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                                    OMNICORP NEXUS
+                                </div>
+                                <div className="h-[1px] w-full bg-white/[0.05]"></div>
+                                <div className="flex flex-col gap-2 font-mono text-xs">
+                                    <div className="flex justify-between items-center"><span className="text-neutral-500">AWS.EKS.east</span><span className="text-orange-400">SYNC</span></div>
+                                    <div className="flex justify-between items-center"><span className="text-neutral-500">AZR.AKS.west</span><span className="text-blue-400">SYNC</span></div>
+                                    <div className="flex justify-between items-center"><span className="text-neutral-500">GCP.GKE.cen</span><span className="text-red-400">SYNC</span></div>
+                                    <div className="flex justify-between items-center"><span className="text-neutral-500">ONP.VMW.loc</span><span className="text-emerald-400">SYNC</span></div>
+                                </div>
+                            </div>
+
+                            {/* 3D Canvas Perspective Container */}
+                            <div className="relative w-full h-full flex items-center justify-center perspective-[2000px] scale-[0.6] sm:scale-[0.85] lg:scale-100 mt-8">
+                                
+                                {/* The Orthographic Plane */}
+                                <div className="relative w-[800px] h-[800px]" style={{ transform: "rotateX(60deg) rotateZ(-45deg)", transformStyle: "preserve-3d" }}>
+                                    
+                                    {/* Isometric Grid Background */}
+                                    <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" style={{ maskImage: "radial-gradient(ellipse at 50% 50%, black 10%, transparent 75%)", WebkitMaskImage: "radial-gradient(ellipse at 50% 50%, black 10%, transparent 75%)" }}></div>
+
+                                    {/* Connecting Lines (Tree Topology) */}
+                                    <svg width="800" height="800" className="absolute inset-0 z-0 pointer-events-none">
+                                        {/* Org -> Project */}
+                                        <path d="M 150 400 L 350 400" fill="none" stroke="rgba(139,92,246,0.15)" strokeWidth="2"></path>
+                                        <path d="M 150 400 L 350 400" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeDasharray="4 16">
+                                            <animate attributeName="stroke-dashoffset" values="20;0" dur="1.0s" repeatCount="indefinite"></animate>
+                                        </path>
+
+                                        {/* Project -> AWS */}
+                                        <path d="M 350 400 L 600 200" fill="none" stroke="rgba(249,115,22,0.15)" strokeWidth="2"></path>
+                                        <path d="M 350 400 L 600 200" fill="none" stroke="#f97316" strokeWidth="2" strokeDasharray="4 16">
+                                            <animate attributeName="stroke-dashoffset" values="20;0" dur="1.2s" repeatCount="indefinite"></animate>
+                                        </path>
+                                        {/* AWS Asset Spokelines */}
+                                        <path d="M 600 200 L 600 155 M 600 200 L 645 200 M 600 200 L 600 245 M 600 200 L 555 200" stroke="rgba(249,115,22,0.25)" strokeWidth="1.5"></path>
+
+                                        {/* Project -> Azure */}
+                                        <path d="M 350 400 L 600 330" fill="none" stroke="rgba(59,130,246,0.15)" strokeWidth="2"></path>
+                                        <path d="M 350 400 L 600 330" fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4 16">
+                                            <animate attributeName="stroke-dashoffset" values="20;0" dur="1.3s" repeatCount="indefinite"></animate>
+                                        </path>
+                                        {/* Azure Asset Spokelines */}
+                                        <path d="M 600 330 L 600 285 M 600 330 L 645 330 M 600 330 L 600 375 M 600 330 L 555 330" stroke="rgba(59,130,246,0.25)" strokeWidth="1.5"></path>
+                                        {/* Project -> GCP */}
+                                        <path d="M 350 400 L 600 470" fill="none" stroke="rgba(239,68,68,0.15)" strokeWidth="2"></path>
+                                        <path d="M 350 400 L 600 470" fill="none" stroke="#ef4444" strokeWidth="2" strokeDasharray="4 16">
+                                            <animate attributeName="stroke-dashoffset" values="20;0" dur="1.4s" repeatCount="indefinite"></animate>
+                                        </path>
+                                        {/* GCP Asset Spokelines */}
+                                        <path d="M 600 470 L 600 425 M 600 470 L 645 470 M 600 470 L 600 515 M 600 470 L 555 470" stroke="rgba(239,68,68,0.25)" strokeWidth="1.5"></path>
+                                        {/* Project -> Private DC */}
+                                        <path d="M 350 400 L 600 600" fill="none" stroke="rgba(16,185,129,0.15)" strokeWidth="2"></path>
+                                        <path d="M 350 400 L 600 600" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 16">
+                                            <animate attributeName="stroke-dashoffset" values="20;0" dur="1.5s" repeatCount="indefinite"></animate>
+                                        </path>
+                                        {/* Private DC Asset Spokelines */}
+                                        <path d="M 600 600 L 600 555 M 600 600 L 645 600 M 600 600 L 600 645 M 600 600 L 555 600" stroke="rgba(16,185,129,0.25)" strokeWidth="1.5"></path>
+                                    </svg>
+
+                                    {/* LEVEL 1: Org Node (150, 400) */}
+                                    <div className="absolute left-[150px] top-[400px] w-24 h-24 -translate-x-1/2 -translate-y-1/2 z-10" style={{"transformStyle": "preserve-3d"}}>
+                                        <div className="absolute inset-0 bg-violet-500/10 blur-2xl rounded-full"></div>
+                                        <div className="absolute inset-0 bg-neutral-950 border border-violet-500/20 rounded-2xl"></div>
+                                        <div className="absolute inset-2 bg-violet-500/5 border border-violet-500/30 rounded-xl flex items-center justify-center backdrop-blur-md" style={{"transform": "translateZ(16px)"}}></div>
+                                        <div className="absolute inset-0 flex items-center justify-center text-violet-400" style={{"transform": "translateZ(32px)"}}>
+                                             <Icon icon="solar:global-linear" className="text-3xl" />
+                                        </div>
+                                        <div className="absolute top-[110%] left-1/2 -translate-x-1/2 text-center w-32" style={{"transform": "translateZ(0px)"}}>
+                                            <span className="text-xs text-white font-semibold tracking-wide uppercase block">OmniCorp</span>
+                                            <span className="text-[10px] text-neutral-500 tracking-widest uppercase block mt-0.5">Global Org</span>
+                                        </div>
+                                    </div>
+
+                                    {/* LEVEL 2: Project Node (350, 400) */}
+                                    <div className="absolute left-[350px] top-[400px] w-16 h-16 -translate-x-1/2 -translate-y-1/2 z-10" style={{"transformStyle": "preserve-3d"}}>
+                                        <div className="absolute inset-0 bg-white/10 blur-xl rounded-full"></div>
+                                        <div className="absolute inset-0 bg-neutral-950 border border-white/20 rounded-xl"></div>
+                                        <div className="absolute inset-1.5 bg-white/5 border border-white/30 rounded-lg flex items-center justify-center backdrop-blur-md" style={{"transform": "translateZ(12px)"}}></div>
+                                        <div className="absolute inset-0 flex items-center justify-center text-white" style={{"transform": "translateZ(24px)"}}>
+                                            <Icon icon="solar:cpu-linear" className="text-xl" />
+                                        </div>
+                                        <div className="absolute top-[110%] left-1/2 -translate-x-1/2 text-center w-32">
+                                            <span className="text-xs text-neutral-200 font-medium tracking-wide uppercase block">Project Nexus</span>
+                                        </div>
+                                    </div>
+
+                                    {/* LEVEL 3 & 4: Cloud Nodes with Asset Rings */}
+                                    
+                                    {/* AWS (600, 200) */}
+                                    <div className="absolute left-[600px] top-[200px] w-12 h-12 -translate-x-1/2 -translate-y-1/2 z-10" style={{"transformStyle": "preserve-3d"}}>
+                                        {/* Assets */}
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-orange-500/30 bg-neutral-950 flex items-center justify-center text-orange-400" style={{"transform": "translate(0, -45px) translateZ(8px)"}}><Icon icon="solar:database-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-orange-500/30 bg-neutral-950 flex items-center justify-center text-orange-400" style={{"transform": "translate(45px, 0) translateZ(8px)"}}><Icon icon="solar:server-square-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-orange-500/30 bg-neutral-950 flex items-center justify-center text-orange-400" style={{"transform": "translate(0, 45px) translateZ(8px)"}}><Icon icon="solar:shield-keyhole-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-orange-500/30 bg-neutral-950 flex items-center justify-center text-orange-400" style={{"transform": "translate(-45px, 0) translateZ(8px)"}}><Icon icon="solar:routing-3-linear" className="text-[10px]" /></div>
+                                        {/* Core */}
+                                        <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full"></div>
+                                        <div className="absolute inset-0 bg-neutral-950 border border-orange-500/30 rounded-lg"></div>
+                                        <div className="absolute inset-1 bg-orange-500/10 border border-orange-500/40 rounded-md" style={{"transform": "translateZ(10px)"}}></div>
+                                        <div className="absolute inset-0 flex items-center justify-center text-orange-400" style={{"transform": "translateZ(20px)"}}><Icon icon="solar:cloud-linear" className="text-lg" /></div>
+                                        <div className="absolute bottom-[130%] left-1/2 -translate-x-1/2 text-center w-24">
+                                            <span className="text-[10px] text-neutral-300 font-medium tracking-widest uppercase block">AWS</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Azure (600, 330) */}
+                                    <div className="absolute left-[600px] top-[330px] w-12 h-12 -translate-x-1/2 -translate-y-1/2 z-10" style={{"transformStyle": "preserve-3d"}}>
+                                        {/* Assets */}
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-blue-500/30 bg-neutral-950 flex items-center justify-center text-blue-400" style={{"transform": "translate(0, -45px) translateZ(8px)"}}><Icon icon="solar:database-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-blue-500/30 bg-neutral-950 flex items-center justify-center text-blue-400" style={{"transform": "translate(45px, 0) translateZ(8px)"}}><Icon icon="solar:server-square-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-blue-500/30 bg-neutral-950 flex items-center justify-center text-blue-400" style={{"transform": "translate(0, 45px) translateZ(8px)"}}><Icon icon="solar:shield-keyhole-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-blue-500/30 bg-neutral-950 flex items-center justify-center text-blue-400" style={{"transform": "translate(-45px, 0) translateZ(8px)"}}><Icon icon="solar:routing-3-linear" className="text-[10px]" /></div>
+                                        {/* Core */}
+                                        <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full"></div>
+                                        <div className="absolute inset-0 bg-neutral-950 border border-blue-500/30 rounded-lg"></div>
+                                        <div className="absolute inset-1 bg-blue-500/10 border border-blue-500/40 rounded-md" style={{"transform": "translateZ(10px)"}}></div>
+                                        <div className="absolute inset-0 flex items-center justify-center text-blue-400" style={{"transform": "translateZ(20px)"}}><Icon icon="solar:server-path-linear" className="text-lg" /></div>
+                                        <div className="absolute bottom-[130%] left-1/2 -translate-x-1/2 text-center w-24">
+                                            <span className="text-[10px] text-neutral-300 font-medium tracking-widest uppercase block">Azure</span>
+                                        </div>
+                                    </div>
+
+                                    {/* GCP (600, 470) */}
+                                    <div className="absolute left-[600px] top-[470px] w-12 h-12 -translate-x-1/2 -translate-y-1/2 z-10" style={{"transformStyle": "preserve-3d"}}>
+                                        {/* Assets */}
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-red-500/30 bg-neutral-950 flex items-center justify-center text-red-400" style={{"transform": "translate(0, -45px) translateZ(8px)"}}><Icon icon="solar:database-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-red-500/30 bg-neutral-950 flex items-center justify-center text-red-400" style={{"transform": "translate(45px, 0) translateZ(8px)"}}><Icon icon="solar:server-square-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-red-500/30 bg-neutral-950 flex items-center justify-center text-red-400" style={{"transform": "translate(0, 45px) translateZ(8px)"}}><Icon icon="solar:shield-keyhole-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-red-500/30 bg-neutral-950 flex items-center justify-center text-red-400" style={{"transform": "translate(-45px, 0) translateZ(8px)"}}><Icon icon="solar:routing-3-linear" className="text-[10px]" /></div>
+                                        {/* Core */}
+                                        <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full"></div>
+                                        <div className="absolute inset-0 bg-neutral-950 border border-red-500/30 rounded-lg"></div>
+                                        <div className="absolute inset-1 bg-red-500/10 border border-red-500/40 rounded-md" style={{"transform": "translateZ(10px)"}}></div>
+                                        <div className="absolute inset-0 flex items-center justify-center text-red-400" style={{"transform": "translateZ(20px)"}}><Icon icon="solar:chart-square-linear" className="text-lg" /></div>
+                                        <div className="absolute top-[130%] left-1/2 -translate-x-1/2 text-center w-24">
+                                            <span className="text-[10px] text-neutral-300 font-medium tracking-widest uppercase block">GCP</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Private Datacenter (600, 600) */}
+                                    <div className="absolute left-[600px] top-[600px] w-12 h-12 -translate-x-1/2 -translate-y-1/2 z-10" style={{"transformStyle": "preserve-3d"}}>
+                                        {/* Assets */}
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-emerald-500/30 bg-neutral-950 flex items-center justify-center text-emerald-400" style={{"transform": "translate(0, -45px) translateZ(8px)"}}><Icon icon="solar:database-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-emerald-500/30 bg-neutral-950 flex items-center justify-center text-emerald-400" style={{"transform": "translate(45px, 0) translateZ(8px)"}}><Icon icon="solar:server-square-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-emerald-500/30 bg-neutral-950 flex items-center justify-center text-emerald-400" style={{"transform": "translate(0, 45px) translateZ(8px)"}}><Icon icon="solar:shield-keyhole-linear" className="text-[10px]" /></div>
+                                        <div className="absolute top-1/2 left-1/2 w-5 h-5 -mt-2.5 -ml-2.5 rounded-[4px] border border-emerald-500/30 bg-neutral-950 flex items-center justify-center text-emerald-400" style={{"transform": "translate(-45px, 0) translateZ(8px)"}}><Icon icon="solar:routing-3-linear" className="text-[10px]" /></div>
+                                        {/* Core */}
+                                        <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full"></div>
+                                        <div className="absolute inset-0 bg-neutral-950 border border-emerald-500/30 rounded-lg"></div>
+                                        <div className="absolute inset-1 bg-emerald-500/10 border border-emerald-500/40 rounded-md" style={{"transform": "translateZ(10px)"}}></div>
+                                        <div className="absolute inset-0 flex items-center justify-center text-emerald-400" style={{"transform": "translateZ(20px)"}}><Icon icon="solar:server-square-linear" className="text-lg" /></div>
+                                        <div className="absolute top-[130%] left-1/2 -translate-x-1/2 text-center w-32">
+                                            <span className="text-[10px] text-neutral-300 font-medium tracking-widest uppercase block">Private DC</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </main>
+                    </div>
                 </div>
               </div>
             </div>
@@ -476,10 +675,10 @@ const Portfolio: React.FC = () => {
               Certifications
             </h4>
             <ul className="space-y-2 text-zinc-200">
-              <li>• AWS Cloud Technical Essentials</li>
-              <li>• IBM Machine Learning with Python</li>
-              <li>• Building Modern Node.js Applications on AWS</li>
-              <li>• Google Analytics</li>
+              <li>AWS Cloud Technical Essentials</li>
+              <li>IBM Machine Learning with Python</li>
+              <li>Building Modern Node.js Applications on AWS</li>
+              <li>Google Analytics</li>
             </ul>
           </div>
         </footer>

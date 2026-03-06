@@ -37,6 +37,7 @@
     "@codesandbox/sandpack-themes": "^2.0.21",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
+    "@iconify-icon/react": "^3.0.3",
     "@monaco-editor/react": "^4.7.0",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
