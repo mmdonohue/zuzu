@@ -5,6 +5,10 @@ const Portfolio: React.FC = () => {
   const [desertModalOpen, setDesertModalOpen] = useState(false);
 
   useEffect(() => {
+
+    const tailwindCSS = document.createElement('link');
+    tailwindCSS.href = 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
+    tailwindCSS.rel = 'stylesheet';
     // Load Google Fonts
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Patrick+Hand&family=Amatic+SC:wght@400;700&display=swap';
@@ -35,6 +39,21 @@ const Portfolio: React.FC = () => {
 
   return (
     <div className="text-zinc-200 antialiased selection:text-indigo-200 relative min-h-screen flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
+            {/* Top Navigation */}
+    `    <div className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800/50 bg-zinc-950/60 backdrop-blur-sm">
+            <div className="max-w-6xl mx-auto pl-6 h-16 flex items-center justify-between">
+                <div className="text-zinc-100 font-normal text-lg tracking-[1em]">Matt Donohue</div>
+                <nav className="hidden md:flex items-center gap-6 text-base font-normal text-zinc-200">
+                    <a href="#about" className="hover:text-zinc-100 text-[#749eb4f0]">About</a>
+                    <a href="#skills" className="hover:text-zinc-100 text-[#749eb4f0]">Expertise</a>
+                    <a href="#experience" className="hover:text-zinc-100 text-[#749eb4f0]">Experience</a>
+                    <a href="#projects" className="hover:text-zinc-100 text-[#749eb4f0]">Projects</a>
+                </nav>
+                <a href="mailto:donohue.matt@gmail.com" className="text-base font-normal text-zinc-100 bg-zinc-800/80 backdrop-blur-sm hover:bg-zinc-700 px-4 py-2 rounded-full transition-colors border border-zinc-700/50">
+                    Get in touch
+                </a>
+            </div>
+        </div>`
       {/* Fixed Background Image */}
       <div 
         className="fixed inset-0 z-[-2] bg-cover bg-center" 
@@ -46,8 +65,8 @@ const Portfolio: React.FC = () => {
 
       {/* Desert Images Modal */}
       {desertModalOpen && (
-        <div className="fixed top-0 right-0 bottom-0 z-50 flex items-center justify-end bg-[transparent]">
-          <div className="relative max-w-3xl mr-8 p-8">
+        <div className="fixed top-0 right-0 bottom-20 z-50 flex items-center justify-end bg-[transparent]">
+          <div className="relative max-w-2xl mr-8 p-4">
             <button 
               onClick={() => setDesertModalOpen(false)}
               className="absolute top-4 right-4 w-10 h-10 rounded-full bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/50 flex items-center justify-center text-zinc-200 hover:text-zinc-100 transition-colors z-10"
@@ -55,16 +74,16 @@ const Portfolio: React.FC = () => {
               <span className="text-xl">×</span>
             </button>
             <div className="grid grid-cols-2 gap-4 opacity-75 transition-opacity duration-300">
-              <div className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
+              <div className="bg-[transparent] backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
                 <img src="/assets/img/desert_2135.JPEG" alt="Desert Hot Springs View 1" className="w-full h-full object-cover aspect-[4/3]" />
               </div>
-              <div className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
+              <div className="bg-[transparent] backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
                 <img src="/assets/img/desert_2699.JPEG" alt="Desert Hot Springs View 2" className="w-full h-full object-cover aspect-[4/3]" />
               </div>
-              <div className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
+              <div className="bg-[transparent] backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
                 <img src="/assets/img/desert_4776.JPEG" alt="Desert Hot Springs View 3" className="w-full h-full object-cover aspect-[4/3]" />
               </div>
-              <div className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
+              <div className="bg-[transparent] backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
                 <img src="/assets/img/desert_3993.JPEG" alt="Desert Hot Springs View 4" className="w-full h-full object-cover aspect-[4/3]" />
               </div>
             </div>
@@ -78,7 +97,7 @@ const Portfolio: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <main className="relative z-10 flex-grow max-w-8xl mx-auto pl-6 lg:pl-64 lg:pr-4 pt-32 pb-24 space-y-32">
+      <main className="relative z-10 flex-grow max-w-8xl mx-auto pl-6 lg:pl-64 lg:pr-4 pt-16 pb-24 space-y-32">
 
         {/* Hero Section */}
         <section id="about" className="max-w-3xl">
@@ -89,15 +108,16 @@ const Portfolio: React.FC = () => {
             </span>
             Available for new opportunities
           </div>
-          
+          {/* 
           <h1 className="text-4xl md:text-6xl font-medium tracking-tight text-zinc-100 mb-6 bg-gradient-to-br from-zinc-100 to-zinc-500 bg-clip-text text-transparent">
             Matt Donohue
           </h1>
+            */}
           <h2 className="text-xl md:text-2xl font-normal tracking-tight text-zinc-300 mb-6">
             Senior Software Engineer & Solution Architect
           </h2>
           
-          <p className="text-lg md:text-xl leading-relaxed text-zinc-200 mb-10 max-w-2xl">
+          <p className="text-lg md:text-lg leading-relaxed text-zinc-200 mb-10 max-w-2xl">
             15+ years of experience building and operating mission-critical production systems. Expertise in distributed architecture, full-stack development, and technical leadership. Proven ability to deliver scalable platforms and drive measurable business outcomes.
           </p>
 
@@ -127,8 +147,8 @@ const Portfolio: React.FC = () => {
         </section>
 
         {/* Core Strengths & Skills */}
-        <section id="skills" className="space-y-8">
-          <h3 className="text-2xl font-medium tracking-tight text-zinc-100">Technical Expertise</h3>
+        <section id="skills" className="space-y-10">
+          <h3 className="text-1xl font-medium tracking-tight text-zinc-100">Technical Expertise</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* Skill Card 1 */}
@@ -218,20 +238,106 @@ const Portfolio: React.FC = () => {
           </div>
         </section>
 
+
+        {/* Experience Timeline */}
+        <section id="experience" className="space-y-8 bg-zinc-900/20 border border-zinc-800/50 rounded-xl p-6">
+            <h3 className="text-2xl font-medium tracking-tight text-zinc-100">Experience</h3>
+            
+            <div className="relative border-l border-zinc-800/50 ml-3 md:ml-4 space-y-12 pb-4">
+                
+                {/* NBCUniversal */}
+                <div className="relative pl-8 md:pl-10">
+                    <div className="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-900 border-2 border-zinc-800 ring-4 ring-zinc-950/50"></div>
+                    
+                    <div className="flex flex-col md:flex-row md:items-baseline justify-between mb-2">
+                        <h4 className="text-lg font-normal tracking-tight text-zinc-100">Senior Engineer / Solution Architect</h4>
+                        <span className="text-base font-normal text-indiglo-300 md:ml-4">Feb 2022 – Apr 2025</span>
+                    </div>
+                    <div className="text-base font-normal text-indigo-200 mb-4">NBCUniversal</div>
+                    
+                    <ul className="space-y-3 text-base text-zinc-200 leading-relaxed mb-6">
+                        <li className="flex items-start gap-2">
+                            <i data-lucide="chevron-right" className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Architected distributed systems for large-scale rights management and live content protection workflows.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <i data-lucide="chevron-right" className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Built cross-platform asset metadata sync across YouTube Content ID &amp; Facebook Rights Manager, reducing manual overhead by 50%+.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <i data-lucide="chevron-right" className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Designed and operated live streaming infrastructure supporting 20+ concurrent streams with real-time monitoring.</span>
+                        </li>
+                    </ul>
+
+                      {/* Achievements Box */}
+                    <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-lg p-4">
+                        <h5 className="text-sm font-normal text-zinc-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i data-lucide="trophy" className="w-4 h-4 text-amber-400"></i>
+                            Major Highlights
+                        </h5>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="border-l-2 border-zinc-700/50 pl-3">
+                                <div className="text-zinc-200 text-base font-normal">Olympics 2024 Operations</div>
+                                <div className="text-sm text-indiglo-300 mt-1">70,000+ live fingerprints, 800+ IP sources, 99.9% accuracy. Supported partnership extension.</div>
+                            </div>
+                            <div className="border-l-2 border-zinc-700/50 pl-3">
+                                <div className="text-zinc-200 text-base font-normal">Platform Optimization</div>
+                                <div className="text-sm text-indiglo-300 mt-1">Reduced asset latency by 40%, achieved 100% delivery SLA within year one.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Netrix LLC */}
+                <div className="relative pl-8 md:pl-10">
+                    <div className="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-900 border-2 border-indigo-200 ring-4 ring-zinc-950/50"></div>
+                    
+                    <div className="flex flex-col md:flex-row md:items-baseline justify-between mb-2">
+                        <h4 className="text-lg font-normal tracking-tight text-zinc-100">Senior Developer / Solution Architect</h4>
+                        <span className="text-base font-normal text-indiglo-300 md:ml-4">2005 – 2022</span>
+                    </div>
+                    <div className="text-base font-normal text-indigo-200 mb-4">Netrix LLC</div>
+                    
+                    <ul className="space-y-3 text-base text-zinc-200 leading-relaxed mb-6">
+                        <li className="flex items-start gap-2">
+                            <i data-lucide="chevron-right" className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Built multi-cloud platform services across AWS, Azure, GCP, and VMware, supporting recurring revenue products.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <i data-lucide="chevron-right" className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Designed Node.js middleware and Python/Flask services for secure API orchestration and long-running workflows.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <i data-lucide="chevron-right" className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"></i>
+                            <span>Led senior engineering team through major releases, owning architecture decisions and delivery execution.</span>
+                        </li>
+                    </ul>
+
+                    <div className="flex flex-wrap gap-2">
+                        <span className="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">CloudHelm</span>
+                        <span className="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">ERP/ETL Pipelines</span>
+                        <span className="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">Rapidata (acquired by Nasdaq)</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
         {/* Projects Section */}
         <section id="projects" className="space-y-8">
-          <h3 className="text-2xl font-medium tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "2rem" }}>Featured Projects & Architecture</h3>
+          <h3 className="text-1xl font-medium tracking-tight text-zinc-100" style={{ fontWeight: 700}}>Featured Projects & Architecture</h3>
           
           <div className="space-y-6">
             {/* Project: Seravanna */}
-            <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+            <div className="bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 rounded-2xl overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex flex-wrap items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
                       <i data-lucide="leaf" className="w-4 h-4"></i>
                     </div>
-                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Seravanna – Wellness Services</h4>
+                    <h4 className="text-lg font-normal tracking-tight text-zinc-100" style={{ fontWeight: 700 }}>Seravanna – Wellness Services</h4>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
                   </div>
@@ -274,14 +380,14 @@ const Portfolio: React.FC = () => {
             </div>
 
             {/* Project: Mahoraga */}
-            <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+            <div className="bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 rounded-2xl overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex flex-wrap items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
                       <i data-lucide="trending-up" className="w-4 h-4"></i>
                     </div>
-                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Mahoraga-AHAB – Trading Bot</h4>
+                    <h4 className="text-lg font-normal tracking-tight text-zinc-100" style={{ fontWeight: 700 }}>Mahoraga-AHAB – Trading Bot</h4>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">TypeScript</span>
                     <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">Python</span>
                   </div>
@@ -316,14 +422,14 @@ const Portfolio: React.FC = () => {
             </div>
 
             {/* Project: ZuZu Scaffold */}
-            <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+            <div className="bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 rounded-2xl overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="pl-8 py-8 lg:pl-10 lg:py-10 flex flex-col justify-start border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded bg-indigo-500/10 border border-indigo-200 flex items-center justify-center text-indigo-200">
                       <i data-lucide="box" className="w-4 h-4"></i>
                     </div>
-                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>ZuZu Scaffold</h4>
+                    <h4 className="text-lg font-normal tracking-tight text-zinc-100" style={{ fontWeight: 700 }}>ZuZu Scaffold</h4>
                   </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
                     Production-ready full-stack application scaffold focused on security, maintainability, and scalable team workflows. Built with React/TypeScript and Node/Express.
@@ -364,14 +470,14 @@ const Portfolio: React.FC = () => {
             </div>
 
             {/* Project: Real-Time Rights Management */}
-            <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+            <div className="bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 rounded-2xl overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded bg-emerald-500/10 border border-emerald-200 flex items-center justify-center text-emerald-200">
                       <i data-lucide="film" className="w-4 h-4"></i>
                     </div>
-                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Real-Time Rights Management</h4>
+                    <h4 className="text-lg font-normal tracking-tight text-zinc-100" style={{ fontWeight: 700 }}>NBCUniversal: Real-Time Rights Management</h4>
                   </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
                     High-throughput distributed system for live content fingerprinting and rights enforcement across partner social video platforms.
@@ -411,20 +517,24 @@ const Portfolio: React.FC = () => {
             </div>
 
             {/* Project: Multi-Cloud Orchestration Portal */}
-            <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+            <div className="bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 rounded-2xl overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-[3fr_5fr]">
                 <div className="p-8 lg:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-zinc-800/50">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
                       <i data-lucide="cloud" className="w-4 h-4"></i>
                     </div>
-                    <h4 className="text-xl font-normal tracking-tight text-zinc-100" style={{ fontFamily: "'Amatic SC', cursive", fontWeight: 700, fontSize: "1.75rem" }}>Multi-Cloud Orchestration Portal</h4>
+                    <h4 className="text-lg font-normal tracking-tight text-zinc-100" style={{ fontWeight: 700 }}>Netrix Global: Multi-Cloud Orchestration Portal</h4>
                   </div>
                   <p className="text-base text-zinc-200 mb-6 leading-relaxed">
                     Enterprise dashboard for automated infrastructure provisioning, ETL pipeline monitoring, and billing analytics.
                   </p>
                   
                   <ul className="space-y-3 text-base text-zinc-200 mb-8">
+                    <li className="flex items-start gap-2">
+                      <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                      <span>Seamless integration with managed VMSphere environment and cloud services</span>
+                    </li>
                     <li className="flex items-start gap-2">
                       <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
                       <span>Next.js frontend with complex state management</span>
