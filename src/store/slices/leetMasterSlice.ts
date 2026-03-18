@@ -379,9 +379,9 @@ export const leetMasterSlice = createSlice({
       state.userProgress = action.payload;
       state.error = null;
     });
-    builder.addCase(loadProgress.rejected, (state, action) => {
+    builder.addCase(loadProgress.rejected, (state) => {
+      // Progress is best-effort background data — don't surface as a UI error
       state.isLoadingProgress = false;
-      state.error = action.payload as string;
     });
 
     // Fetch problems by focus area cases
