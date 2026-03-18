@@ -82,6 +82,31 @@ const initialState: LeetMasterState = {
   showSolution: false,
 };
 
+// Safe JSON parse for error responses — prod may return HTML (nginx/proxy errors)
+const parseErrorResponse = async (
+  response: Response,
+): Promise<{ error?: string; message?: string; code?: string }> => {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    const text = await response.text();
+    console.error(
+      `[LeetMaster] Non-JSON error response (${response.status} ${response.statusText}):`,
+      text.slice(0, 200),
+    );
+    return { error: `Server error: ${response.status} ${response.statusText}` };
+  }
+  try {
+    return await response.json();
+  } catch (e) {
+    const text = await response.text().catch(() => "");
+    console.error(
+      `[LeetMaster] Failed to parse error JSON:`,
+      text.slice(0, 200),
+    );
+    return { error: `Server error: ${response.status} ${response.statusText}` };
+  }
+};
+
 // Async thunks
 export const generateProblem = createAsyncThunk(
   "leetMaster/generateProblem",
@@ -99,7 +124,7 @@ export const generateProblem = createAsyncThunk(
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await parseErrorResponse(response);
         throw new Error(errorData.error || "Failed to generate problem");
       }
 
@@ -142,7 +167,7 @@ export const saveAttempt = createAsyncThunk(
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await parseErrorResponse(response);
 
         // Check for CSRF validation failure (multiple possible indicators)
         const isCsrfError =
@@ -173,7 +198,7 @@ export const saveAttempt = createAsyncThunk(
           });
 
           if (!retryResponse.ok) {
-            const retryError = await retryResponse.json();
+            const retryError = await parseErrorResponse(retryResponse);
             throw new Error(
               retryError.error || "Failed to save attempt after token refresh",
             );
@@ -208,7 +233,7 @@ export const loadProgress = createAsyncThunk(
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await parseErrorResponse(response);
         throw new Error(errorData.error || "Failed to load progress");
       }
 
@@ -235,7 +260,7 @@ export const fetchProblemsByFocusArea = createAsyncThunk(
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await parseErrorResponse(response);
         throw new Error(errorData.error || "Failed to fetch problems");
       }
 
@@ -259,7 +284,7 @@ export const loadProblemById = createAsyncThunk(
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await parseErrorResponse(response);
         throw new Error(errorData.error || "Failed to load problem");
       }
 
