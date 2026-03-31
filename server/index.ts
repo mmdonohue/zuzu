@@ -17,6 +17,7 @@ import csrfRoutes from "./routes/csrf.js";
 import templateRoutes from "./routes/templates.js";
 import styleGuideRoutes from "./routes/styleGuides.js";
 import leetmasterRoutes from "./routes/leetmaster.js";
+import wtaRoutes from "./routes/wta.js";
 import { logger, httpLogger } from "./config/logger.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
 import { apiLimiter } from "./middleware/rateLimiter.middleware.js";
@@ -292,6 +293,7 @@ app.use("/api/review", reviewRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/style-guides", styleGuideRoutes);
 app.use("/api/leetmaster", leetmasterRoutes);
+app.use("/api/wta", wtaRoutes);
 
 // Health check endpoint
 app.get("/health", (_req, res) => {

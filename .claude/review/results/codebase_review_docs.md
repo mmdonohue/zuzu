@@ -1,8 +1,8 @@
 # Codebase Review Report
 
-**Generated**: 2026-02-23 18:27:38 UTC
+**Generated**: 2026-03-26 19:20:08 UTC
 **Review Version**: 1.0.0
-**Commit**: 94e9493 (main)
+**Commit**: e8f66a7 (main)
 **Total Findings**: 5
 
 
@@ -39,13 +39,13 @@ The provider hierarchy documentation does not mention AuthProvider, but it exist
 
 **Location**: `.claude/CLAUDE.md:54`
 
-Documentation lists 0 routes but codebase has 10 routes.
+Documentation lists 0 routes but codebase has 2 routes.
 
-**Actual**: 10 routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account
+**Actual**: 2 routes: Portfolio, Layout
 
 **Documented**: 0 routes: 
 
-**Recommendation**: Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account
+**Recommendation**: Update line 54 to include all routes: Portfolio, Layout
 
 
 ### ℹ️ Information
@@ -100,7 +100,7 @@ Some environment variables in CLAUDE.md are not documented in README.md.
 
 ### High Priority (Warnings)
 1. Add AuthProvider to the provider hierarchy list in CLAUDE.md around line 52
-2. Update line 54 to include all routes: Home, About, Login, Signup, VerifyCode, Dashboard, OpenRouterComponent, LeetMaster, Logs, Account
+2. Update line 54 to include all routes: Portfolio, Layout
 
 ### Suggested Improvements (Info)
 1. Consider adding: Material-UI (MUI), React Router

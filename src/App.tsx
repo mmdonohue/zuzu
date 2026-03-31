@@ -17,6 +17,7 @@ import Signup from "./pages/Signup";
 import VerifyCode from "./pages/VerifyCode";
 import Account from "./pages/Account";
 import Portfolio from "./pages/Portfolio";
+import WtaCorrections from "./pages/WtaCorrections";
 
 const App: React.FC = () => {
   return (
@@ -25,76 +26,87 @@ const App: React.FC = () => {
       <Route path="/portfolio" element={<Portfolio />} />
 
       {/* Routes with Layout */}
-      <Route path="*" element={
-        <Layout>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Home message={"welcome to zuzu"} />} />
-            <Route path="/about" element={<About />} />
+      <Route
+        path="*"
+        element={
+          <Layout>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Home message={"welcome to zuzu"} />} />
+              <Route path="/about" element={<About />} />
 
-            {/* Auth routes (redirect to dashboard if already logged in) */}
-            <Route
-              path="/login"
-              element={
-                <ProtectedRoute requireAuth={false}>
-                  <Login />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <ProtectedRoute requireAuth={false}>
-                  <Signup />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/auth/verify" element={<VerifyCode />} />
+              {/* Auth routes (redirect to dashboard if already logged in) */}
+              <Route
+                path="/login"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <Login />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/signup"
+                element={
+                  <ProtectedRoute requireAuth={false}>
+                    <Signup />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/auth/verify" element={<VerifyCode />} />
 
-            {/* Protected routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/openrouter"
-              element={
-                <ProtectedRoute>
-                  <OpenRouterComponent />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/leet-master"
-              element={
-                <ProtectedRoute>
-                  <LeetMaster />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/logs"
-              element={
-                <ProtectedRoute>
-                  <Logs />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/account"
-              element={
-                <ProtectedRoute>
-                  <Account />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Layout>
-      } />
+              {/* Protected routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/openrouter"
+                element={
+                  <ProtectedRoute>
+                    <OpenRouterComponent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leet-master"
+                element={
+                  <ProtectedRoute>
+                    <LeetMaster />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/logs"
+                element={
+                  <ProtectedRoute>
+                    <Logs />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/account"
+                element={
+                  <ProtectedRoute>
+                    <Account />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/wta"
+                element={
+                  <ProtectedRoute>
+                    <WtaCorrections />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Layout>
+        }
+      />
     </Routes>
   );
 };

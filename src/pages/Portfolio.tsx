@@ -446,7 +446,7 @@ const Portfolio: React.FC = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <i data-lucide="check-circle" className="mt-0.5 w-5 h-5 text-emerald-500 flex-shrink-0"></i>
-                      <span>Cypress E2E testing integrated</span>
+                      <span>OpenRouter integration with free tier model evaluation prompt tools</span>
                     </li>
                   </ul>
 
