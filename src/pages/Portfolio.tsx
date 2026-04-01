@@ -65,7 +65,7 @@ const Portfolio: React.FC = () => {
 
       {/* Desert Images Modal */}
       {desertModalOpen && (
-        <div className="fixed top-0 right-0 bottom-20 z-50 flex items-center justify-end bg-[transparent]">
+        <div className="fixed top-0 right-0 bottom-10 z-50 flex items-center bg-[transparent]">
           <div className="relative max-w-2xl mr-8 p-4">
             <button 
               onClick={() => setDesertModalOpen(false)}
@@ -122,7 +122,7 @@ const Portfolio: React.FC = () => {
           </p>
 
           {/* Contact & Social Links */}
-          <div className="flex flex-wrap items-center gap-4 text-base font-normal">
+          <div className="flex flex-wrap items-center gap-4 text-base font-normal" style={{ minHeight: 100 }}>
             <a href="https://www.linkedin.com/in/matt-donohue-609b084/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700">
               <i data-lucide="user" className="w-5 h-5"></i>
               LinkedIn
@@ -137,6 +137,7 @@ const Portfolio: React.FC = () => {
             </a>
             <div 
               className="flex items-center gap-2 text-indiglo-300 px-4 py-2 cursor-pointer hover:text-indigo-200 transition-colors"
+              onClick={() => setDesertModalOpen(true)}
               onMouseEnter={() => setDesertModalOpen(true)}
               onMouseLeave={() => setDesertModalOpen(false)}
             >
