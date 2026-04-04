@@ -44,6 +44,7 @@ type DragInfo = {
 type GlobalCourtCorr = {
   court_primary: string | null;
   court_secondary: string | null;
+  skin_tones: string[];
 };
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -106,6 +107,15 @@ function normalizeHex(hex: string): string {
 const NEAR_BLACK_THRESHOLD = 60;
 const NEAR_WHITE_THRESHOLD = 220;
 
+const FLOWER_GOLDEN_ANGLE_DEG = 137.508;
+const FLOWER_SVG_SIZE = 400;
+const FLOWER_MARGIN_PX = 20;
+const FLOWER_BASE_PETAL_H = 44;
+const FLOWER_MIN_PETAL_H = 18;
+const FLOWER_MAX_PETAL_H = 50;
+const FLOWER_PETAL_ASPECT = 0.48;
+const FLOWER_CENTER_DOT_R = 9;
+
 function collapseNearBlack(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -127,6 +137,71 @@ function collapseNearBlack(hex: string): string {
 
 function frameFilename(p: string): string {
   return p.split("/").pop() ?? p;
+}
+
+function hexToHsvV(hex: string): number {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  return Math.max(r, g, b);
+}
+
+function samePlayerName(a: string, b: string): boolean {
+  return a.trim().toLowerCase() === b.trim().toLowerCase();
+}
+
+function propagatePlayerCorr(
+  target: PlayerCorrection,
+  oldSrc: PlayerCorrection,
+  newSrc: PlayerCorrection,
+): PlayerCorrection {
+  let result = { ...target };
+  // Newly added to outfit_add → add to target unless conflicting
+  for (const hex of newSrc.outfit_add) {
+    if (
+      !oldSrc.outfit_add.includes(hex) &&
+      !result.outfit_remove.includes(hex) &&
+      !result.outfit_add.includes(hex)
+    ) {
+      result = { ...result, outfit_add: [...result.outfit_add, hex] };
+    }
+  }
+  // Removed from outfit_add → remove from target
+  for (const hex of oldSrc.outfit_add) {
+    if (!newSrc.outfit_add.includes(hex)) {
+      result = {
+        ...result,
+        outfit_add: result.outfit_add.filter((h) => h !== hex),
+      };
+    }
+  }
+  // Newly added to outfit_remove → add to target unless conflicting
+  for (const hex of newSrc.outfit_remove) {
+    if (
+      !oldSrc.outfit_remove.includes(hex) &&
+      !result.outfit_add.includes(hex) &&
+      !result.outfit_remove.includes(hex)
+    ) {
+      result = { ...result, outfit_remove: [...result.outfit_remove, hex] };
+    }
+  }
+  // Removed from outfit_remove → remove from target
+  for (const hex of oldSrc.outfit_remove) {
+    if (!newSrc.outfit_remove.includes(hex)) {
+      result = {
+        ...result,
+        outfit_remove: result.outfit_remove.filter((h) => h !== hex),
+      };
+    }
+  }
+  return result;
+}
+
+function playerCorrChanged(a: PlayerCorrection, b: PlayerCorrection): boolean {
+  return (
+    a.outfit_add.join(",") !== b.outfit_add.join(",") ||
+    a.outfit_remove.join(",") !== b.outfit_remove.join(",")
+  );
 }
 
 function contrastColor(hex: string): string {
@@ -205,6 +280,71 @@ const Swatch: React.FC<SwatchProps> = ({
   </div>
 );
 
+// ── FlowerPalette ──────────────────────────────────────────────────────────────
+
+type FlowerPaletteProps = {
+  colors: string[];
+  centerColor?: string;
+  size?: number;
+};
+
+const FlowerPalette: React.FC<FlowerPaletteProps> = ({
+  colors,
+  centerColor = "#e0e0e0",
+  size = FLOWER_SVG_SIZE,
+}) => {
+  const center = size / 2;
+  const sorted = [...colors].sort((a, b) => hexToHsvV(b) - hexToHsvV(a));
+  const N = sorted.length;
+  if (N === 0) return null;
+
+  const petalH = Math.max(
+    FLOWER_MIN_PETAL_H,
+    Math.min(FLOWER_MAX_PETAL_H, FLOWER_BASE_PETAL_H - N * 0.6),
+  );
+  const petalW = petalH * FLOWER_PETAL_ASPECT;
+  const spiralScale = (center - FLOWER_MARGIN_PX - petalH / 2) / Math.sqrt(N);
+  const goldenRad = (FLOWER_GOLDEN_ANGLE_DEG * Math.PI) / 180;
+
+  const petals = sorted.map((hex, n) => ({
+    hex,
+    r: spiralScale * Math.sqrt(n + 1),
+    thetaDeg: (n * FLOWER_GOLDEN_ANGLE_DEG) % 360,
+    thetaRad: n * goldenRad,
+  }));
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      style={{ display: "block", margin: "0 auto" }}
+    >
+      {petals.map(({ hex, r, thetaDeg }, n) => (
+        <ellipse
+          key={n}
+          rx={petalH / 2}
+          ry={petalW / 2}
+          fill={hex}
+          stroke={`${contrastColor(hex)}30`}
+          strokeWidth={1}
+          transform={`translate(${center},${center}) rotate(${thetaDeg}) translate(${r},0)`}
+        >
+          <title>{hex}</title>
+        </ellipse>
+      ))}
+      <circle
+        cx={center}
+        cy={center}
+        r={FLOWER_CENTER_DOT_R}
+        fill={centerColor}
+        stroke="rgba(0,0,0,0.2)"
+        strokeWidth={1}
+      />
+    </svg>
+  );
+};
+
 // ── AddColorInput ──────────────────────────────────────────────────────────────
 
 const AddColorInput: React.FC<{
@@ -282,6 +422,7 @@ type PlayerSectionProps = {
   onDragStart: (info: DragInfo) => void;
   onDrop: (toPlayer: "p1" | "p2") => void;
   isDragActive: boolean;
+  globalSkinFilter: string[];
 };
 
 const PlayerSection: React.FC<PlayerSectionProps> = ({
@@ -292,6 +433,7 @@ const PlayerSection: React.FC<PlayerSectionProps> = ({
   onDragStart,
   onDrop,
   isDragActive,
+  globalSkinFilter,
 }) => {
   const corr: PlayerCorrection = {
     outfit_add: corrRaw?.outfit_add ?? [],
@@ -299,9 +441,12 @@ const PlayerSection: React.FC<PlayerSectionProps> = ({
   };
   const [dragOver, setDragOver] = useState(false);
   const [showRemoved, setShowRemoved] = useState(false);
-  const detected = player?.outfit ?? [];
+  const skinSet = new Set(globalSkinFilter.map((h) => h.toUpperCase()));
+  const detected = (player?.outfit ?? []).filter(
+    (h) => !skinSet.has(h.toUpperCase()),
+  );
   const removed = new Set(corr.outfit_remove);
-  const added = corr.outfit_add;
+  const added = corr.outfit_add.filter((h) => !skinSet.has(h.toUpperCase()));
 
   const removeDetected = (hex: string) =>
     onChange({
@@ -444,6 +589,7 @@ type VideoCardProps = {
   video: WtaVideo;
   corr: VideoCorrection;
   onChange: (c: VideoCorrection) => void;
+  globalSkinFilter: string[];
 };
 
 // ── GlobalCourtSection ─────────────────────────────────────────────────────────
@@ -819,6 +965,113 @@ const GlobalCourtSection: React.FC<{
           )}
         </div>
       )}
+      {/* Tournament skin tone filter */}
+      <div
+        style={{
+          marginTop: 14,
+          paddingTop: 14,
+          borderTop: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 8,
+          }}
+        >
+          <div style={{ fontSize: 13, fontWeight: 700, color: TEXT_PRIMARY }}>
+            Skin Tone Filter
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 400,
+                color: TEXT_DIM,
+                marginLeft: 8,
+              }}
+            >
+              — filters these colors from all outfit displays
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              const seen = new Set<string>();
+              const merged: string[] = [];
+              for (const v of videos) {
+                for (const h of v.skin_hex) {
+                  const key = h.toUpperCase();
+                  if (!seen.has(key)) {
+                    seen.add(key);
+                    merged.push(h);
+                  }
+                }
+              }
+              onChange({ ...corr, skin_tones: merged });
+            }}
+            style={{
+              padding: "3px 10px",
+              borderRadius: 4,
+              border: "1px solid rgba(255,255,255,0.4)",
+              background: "#fff",
+              color: "#000",
+              fontSize: 11,
+              fontWeight: 700,
+              cursor: "pointer",
+              marginLeft: "auto",
+              flexShrink: 0,
+            }}
+          >
+            Populate from videos
+          </button>
+          {corr.skin_tones.length > 0 && (
+            <button
+              onClick={() => onChange({ ...corr, skin_tones: [] })}
+              style={{
+                padding: "3px 10px",
+                borderRadius: 4,
+                border: "1px solid rgba(255,255,255,0.3)",
+                background: "rgba(255,255,255,0.1)",
+                color: TEXT_DIM,
+                fontSize: 11,
+                fontWeight: 700,
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        {corr.skin_tones.length > 0 ? (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {corr.skin_tones.map((h) => (
+              <Swatch
+                key={h}
+                hex={h}
+                onRemove={() =>
+                  onChange({
+                    ...corr,
+                    skin_tones: corr.skin_tones.filter((s) => s !== h),
+                  })
+                }
+              />
+            ))}
+            <AddColorInput
+              onAdd={(h) => {
+                if (!corr.skin_tones.includes(h))
+                  onChange({ ...corr, skin_tones: [...corr.skin_tones, h] });
+              }}
+              placeholder="Add #hex"
+            />
+          </div>
+        ) : (
+          <div style={{ fontSize: 11, color: TEXT_FAINT }}>
+            No skin tones set — click "Populate from videos" to auto-fill from
+            notebook detections
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -835,6 +1088,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   video,
   corr: corrRaw,
   onChange,
+  globalSkinFilter,
 }) => {
   const corr: VideoCorrection = {
     p1: {
@@ -1062,6 +1316,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           onDragStart={handleDragStart}
           onDrop={handleDrop}
           isDragActive={!!drag}
+          globalSkinFilter={globalSkinFilter}
         />
         <PlayerSection
           player={video.p2}
@@ -1071,6 +1326,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           onDragStart={handleDragStart}
           onDrop={handleDrop}
           isDragActive={!!drag}
+          globalSkinFilter={globalSkinFilter}
         />
       </div>
 
@@ -1374,10 +1630,17 @@ const TennisCourtDiagram: React.FC<{
 
 // ── PresentationCard ───────────────────────────────────────────────────────────
 
-function effectiveOutfit(player: WtaPlayer, pc: PlayerCorrection): string[] {
+function effectiveOutfit(
+  player: WtaPlayer,
+  pc: PlayerCorrection,
+  skinFilter: string[] = [],
+): string[] {
+  const skinSet = new Set(skinFilter.map((h) => h.toUpperCase()));
   return [
-    ...player.outfit.filter((h) => !pc.outfit_remove.includes(h)),
-    ...pc.outfit_add,
+    ...player.outfit.filter(
+      (h) => !pc.outfit_remove.includes(h) && !skinSet.has(h.toUpperCase()),
+    ),
+    ...pc.outfit_add.filter((h) => !skinSet.has(h.toUpperCase())),
   ];
 }
 
@@ -1386,11 +1649,12 @@ const PresentationCard: React.FC<{
   corr: VideoCorrection;
   courtPrimary: string | null;
   courtSecondary: string | null;
-}> = ({ video, corr, courtPrimary, courtSecondary }) => {
+  skinFilter: string[];
+}> = ({ video, corr, courtPrimary, courtSecondary, skinFilter }) => {
   const bg = courtPrimary ? `${courtPrimary}44` : CARD_BG;
   const border = courtSecondary ? `1px solid ${courtSecondary}bb` : CARD_BORDER;
-  const p1Colors = effectiveOutfit(video.p1, corr.p1);
-  const p2Colors = effectiveOutfit(video.p2, corr.p2);
+  const p1Colors = effectiveOutfit(video.p1, corr.p1, skinFilter);
+  const p2Colors = effectiveOutfit(video.p2, corr.p2, skinFilter);
 
   return (
     <div
@@ -1480,11 +1744,13 @@ const WtaCorrections: React.FC = () => {
   const [globalCorr, setGlobalCorr] = useState<GlobalCourtCorr>({
     court_primary: null,
     court_secondary: null,
+    skin_tones: [],
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"edit" | "present">("edit");
+  const [propagationLog, setPropagationLog] = useState<string[]>([]);
 
   useEffect(() => {
     Promise.all([
@@ -1504,6 +1770,7 @@ const WtaCorrections: React.FC = () => {
         setGlobalCorr({
           court_primary: (g.court_primary as string) ?? null,
           court_secondary: (g.court_secondary as string) ?? null,
+          skin_tones: (g.skin_tones as string[]) ?? [],
         });
       })
       .catch(() =>
@@ -1520,10 +1787,58 @@ const WtaCorrections: React.FC = () => {
     [pending],
   );
 
-  const setCorr = useCallback((vid_id: string, corr: VideoCorrection) => {
-    setSaved(false);
-    setPending((prev) => ({ ...prev, [vid_id]: corr }));
-  }, []);
+  const setCorr = useCallback(
+    (vid_id: string, corr: VideoCorrection, sourceVideo: WtaVideo) => {
+      setSaved(false);
+      setPropagationLog([]);
+      setPending((prev) => {
+        const oldCorr = normalizeCorr(prev[vid_id]);
+        const next: Corrections = { ...prev, [vid_id]: corr };
+        const propagated: string[] = [];
+
+        for (const other of videos) {
+          if (other.video_id === vid_id) continue;
+          const otherCorr = normalizeCorr(prev[other.video_id]);
+          let newP1 = otherCorr.p1;
+          let newP2 = otherCorr.p2;
+
+          for (const srcSlot of ["p1", "p2"] as const) {
+            const srcName = sourceVideo[srcSlot].name;
+            const oldSrcPlayerCorr = oldCorr[srcSlot];
+            const newSrcPlayerCorr = corr[srcSlot];
+            for (const dstSlot of ["p1", "p2"] as const) {
+              if (!samePlayerName(srcName, other[dstSlot].name)) continue;
+              const updated = propagatePlayerCorr(
+                dstSlot === "p1" ? newP1 : newP2,
+                oldSrcPlayerCorr,
+                newSrcPlayerCorr,
+              );
+              if (
+                playerCorrChanged(updated, dstSlot === "p1" ? newP1 : newP2)
+              ) {
+                if (dstSlot === "p1") newP1 = updated;
+                else newP2 = updated;
+              }
+            }
+          }
+
+          if (
+            playerCorrChanged(newP1, otherCorr.p1) ||
+            playerCorrChanged(newP2, otherCorr.p2)
+          ) {
+            next[other.video_id] = { ...otherCorr, p1: newP1, p2: newP2 };
+            propagated.push(other.video_id);
+          }
+        }
+
+        if (propagated.length > 0) {
+          Promise.resolve().then(() => setPropagationLog(propagated));
+        }
+        return next;
+      });
+    },
+    [videos],
+  );
 
   const save = async () => {
     setSaving(true);
@@ -1666,6 +1981,42 @@ const WtaCorrections: React.FC = () => {
         </div>
       </div>
 
+      {viewMode === "edit" && propagationLog.length > 0 && (
+        <div
+          style={{
+            background: "rgba(21,101,192,0.2)",
+            border: "1px solid rgba(21,101,192,0.6)",
+            borderRadius: 6,
+            padding: "7px 14px",
+            fontSize: 11,
+            color: "#90CAF9",
+            marginBottom: 14,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>
+            Auto-propagated to {propagationLog.length} other match
+            {propagationLog.length > 1 ? "es" : ""}
+          </span>
+          <button
+            onClick={() => setPropagationLog([])}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#90CAF9",
+              cursor: "pointer",
+              fontSize: 14,
+              lineHeight: 1,
+              padding: "0 4px",
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {viewMode === "edit" && (
         <>
           {/* Instructions */}
@@ -1785,20 +2136,16 @@ const WtaCorrections: React.FC = () => {
       {viewMode === "present" &&
         videos.length > 0 &&
         (() => {
-          const skinTones = new Set<string>();
-          for (const v of videos) {
-            const c = getCorr(v.video_id);
-            for (const h of [...v.skin_hex, ...c.skin_add]) {
-              skinTones.add(h.toUpperCase());
-            }
-          }
+          const skinTones = new Set<string>(
+            globalCorr.skin_tones.map((h) => h.toUpperCase()),
+          );
           const seen = new Set<string>();
           const unique: string[] = [];
           for (const v of videos) {
             const c = getCorr(v.video_id);
             for (const raw of [
-              ...effectiveOutfit(v.p1, c.p1),
-              ...effectiveOutfit(v.p2, c.p2),
+              ...effectiveOutfit(v.p1, c.p1, globalCorr.skin_tones),
+              ...effectiveOutfit(v.p2, c.p2, globalCorr.skin_tones),
             ]) {
               const h = collapseNearBlack(raw);
               const key = h.toUpperCase();
@@ -1832,15 +2179,10 @@ const WtaCorrections: React.FC = () => {
               >
                 Tournament Palette
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {unique.map((h) => (
-                  <Swatch
-                    key={h}
-                    hex={h}
-                    borderColor={globalCorr.court_primary ?? "#999"}
-                  />
-                ))}
-              </div>
+              <FlowerPalette
+                colors={unique}
+                centerColor={globalCorr.court_primary ?? "#e0e0e0"}
+              />
             </div>
           ) : null;
         })()}
@@ -1853,14 +2195,37 @@ const WtaCorrections: React.FC = () => {
             corr={getCorr(v.video_id)}
             courtPrimary={globalCorr.court_primary}
             courtSecondary={globalCorr.court_secondary}
+            skinFilter={globalCorr.skin_tones}
           />
         ) : (
-          <VideoCard
-            key={v.video_id}
-            video={v}
-            corr={getCorr(v.video_id)}
-            onChange={(c) => setCorr(v.video_id, c)}
-          />
+          <div key={v.video_id} style={{ position: "relative" }}>
+            {propagationLog.includes(v.video_id) && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  zIndex: 1,
+                  fontSize: 10,
+                  color: "#90CAF9",
+                  background: "rgba(21,101,192,0.25)",
+                  border: "1px solid rgba(21,101,192,0.5)",
+                  borderRadius: 4,
+                  padding: "2px 7px",
+                  fontWeight: 700,
+                  pointerEvents: "none",
+                }}
+              >
+                auto-updated
+              </div>
+            )}
+            <VideoCard
+              video={v}
+              corr={getCorr(v.video_id)}
+              onChange={(c) => setCorr(v.video_id, c, v)}
+              globalSkinFilter={globalCorr.skin_tones}
+            />
+          </div>
         ),
       )}
     </div>
