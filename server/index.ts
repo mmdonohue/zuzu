@@ -137,7 +137,10 @@ app.use(
 
 // Middleware
 // Build allowed origins list
-const allowedOrigins: string[] = ["http://localhost:3000"];
+const allowedOrigins: string[] = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+];
 
 // Add production frontend URL if set
 if (process.env.PRODUCTION_FRONTEND_URL) {

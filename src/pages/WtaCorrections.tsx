@@ -110,11 +110,20 @@ const NEAR_WHITE_THRESHOLD = 220;
 const FLOWER_GOLDEN_ANGLE_DEG = 137.508;
 const FLOWER_SVG_SIZE = 400;
 const FLOWER_MARGIN_PX = 20;
-const FLOWER_BASE_PETAL_H = 44;
-const FLOWER_MIN_PETAL_H = 18;
-const FLOWER_MAX_PETAL_H = 50;
+const FLOWER_BASE_PETAL_H = 62;
+const FLOWER_MIN_PETAL_H = 28;
+const FLOWER_MAX_PETAL_H = 76;
 const FLOWER_PETAL_ASPECT = 0.48;
-const FLOWER_CENTER_DOT_R = 9;
+const FLOWER_PETAL_OPACITY = 0.45;
+const FLOWER_COURT_BG_OPACITY = 0.3;
+const FLOWER_CENTER_DOT_R = 8;
+
+const BLOOM_BASE_PETAL_H = 180;
+const BLOOM_MIN_PETAL_H = 100;
+const BLOOM_MAX_PETAL_H = 220;
+const BLOOM_SPIRAL_DAMPEN = 0.55;
+const BLOOM_PETAL_OPACITY = 0.28;
+const BLOOM_SVG_SIZE = 600;
 
 function collapseNearBlack(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -139,11 +148,21 @@ function frameFilename(p: string): string {
   return p.split("/").pop() ?? p;
 }
 
-function hexToHsvV(hex: string): number {
+function hexToHsv(hex: string): [number, number, number] {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
   const g = parseInt(hex.slice(3, 5), 16) / 255;
   const b = parseInt(hex.slice(5, 7), 16) / 255;
-  return Math.max(r, g, b);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  let h = 0;
+  if (d !== 0) {
+    if (max === r) h = ((g - b) / d + 6) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h = (h / 6) * 360;
+  }
+  return [h, max === 0 ? 0 : d / max, max];
 }
 
 function samePlayerName(a: string, b: string): boolean {
@@ -285,25 +304,47 @@ const Swatch: React.FC<SwatchProps> = ({
 type FlowerPaletteProps = {
   colors: string[];
   centerColor?: string;
+  courtColor?: string;
   size?: number;
+  variant?: "spiral" | "bloom";
 };
 
 const FlowerPalette: React.FC<FlowerPaletteProps> = ({
   colors,
   centerColor = "#e0e0e0",
+  courtColor,
   size = FLOWER_SVG_SIZE,
+  variant = "spiral",
 }) => {
   const center = size / 2;
-  const sorted = [...colors].sort((a, b) => hexToHsvV(b) - hexToHsvV(a));
+  // Sort by hue first (groups like colors into arcs), then brightness descending within each hue
+  const sorted = [...colors].sort((a, b) => {
+    const [hA, , vA] = hexToHsv(a);
+    const [hB, , vB] = hexToHsv(b);
+    const hueDiff = hA - hB;
+    if (Math.abs(hueDiff) > 15) return hueDiff;
+    return vB - vA;
+  });
   const N = sorted.length;
   if (N === 0) return null;
 
-  const petalH = Math.max(
-    FLOWER_MIN_PETAL_H,
-    Math.min(FLOWER_MAX_PETAL_H, FLOWER_BASE_PETAL_H - N * 0.6),
-  );
+  const isBloom = variant === "bloom";
+  const petalH = isBloom
+    ? Math.max(
+        BLOOM_MIN_PETAL_H,
+        Math.min(BLOOM_MAX_PETAL_H, BLOOM_BASE_PETAL_H - N * 0.5),
+      )
+    : Math.max(
+        FLOWER_MIN_PETAL_H,
+        Math.min(FLOWER_MAX_PETAL_H, FLOWER_BASE_PETAL_H - N * 0.6),
+      );
   const petalW = petalH * FLOWER_PETAL_ASPECT;
-  const spiralScale = (center - FLOWER_MARGIN_PX - petalH / 2) / Math.sqrt(N);
+  const baseSpiralScale =
+    (center - FLOWER_MARGIN_PX - petalH / 2) / Math.sqrt(N);
+  const spiralScale = isBloom
+    ? baseSpiralScale * BLOOM_SPIRAL_DAMPEN
+    : baseSpiralScale;
+  const petalOpacity = isBloom ? BLOOM_PETAL_OPACITY : FLOWER_PETAL_OPACITY;
   const goldenRad = (FLOWER_GOLDEN_ANGLE_DEG * Math.PI) / 180;
 
   const petals = sorted.map((hex, n) => ({
@@ -318,29 +359,65 @@ const FlowerPalette: React.FC<FlowerPaletteProps> = ({
       width={size}
       height={size}
       viewBox={`0 0 ${size} ${size}`}
-      style={{ display: "block", margin: "0 auto" }}
+      style={{
+        display: "block",
+        margin: "0 auto",
+        width: "100%",
+        height: "auto",
+      }}
     >
-      {petals.map(({ hex, r, thetaDeg }, n) => (
+      {isBloom && (
+        <rect x={0} y={0} width={size} height={size} fill="#ffffff" rx={8} />
+      )}
+      {/* Flower-shaped court color backdrop — renders behind petals */}
+      {courtColor &&
+        !isBloom &&
+        Array.from({ length: 8 }, (_, i) => (
+          <ellipse
+            key={`bg-${i}`}
+            cx={center}
+            cy={center}
+            rx={size * 0.38}
+            ry={size * 0.13}
+            fill={courtColor}
+            fillOpacity={0.18}
+            transform={`rotate(${i * 22.5} ${center} ${center})`}
+          />
+        ))}
+      {/* Render dark (outer) first, light (inner) last so light sits on top */}
+      {[...petals].reverse().map(({ hex, r, thetaDeg }, n) => (
         <ellipse
           key={n}
           rx={petalH / 2}
           ry={petalW / 2}
           fill={hex}
-          stroke={`${contrastColor(hex)}30`}
-          strokeWidth={1}
+          fillOpacity={petalOpacity}
+          stroke={hex}
+          strokeOpacity={0.85}
+          strokeWidth={1.5}
           transform={`translate(${center},${center}) rotate(${thetaDeg}) translate(${r},0)`}
         >
           <title>{hex}</title>
         </ellipse>
       ))}
-      <circle
-        cx={center}
-        cy={center}
-        r={FLOWER_CENTER_DOT_R}
-        fill={centerColor}
-        stroke="rgba(0,0,0,0.2)"
-        strokeWidth={1}
-      />
+      {isBloom && courtColor && (
+        <ellipse
+          cx={center}
+          cy={center}
+          rx={54}
+          ry={36}
+          fill={courtColor}
+          fillOpacity={0.35}
+        />
+      )}
+      {!isBloom && (
+        <circle
+          cx={center}
+          cy={center}
+          r={FLOWER_CENTER_DOT_R}
+          fill={centerColor}
+        />
+      )}
     </svg>
   );
 };
@@ -1751,6 +1828,9 @@ const WtaCorrections: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"edit" | "present">("edit");
   const [propagationLog, setPropagationLog] = useState<string[]>([]);
+  const [paletteView, setPaletteView] = useState<"grid" | "flower" | "bloom">(
+    "flower",
+  );
 
   useEffect(() => {
     Promise.all([
@@ -2169,20 +2249,94 @@ const WtaCorrections: React.FC = () => {
             >
               <div
                 style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: "#666",
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                  marginBottom: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 14,
                 }}
               >
-                Tournament Palette
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#666",
+                    textTransform: "uppercase",
+                    letterSpacing: 1,
+                  }}
+                >
+                  Tournament Palette
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    borderRadius: 5,
+                    border: "1px solid #ddd",
+                    overflow: "hidden",
+                  }}
+                >
+                  {(["grid", "flower", "bloom"] as const).map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => setPaletteView(v)}
+                      style={{
+                        padding: "4px 14px",
+                        border: "none",
+                        background:
+                          paletteView === v ? courtPrimaryColor : "transparent",
+                        color:
+                          paletteView === v
+                            ? contrastColor(courtPrimaryColor)
+                            : "#555",
+                        fontWeight: 700,
+                        fontSize: 11,
+                        cursor: "pointer",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <FlowerPalette
-                colors={unique}
-                centerColor={globalCorr.court_primary ?? "#e0e0e0"}
-              />
+              {paletteView === "grid" && (
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 10,
+                    padding: "4px 0",
+                  }}
+                >
+                  {unique.map((h) => (
+                    <div
+                      key={h}
+                      title={h}
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: 7,
+                        background: h,
+                        border: `2px solid ${courtPrimaryColor}66`,
+                        flexShrink: 0,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+              {paletteView === "flower" && (
+                <FlowerPalette
+                  colors={unique}
+                  courtColor={globalCorr.court_primary ?? undefined}
+                />
+              )}
+              {paletteView === "bloom" && (
+                <FlowerPalette
+                  colors={unique}
+                  size={BLOOM_SVG_SIZE}
+                  variant="bloom"
+                  courtColor={globalCorr.court_primary ?? undefined}
+                />
+              )}
             </div>
           ) : null;
         })()}
