@@ -17,6 +17,7 @@ import Signup from "./pages/Signup";
 import VerifyCode from "./pages/VerifyCode";
 import Account from "./pages/Account";
 import Portfolio from "./pages/Portfolio";
+import MoxiLabs from "./pages/MoxiLabs";
 import WtaCorrections from "./pages/WtaCorrections";
 
 const App: React.FC = () => {
@@ -24,6 +25,7 @@ const App: React.FC = () => {
     <Routes>
       {/* Full-screen routes (without Layout) */}
       <Route path="/portfolio" element={<Portfolio />} />
+      <Route path="/moxilabs" element={<MoxiLabs />} />
 
       {/* Routes with Layout */}
       <Route
