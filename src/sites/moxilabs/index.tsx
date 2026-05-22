@@ -157,10 +157,10 @@ const MoxiLabs: React.FC = () => {
               <span className="flex h-2 w-2 rounded-full bg-zinc-400 mr-2" />
               Practical AI &amp; Automation
             </div>
-            <h1 className="text-4xl md:text-6xl font-medium tracking-tighter text-azure-800 leading-tight mb-6 max-w-3xl">
+            <h1 className="text-4xl md:text-6xl font-medium tracking-tighter bg-zinc-100/20 px-6 py-4 border border-text-azure-800 rounded-lg leading-tight mb-6 max-w-3xl">
               Operational modernization without the technical overwhelm.
             </h1>
-            <p className="text-base md:text-lg mb-10 max-w-2xl leading-relaxed text-azure-500 bg-zinc-800/30 px-6 py-4 rounded-lg">
+            <p className="text-base md:text-lg mb-10 max-w-2xl leading-relaxed text-azure-500 bg-zinc-800/30 px-6 py-4 border border-text-azure-800 rounded-lg">
               We help small and medium-sized businesses modernize repetitive processes using practical, approachable technology. Streamline workflows, simplify communication, and scale efficiently.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">

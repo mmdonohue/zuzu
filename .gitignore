@@ -81,4 +81,3 @@ yarn-error.log*
 .claude/plans/
 /tmp/.claude-review-trigger
 .claude/del
-.claude/diary
