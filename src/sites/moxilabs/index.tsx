@@ -1,7 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify-icon/react';
+import { fetchWithCsrf } from '../../services/api';
+import Portfolio from '../../components/Portfolio';
+import { usePortfolioData } from '../../components/Portfolio/usePortfolioData';
+import type { PortfolioItem } from '../../components/Portfolio/types';
+import moxiPortfolio from './portfolio.json';
+import parentPortfolio from '../portfolio.json';
+import MOXILABS_CONFIG from './config';
 
 const BG_IMAGE_URL = "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/variants/f27d997b-82cd-4784-b79b-449c5d13aa67/3840w.png";
+
+const BG_IMAGES = [
+  "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/variants/f27d997b-82cd-4784-b79b-449c5d13aa67/3840w.png",
+  "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/variants/e9f9955e-7c64-4ca8-b81a-604505c4863b/3840w.png",
+  "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/a18c4ab3-6e4c-43e5-a447-f73928b7dc48_3840w.webp",
+  "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/2efedcf5-e102-40e8-8cc8-8df001d46118_3840w.webp",
+];
 
 const CUSTOM_STYLES = `
   a { color: inherit; }
@@ -44,6 +59,29 @@ const CUSTOM_STYLES = `
 `;
 
 const MoxiLabs: React.FC = () => {
+  const navigate = useNavigate();
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactInterest, setContactInterest] = useState('');
+  const [contactNotes, setContactNotes] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleContactSubmit = async () => {
+    if (!contactEmail || submitStatus === 'loading') return;
+    setSubmitStatus('loading');
+    try {
+      const res = await fetchWithCsrf('/api/contact/moxilabs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: contactEmail, interest: contactInterest, notes: contactNotes }),
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Request failed');
+      setSubmitStatus('success');
+    } catch {
+      setSubmitStatus('error');
+    }
+  };
+
   useEffect(() => {
     const tailwind = document.createElement('script');
     tailwind.src = 'https://cdn.tailwindcss.com';
@@ -62,6 +100,8 @@ const MoxiLabs: React.FC = () => {
     };
   }, []);
 
+  const bgImage = useMemo(() => BG_IMAGES[Math.floor(Math.random() * BG_IMAGES.length)], []);
+  const portfolioItems = usePortfolioData(moxiPortfolio as PortfolioItem[], parentPortfolio as PortfolioItem[]);
   const maskStyle = 'linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)';
 
   return (
@@ -76,7 +116,7 @@ const MoxiLabs: React.FC = () => {
         className="fixed top-0 w-full h-screen bg-cover bg-center -z-10"
         id="aura-image" 
         style={{
-          backgroundImage: `url("${BG_IMAGE_URL}")`,
+          backgroundImage: `url("${bgImage}")`,
           maskImage: maskStyle,
           WebkitMaskImage: maskStyle,
         }}
@@ -89,13 +129,15 @@ const MoxiLabs: React.FC = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-50 w-full border-b border-white/[0.05] bg-zinc-950/50 backdrop-blur-md">
+      <nav className="relative z-50 w-full border-b border-white/[0.05] bg-zinc-950/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="text-zinc-100 font-medium tracking-tighter text-4xl uppercase">MOXI LABS AI</span>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-azure-800">
             <a href="#approach" className="hover:text-zinc-100 transition-colors">Approach</a>
             <a href="#services" className="hover:text-zinc-100 transition-colors">Services</a>
             <a href="#clients" className="hover:text-zinc-100 transition-colors">Clients</a>
+            {portfolioItems.length > 0 && <a href="#work" className="hover:text-zinc-100 transition-colors">Work</a>}
+            <button onClick={() => navigate(`${MOXILABS_CONFIG.route}/events`)} className="hover:text-zinc-100 transition-colors">Events</button>
           </div>
           <a
             href="#contact"
@@ -118,7 +160,7 @@ const MoxiLabs: React.FC = () => {
             <h1 className="text-4xl md:text-6xl font-medium tracking-tighter text-azure-800 leading-tight mb-6 max-w-3xl">
               Operational modernization without the technical overwhelm.
             </h1>
-            <p className="text-base md:text-lg mb-10 max-w-2xl leading-relaxed text-azure-500">
+            <p className="text-base md:text-lg mb-10 max-w-2xl leading-relaxed text-azure-500 bg-zinc-800/30 px-6 py-4 rounded-lg">
               We help small and medium-sized businesses modernize repetitive processes using practical, approachable technology. Streamline workflows, simplify communication, and scale efficiently.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -311,6 +353,21 @@ const MoxiLabs: React.FC = () => {
           </div>
         </section>
 
+        {/* Work / Portfolio Section */}
+        {portfolioItems.length > 0 && (
+          <section id="work" className="py-24 px-6 border-y border-white/[0.02] bg-zinc-950/20">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12 max-w-2xl mx-auto">
+                <h2 className="text-2xl md:text-3xl font-medium tracking-tight text-zinc-100 mb-4">Selected Work</h2>
+                <p className="text-base text-azure-500">
+                  Real projects. Real businesses. Practical outcomes.
+                </p>
+              </div>
+              <Portfolio items={portfolioItems} templateId={MOXILABS_CONFIG.portfolioTemplate} autoplay={MOXILABS_CONFIG.portfolioAutoplay} showNav={!MOXILABS_CONFIG.portfolioHideNav} />
+            </div>
+          </section>
+        )}
+
         {/* CTA / Contact Section */}
         <section id="contact" className="py-32 px-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900/40 via-zinc-950/0 to-zinc-950/0 pointer-events-none" />
@@ -321,19 +378,23 @@ const MoxiLabs: React.FC = () => {
             </p>
             <form className="max-w-md mx-auto flex flex-col gap-4 text-left border border-white/[0.05] p-6 rounded-2xl bg-zinc-950 shadow-2xl">
               <div className="space-y-1">
-                <label htmlFor="moxilabs-email" className="text-xs font-medium text-zinc-300">Work Email</label>
+                <label htmlFor="moxilabs-email" className="text-xs font-medium text-zinc-400">Work Email</label>
                 <input
                   type="email"
                   id="moxilabs-email"
                   placeholder="you@company.com"
+                  value={contactEmail}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setContactEmail(e.target.value)}
                   className="flex h-9 w-full rounded-md border border-zinc-800 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 text-zinc-100"
                 />
               </div>
               <div className="space-y-1">
-                <label htmlFor="moxilabs-interest" className="text-xs font-medium text-zinc-300">Primary Interest</label>
+                <label htmlFor="moxilabs-interest" className="text-xs font-medium text-zinc-400">Primary Interest</label>
                 <div className="relative">
                   <select
                     id="moxilabs-interest"
+                    value={contactInterest}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setContactInterest(e.target.value)}
                     className="flex h-9 w-full appearance-none rounded-md border border-zinc-800 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 text-zinc-300"
                   >
                     <option value="" className="bg-zinc-950">Select an area...</option>
@@ -345,13 +406,29 @@ const MoxiLabs: React.FC = () => {
                   <Icon icon="solar:alt-arrow-down-linear" className="absolute right-3 top-2.5 text-zinc-500 pointer-events-none" />
                 </div>
               </div>
+              <div className="space-y-1">
+                <label htmlFor="moxilabs-notes" className="text-xs font-medium text-zinc-400">Notes <span className="text-zinc-600">(optional)</span></label>
+                <textarea
+                  id="moxilabs-notes"
+                  placeholder="Tell us a bit about your business or the challenge you're facing..."
+                  value={contactNotes}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContactNotes(e.target.value)}
+                  rows={3}
+                  className="flex w-full rounded-md border border-zinc-800 bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 text-zinc-100 resize-none"
+                />
+              </div>
               <button
                 type="button"
-                className="mt-2 inline-flex w-full items-center justify-center rounded-md text-sm font-medium transition-colors bg-zinc-100 text-zinc-900 shadow hover:bg-zinc-200/90 h-9 px-4 py-2"
+                onClick={handleContactSubmit}
+                disabled={submitStatus === 'loading' || submitStatus === 'success'}
+                className="mt-2 inline-flex w-full items-center justify-center rounded-md text-sm font-medium transition-colors bg-zinc-100 text-zinc-900 shadow hover:bg-zinc-200/90 h-9 px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Request Consultation
+                {submitStatus === 'loading' && 'Sending...'}
+                {submitStatus === 'success' && 'Request Sent — We\'ll be in touch!'}
+                {submitStatus === 'error' && 'Something went wrong — try again'}
+                {submitStatus === 'idle' && 'Request Consultation'}
               </button>
-              <p className="text-xs text-zinc-600 text-center mt-2">Local, long-term partnerships. No pressure.</p>
+              <p className="text-xs text-zinc-400 text-center mt-2">Local, long-term partnerships. No pressure.</p>
             </form>
           </div>
         </section>

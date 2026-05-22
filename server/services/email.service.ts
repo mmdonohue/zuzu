@@ -84,12 +84,155 @@ export class EmailService {
     return this.sendEmail(email, subject, html, 'password_reset');
   }
 
+  // Send site contact form notification (generic — works for any microsite)
+  static async sendSiteContactRequest(
+    siteName: string,
+    ownerEmail: string,
+    userEmail: string,
+    interest: string,
+    notes?: string
+  ) {
+    const subject = `New Consultation Request — ${siteName}`;
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #111;">New ${siteName} Consultation Request</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold; width: 140px;">Email</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee;">${userEmail}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold;">Interest</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee;">${interest}</td>
+              </tr>
+              ${notes ? `<tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold; vertical-align: top;">Notes</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee; white-space: pre-wrap;">${notes}</td>
+              </tr>` : ''}
+            </table>
+            <p style="margin-top: 24px; color: #666; font-size: 13px;">Submitted via ${siteName} contact form.</p>
+          </div>
+        </body>
+      </html>
+    `;
+    // from must use the Mailgun-authorized domain; replyTo set to the submitter
+    // so replies go directly to the lead
+    return this.sendEmail(
+      ownerEmail,
+      subject,
+      html,
+      'site_contact',
+      undefined,
+      userEmail
+    );
+  }
+
+  // Send event registration confirmation to registrant + owner notification
+  static async sendEventRegistrationConfirmation(params: {
+    eventId: string;
+    eventTitle: string;
+    location: string | null;
+    locationUrl: string | null;
+    startAt: string;
+    registrantEmail: string;
+    registrantName: string | null;
+    registeredCount: number;
+    maxCapacity: number | null;
+    siteName: string;
+    ownerEmail: string;
+  }) {
+    const {
+      eventId, eventTitle, location, locationUrl, startAt,
+      registrantEmail, registrantName, registeredCount, maxCapacity, siteName, ownerEmail
+    } = params;
+
+    const shortId = eventId.slice(-8).toUpperCase();
+    const formattedDate = new Date(startAt).toLocaleString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      hour: 'numeric', minute: '2-digit', timeZoneName: 'short'
+    });
+    const capacityLine = maxCapacity
+      ? `${registeredCount} of ${maxCapacity} spots filled`
+      : `${registeredCount} registered`;
+
+    const confirmationHtml = `
+      <!DOCTYPE html>
+      <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #111;">You're registered — see you there!</h2>
+            <p>Hi ${registrantName || 'there'},</p>
+            <p>Your spot at <strong>${eventTitle}</strong> is confirmed.</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold; width: 140px;">Reference</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee; font-family: monospace;">#${shortId}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold;">Date</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee;">${formattedDate}</td>
+              </tr>
+              ${location ? `<tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold;">Location</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee;">
+                  ${locationUrl ? `<a href="${locationUrl}" style="color: #0066cc;">${location}</a>` : location}
+                </td>
+              </tr>` : ''}
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold;">Attendance</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee;">${capacityLine}</td>
+              </tr>
+            </table>
+            <p style="margin-top: 24px; color: #666; font-size: 13px;">Registered via ${siteName}. Reply to this email with any questions.</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    await this.sendEmail(registrantEmail, `You're registered: ${eventTitle}`, confirmationHtml, 'event_confirmation', undefined, ownerEmail);
+
+    const notifyHtml = `
+      <!DOCTYPE html>
+      <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #111;">New Registration — ${eventTitle}</h2>
+            <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold; width: 140px;">Reference</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee; font-family: monospace;">#${shortId}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold;">Name</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee;">${registrantName || '—'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold;">Email</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee;">${registrantEmail}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 12px; background: #f4f4f4; font-weight: bold;">Attendance</td>
+                <td style="padding: 8px 12px; border: 1px solid #eee;">${capacityLine}</td>
+              </tr>
+            </table>
+          </div>
+        </body>
+      </html>
+    `;
+    await this.sendEmail(ownerEmail, `New registration: ${eventTitle} (#${shortId})`, notifyHtml, 'event_registration_notify', undefined, registrantEmail);
+  }
+
   // Generic send email with database logging
   private static async sendEmail(
     recipient: string,
     subject: string,
     html: string,
-    type: string
+    type: string,
+    from?: string,
+    replyTo?: string
   ) {
     // test config
     /*
@@ -105,8 +248,9 @@ export class EmailService {
       // Send email via nodemailer
       logger.info(`Sending email: ${type} to ${recipient}`);
       const info = await transporter.sendMail({
-        from: EMAIL_CONFIG.from,
+        from: from || EMAIL_CONFIG.from,
         to: recipient,
+        replyTo: replyTo || EMAIL_CONFIG.replyTo,
         subject,
         html
       });

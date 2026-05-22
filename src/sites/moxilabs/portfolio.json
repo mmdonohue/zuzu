@@ -1,0 +1,73 @@
+[
+  {
+    "id": "splash",
+    "type": "splash",
+    "title": "MOXI LABS",
+    "subtitle": "AI for small business",
+    "image": "",
+    "gallery": [],
+    "tags": [],
+    "featured": false,
+    "css_options": { "accent": "#74e5ff", "bg_color": "#000" }
+  },
+  {
+    "id": "intro",
+    "title": "Your business is running you.",
+    "subtitle": "It doesn't have to.",
+    "text": "",
+    "image": "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=1600&q=80",
+    "gallery": [],
+    "tags": [],
+    "featured": false,
+    "css_options": { "accent": "#74e5ff" }
+  },
+  {
+    "id": "problem",
+    "title": "Too many tools. Too much admin. Not enough time.",
+    "subtitle": "Sound familiar?",
+    "text": "Most small businesses are buried in disconnected software, manual workflows, and operational chaos.",
+    "image": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1600&q=80",
+    "gallery": [],
+    "tags": [],
+    "featured": false,
+    "css_options": { "accent": "#f87171" }
+  },
+  {
+    "id": "solution",
+    "title": "Moxi Labs builds practical AI systems for small business.",
+    "subtitle": "Automation. Workflows. Operational Intelligence.",
+    "text": "We simplify operations, connect systems, and help businesses operate more independently with AI.",
+    "image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1600&q=80",
+    "gallery": [],
+    "tags": [],
+    "featured": true,
+    "css_options": { "accent": "#74e5ff" }
+  },
+  {
+    "id": "local",
+    "title": "Built in the desert. For businesses like yours.",
+    "subtitle": "Palm Springs + Coachella Valley",
+    "text": "We help local businesses use AI to simplify operations, reduce SaaS dependency, and operate more independently.",
+    "image": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=80",
+    "gallery": [],
+    "tags": [],
+    "featured": false,
+    "css_options": { "accent": "#fb923c" }
+  },
+  {
+    "id": "cta-coffee",
+    "type": "cta",
+    "title": "Join us for coffee.",
+    "subtitle": "Weekly AI + Business Roundtable",
+    "text": "Every Thursday morning at Koffi on South Palm Canyon. No sales pitch. No presentations. Just practical conversations about AI, automation, operations, and what’s actually working for local businesses.",
+    "cta_label": "Reserve Your Seat",
+    "cta_url": "/moxilabs/events",
+    "display_url": "moxilabs.ai/reserve",
+    "site_slug": "moxilabs",
+    "image": "",
+    "gallery": [],
+    "tags": [],
+    "featured": false,
+    "css_options": { "accent": "#74e5ff" }
+  }
+]

@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import useLastVisited from "./hooks/useLastVisited";
 
 // Import components
 import Layout from "./components/Layout";
@@ -17,15 +18,25 @@ import Signup from "./pages/Signup";
 import VerifyCode from "./pages/VerifyCode";
 import Account from "./pages/Account";
 import Portfolio from "./pages/Portfolio";
-import MoxiLabs from "./pages/MoxiLabs";
 import WtaCorrections from "./pages/WtaCorrections";
 
+// Microsites
+import MoxiLabs from "./sites/moxilabs";
+import MoxiLabsEvents from "./sites/moxilabs/events";
+import MoxiLabsEventDetail from "./sites/moxilabs/events/EventDetail";
+
 const App: React.FC = () => {
+  useLastVisited();
+
   return (
     <Routes>
-      {/* Full-screen routes (without Layout) */}
+      {/* Full-screen routes — ZuZu tools */}
       <Route path="/portfolio" element={<Portfolio />} />
+
+      {/* Microsites — slug-based, domain overlay added when DNS is live */}
       <Route path="/moxilabs" element={<MoxiLabs />} />
+      <Route path="/moxilabs/events" element={<MoxiLabsEvents />} />
+      <Route path="/moxilabs/events/:eventId" element={<MoxiLabsEventDetail />} />
 
       {/* Routes with Layout */}
       <Route

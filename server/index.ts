@@ -18,6 +18,9 @@ import templateRoutes from "./routes/templates.js";
 import styleGuideRoutes from "./routes/styleGuides.js";
 import leetmasterRoutes from "./routes/leetmaster.js";
 import wtaRoutes from "./routes/wta.js";
+import contactRoutes from "./routes/contact.js";
+import eventsRoutes from "./routes/events.js";
+import { siteResolver } from "./middleware/site-resolver.js";
 import { logger, httpLogger } from "./config/logger.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
 import { apiLimiter } from "./middleware/rateLimiter.middleware.js";
@@ -277,6 +280,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Resolve site context from custom domain (non-blocking)
+app.use(siteResolver);
+
 // API rate limiting
 app.use("/api", apiLimiter);
 
@@ -297,6 +303,8 @@ app.use("/api/templates", templateRoutes);
 app.use("/api/style-guides", styleGuideRoutes);
 app.use("/api/leetmaster", leetmasterRoutes);
 app.use("/api/wta", wtaRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/events", eventsRoutes);
 
 // Health check endpoint
 app.get("/health", (_req, res) => {

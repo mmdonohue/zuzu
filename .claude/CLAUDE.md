@@ -48,6 +48,103 @@ npm test
 npm run test:open
 ```
 
+## Microsite Factory
+
+ZuZu is evolving into a **microsite factory** — a single Vercel deployment that hosts branded client microsites under one codebase, shared backend, and shared infrastructure.
+
+**Pattern:** one deployment. Client points a custom domain at it. `site-resolver` middleware reads `req.hostname` → looks up `sites` table → attaches `req.site`. Frontend reads `window.location.hostname` on load → fetches site config → renders the right component tree. No redirect, no iframe.
+
+### Microsite structure
+```
+src/sites/[slug]/
+  index.tsx          ← full-screen component, registered in App.tsx OUTSIDE <Layout>
+  config.ts          ← slug, name, route, portfolioTemplate, portfolioAutoplay, portfolioHideNav, domain
+  portfolio.json     ← site-local portfolio data (falls back to src/sites/portfolio.json)
+  events/
+    index.tsx        ← /[slug]/events
+    EventDetail.tsx  ← /[slug]/events/:eventId
+```
+
+### Microsite routes in App.tsx
+Microsites are full-screen — registered **outside** `<Layout>` so they don't inherit the ZuZu header/footer:
+```tsx
+{/* Microsite routes — full screen, no Layout */}
+<Route path="/moxilabs" element={<MoxiLabs />} />
+<Route path="/moxilabs/events" element={<MoxiLabsEvents />} />
+<Route path="/moxilabs/events/:eventId" element={<MoxiLabsEventDetail />} />
+```
+
+### Portfolio component system
+```
+src/components/Portfolio/
+  index.tsx          ← <Portfolio items={} templateId={1|2|3} autoplay showNav />
+  types.ts           ← PortfolioItem: id, type ('project'|'cta'|'splash'), title, subtitle, text, link, image, gallery[], tags[], featured, css_options, cta_label, cta_url, display_url, site_slug, event_id
+  usePortfolioData.ts ← loads site-local JSON, falls back to src/sites/portfolio.json
+  PortfolioCard.tsx
+  templates/
+    Grid.tsx         ← 3-col card grid, hover lift, featured first
+    Magazine.tsx     ← featured hero + supporting grid
+    Cinematic.tsx    ← fade+slide transitions, autoplay, direction-aware, SplashSlide/CtaSlide/ProjectSlide
+```
+
+Config drives Portfolio — never hardcode templateId in JSX:
+```tsx
+import config from './config';
+<Portfolio items={portfolioItems} templateId={config.portfolioTemplate} autoplay={config.portfolioAutoplay} showNav={!config.portfolioHideNav} />
+```
+
+### Events component system
+```
+src/components/Events/
+  types.ts           ← SiteEvent, EventRegistrationPayload, EventRegistrationResult
+  useEvents.ts       ← GET /api/events/:slug, abort on unmount
+  EventCard.tsx      ← capacity bar, recurring badge
+```
+
+### Microsite API routes
+| Route | File | Notes |
+|---|---|---|
+| `POST /api/contact/:slug` | `server/routes/contact.ts` | Looks up site by slug, writes to `site_contacts`, sends email |
+| `GET /api/events/:slug` | `server/routes/events.ts` | Returns active events with `registered_count` |
+| `POST /api/events/:slug/register` | `server/routes/events.ts` | Validates capacity, unique constraint, dual confirmation emails |
+
+### Site-resolver middleware
+`server/middleware/site-resolver.ts` — reads `req.hostname`, queries `sites` table by `domain`, attaches `req.site`. Skips localhost. Non-blocking (always calls `next()`).
+
+### Microsite DB tables (migrations 005–007)
+```
+sites (id uuid, slug, domain, parent_id → sites, config jsonb)
+  → site_service_overrides (site_id, service, config jsonb)   ← per-site email/API key overrides
+  → site_contacts (site_id, email, interest, notes)           ← all lead form submissions
+  → events (site_id, template, title, rrule, start_at, max_capacity, status)
+      → event_registrations (event_id, site_id, email, name)  UNIQUE(event_id, email)
+  → site_members (site_id, user_id bigint, role, status)      ← roles: admin/partner/client_partner/client/user
+```
+
+Seeded: `zuzu` (root), `moxilabs` (child of zuzu), `Tech Over Coffee` recurring Thursday event at Koffi Palm Springs.
+
+### users table
+```sql
+users(id bigint, first_name, last_name, email, role_id bigint → roles(id), ...)
+```
+**`id` is `bigint` — not uuid.** Any FK referencing `users(id)` must use `bigint`. No `name` column — use `trim(first_name || ' ' || last_name)`.
+
+### Server dist — CRITICAL
+The server runs from `server/dist/` (compiled JS). Every new route file **must be compiled** before the server picks it up:
+```bash
+npx tsc --project ./server/tsconfig.json --noEmit  # type-check
+npx tsc --project ./server/tsconfig.json           # compile
+```
+**404 on a new route = almost always missing from dist.** Check `server/dist/routes/` first.
+
+### Supabase MCP
+Configured in `.mcp.json` at workspace root (`mcpServers` key). Uses `@supabase/mcp-server-supabase`. Requires personal access token (`sbp_...`) — not the service role key. Reload VS Code window to initialize after adding token.
+
+### Last-visited cookie
+`src/hooks/useLastVisited.ts` — sets `zuzu_last_page` cookie (SameSite=Lax, 90-day) on every route change. On reload to `/`, redirects to last visited. Excludes auth routes.
+
+---
+
 ## Architecture
 
 ### Frontend Stack

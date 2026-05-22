@@ -71,6 +71,9 @@ yarn-error.log*
 # Supabase
 .supabase
 
+# MCP config (contains API tokens)
+.mcp.json
+
 # Claude Code - Personal Settings & Generated Files
 .claude/settings.local.json
 .claude/CODEBASE_REVIEW_*.md
@@ -78,3 +81,4 @@ yarn-error.log*
 .claude/plans/
 /tmp/.claude-review-trigger
 .claude/del
+.claude/diary
