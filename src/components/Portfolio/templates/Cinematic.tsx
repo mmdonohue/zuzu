@@ -173,6 +173,24 @@ function SplashSlide({ item }: { item: PortfolioItem }) {
             {item.subtitle}
           </p>
         )}
+        {item.display_url && (
+          <p
+            className="text-sm md:text-base font-mono tracking-widest"
+            style={{
+              color: accent,
+              opacity: 0.6,
+              animation: 'urlBrighten 4s ease-out 1.5s forwards',
+            }}
+          >
+            {item.display_url}
+            <style>{`
+              @keyframes urlBrighten {
+                from { opacity: 0.6; text-shadow: none; }
+                to   { opacity: 1; text-shadow: 0 0 24px ${accent}cc, 0 0 8px ${accent}88; }
+              }
+            `}</style>
+          </p>
+        )}
       </div>
     </div>
   );
@@ -181,6 +199,16 @@ function SplashSlide({ item }: { item: PortfolioItem }) {
 function CtaSlide({ item }: { item: PortfolioItem }) {
   const accent = item.css_options?.accent ?? DEFAULT_ACCENT;
   const bg = item.css_options?.bg_color;
+
+  // Pull live event data when site_slug is set
+  const { events } = useEvents(item.site_slug ?? '');
+  const liveEvent = item.site_slug
+    ? (item.event_id ? events.find((e) => e.id === item.event_id) : events[0]) ?? null
+    : null;
+
+  const title = liveEvent?.title ?? item.title;
+  const subtitle = liveEvent ? null : item.subtitle; // subtitle comes from JSON only
+  const text = liveEvent?.description ?? item.text;
 
   return (
     <div
@@ -205,14 +233,14 @@ function CtaSlide({ item }: { item: PortfolioItem }) {
             ))}
           </div>
         )}
-        <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight">{item.title}</h2>
-        {item.subtitle && (
+        <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight">{title}</h2>
+        {subtitle && (
           <p className="text-xl md:text-2xl mt-4" style={{ color: accent }}>
-            {item.subtitle}
+            {subtitle}
           </p>
         )}
-        {item.text && (
-          <p className="text-base md:text-lg text-white/70 mt-6 leading-relaxed">{item.text}</p>
+        {text && (
+          <p className="text-base md:text-lg text-white/70 mt-6 leading-relaxed">{text}</p>
         )}
         {item.site_slug && (
           <EventInfo siteSlug={item.site_slug} eventId={item.event_id} accent={accent} />

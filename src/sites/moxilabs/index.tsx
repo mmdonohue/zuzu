@@ -102,6 +102,7 @@ const MoxiLabs: React.FC = () => {
 
   const bgImage = useMemo(() => BG_IMAGES[Math.floor(Math.random() * BG_IMAGES.length)], []);
   const portfolioItems = usePortfolioData(moxiPortfolio as PortfolioItem[], parentPortfolio as PortfolioItem[]);
+  const [hidePortfolioNav, setHidePortfolioNav] = useState<boolean>(MOXILABS_CONFIG.portfolioHideNav);
   const maskStyle = 'linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)';
 
   return (
@@ -357,13 +358,31 @@ const MoxiLabs: React.FC = () => {
         {portfolioItems.length > 0 && (
           <section id="work" className="py-24 px-6 border-y border-white/[0.02] bg-zinc-950/20">
             <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12 max-w-2xl mx-auto">
-                <h2 className="text-2xl md:text-3xl font-medium tracking-tight text-zinc-100 mb-4">Selected Work</h2>
-                <p className="text-base text-azure-500">
-                  Real projects. Real businesses. Practical outcomes.
-                </p>
+              <div className="flex items-end justify-between mb-12">
+                <div className="max-w-2xl">
+                  <h2 className="text-2xl md:text-3xl font-medium tracking-tight text-zinc-100 mb-4">Selected Work</h2>
+                  <p className="text-base text-azure-500">
+                    Real projects. Real businesses. Practical outcomes.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setHidePortfolioNav(v => !v)}
+                  className="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors shrink-0 mb-1"
+                  title={hidePortfolioNav ? 'Show navigation' : 'Hide navigation'}
+                >
+                  <span>{hidePortfolioNav ? 'Show nav' : 'Hide nav'}</span>
+                  <span
+                    className="w-8 h-4 rounded-full transition-colors relative"
+                    style={{ background: hidePortfolioNav ? '#27272a' : '#3f3f46' }}
+                  >
+                    <span
+                      className="absolute top-0.5 w-3 h-3 rounded-full transition-all"
+                      style={{ left: hidePortfolioNav ? '2px' : '18px', background: hidePortfolioNav ? '#52525b' : '#a1a1aa' }}
+                    />
+                  </span>
+                </button>
               </div>
-              <Portfolio items={portfolioItems} templateId={MOXILABS_CONFIG.portfolioTemplate} autoplay={MOXILABS_CONFIG.portfolioAutoplay} showNav={!MOXILABS_CONFIG.portfolioHideNav} />
+              <Portfolio items={portfolioItems} templateId={MOXILABS_CONFIG.portfolioTemplate} autoplay={MOXILABS_CONFIG.portfolioAutoplay} showNav={!hidePortfolioNav} />
             </div>
           </section>
         )}

@@ -2,6 +2,11 @@
 
 > Architecture, stack, and project structure live in `.claude/CLAUDE.md`. This file is session logs and hard-won gotchas only.
 
+## Milestone
+- **2026-05-22** — `moxilabs.ai` domain purchased, 2-year registration. Ready for Vercel custom domain setup.
+
+---
+
 ## Session Start Protocol
 At the start of every session: *"Read `.claude/diary/relationship.md` and `.claude/CLAUDE.md`, diff against current repo state, then we'll start."*
 
