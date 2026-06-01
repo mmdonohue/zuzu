@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import Divider from "@mui/material/Divider";
 
 import logo from "../assets/img/zuzu-logo.png";
 import { useAuth } from "@/context/AuthContext";
@@ -30,6 +32,7 @@ const publicPages = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
   { name: "Portfolio", path: "/portfolio" },
+  { name: "Moxi Labs", path: "/moxilabs" },
 ];
 
 const protectedPages = [
@@ -53,6 +56,7 @@ const Header: React.FC = () => {
   } = useBackground();
   const navigate = useNavigate();
 
+  const isAdmin = user?.role?.toLowerCase() === 'admin';
   const pages = isAuthenticated
     ? [...publicPages, ...protectedPages]
     : publicPages;
@@ -307,6 +311,13 @@ const Header: React.FC = () => {
                   <MenuItem onClick={() => handleSettingClick("Account")}>
                     <Typography textAlign="center">Account</Typography>
                   </MenuItem>
+                  {isAdmin && (
+                    <MenuItem component={RouterLink} to="/admin" onClick={handleCloseUserMenu} sx={{ color: 'primary.main' }}>
+                      <AdminPanelSettingsIcon fontSize="small" sx={{ mr: 1 }} />
+                      <Typography textAlign="center">Admin</Typography>
+                    </MenuItem>
+                  )}
+                  <Divider />
                   <MenuItem onClick={() => handleSettingClick("Logout")}>
                     <Typography textAlign="center">Logout</Typography>
                   </MenuItem>

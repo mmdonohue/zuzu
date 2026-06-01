@@ -104,7 +104,8 @@ Never hardcode `templateId`, `autoplay`, or `showNav` in JSX. Read from `config.
 - Custom domain: Vercel → site-resolver → right component tree (no DNS registered yet for moxilabs.ai)
 - `display_url` on PortfolioItem for vanity TV URLs independent of actual routing
 
-**Committed & pushed:** ✅ — `.mcp.json` token incident caught pre-push, removed from history via `git rm --cached` + `--amend`. Token should be rotated.
-- `client_partner` role for embedded vendors
+**Committed & pushed:** ✅ (x2)
+- Push 1: core build — `.mcp.json` token incident caught pre-push, removed via `git rm --cached` + `--amend`. Token rotated.
+- Push 2: domain locked (`moxilabs.ai` 2yr), live event data on CTA + splash slides, nav toggle, URL glow animation, admin notes, diary finalized
 
-**Vibe:** Exceptional. Palm Springs angle clicked immediately. The Cinematic ad with MOXI LABS splash → problem slides → desert highway → "Join us for coffee at Koffi" is genuinely good marketing. Matt: *"don't let people tell you that opus is bad at marketing. it looks really pro."*
+**Vibe:** Exceptional. Palm Springs angle clicked immediately. The Cinematic ad with MOXI LABS splash → problem slides → desert highway → "Join us for coffee at Koffi" is genuinely good marketing. Matt: *"don't let people tell you that opus is bad at marketing. it looks really pro."* Called it when brain was fried — clean exit.

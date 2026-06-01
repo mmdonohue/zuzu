@@ -30,3 +30,18 @@ export type EventRegistrationResult = {
   reference: string;
   registered_count: number;
 };
+
+export type EventTopic = {
+  id: string;
+  event_id: string;
+  site_id: string;
+  title: string;
+  description?: string;
+  text?: string;
+  image?: string;
+  up_votes: number;
+  display_order: number;
+  status: 'active' | 'draft' | 'archived';
+  created_at: string;
+  user_voted?: boolean;
+};

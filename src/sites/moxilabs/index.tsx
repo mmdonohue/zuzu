@@ -309,7 +309,7 @@ const MoxiLabs: React.FC = () => {
                 </div>
               </div>
 
-              <div className="group relative p-6 rounded-2xl border border-white/[0.05] bg-zinc-950 hover:border-zinc-700 transition-all overflow-hidden flex flex-col h-full md:col-span-2 lg:col-span-1">
+              <div className="group relative p-6 rounded-2xl border border-white/[0.05] bg-zinc-950 hover:border-zinc-700 transition-all overflow-hidden flex flex-col h-full">
                 <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10 flex flex-col h-full">
                   <Icon icon="solar:chart-square-linear" width={24} height={24} className="text-zinc-300 mb-4" />
@@ -318,7 +318,33 @@ const MoxiLabs: React.FC = () => {
                 </div>
               </div>
 
-              <div className="group relative p-6 rounded-2xl border border-white/[0.05] bg-zinc-950 hover:border-zinc-700 transition-all overflow-hidden flex flex-col h-full md:col-span-2 lg:col-span-2">
+              <div className="group relative p-6 rounded-2xl border border-white/[0.05] bg-zinc-950 hover:border-zinc-700 transition-all overflow-hidden flex flex-col h-full">
+                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative z-10 flex flex-col h-full">
+                  <Icon icon="solar:users-group-rounded-linear" width={24} height={24} className="text-zinc-300 mb-4" />
+                  <h3 className="text-base font-medium tracking-tight text-zinc-100 mb-2">Recruitment & Talent</h3>
+                  <p className="text-sm text-azure-500 mb-6 flex-grow">AI-assisted screening, sourcing pipelines, and intake automation to help you hire smarter without a full HR team.</p>
+                  <ul className="text-xs text-zinc-500 space-y-2">
+                    <li className="flex items-center gap-2"><Icon icon="solar:check-circle-linear" className="text-azure-500" /> Candidate screening workflows</li>
+                    <li className="flex items-center gap-2"><Icon icon="solar:check-circle-linear" className="text-azure-500" /> Automated outreach sequences</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="group relative p-6 rounded-2xl border border-white/[0.05] bg-zinc-950 hover:border-zinc-700 transition-all overflow-hidden flex flex-col h-full">
+                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative z-10 flex flex-col h-full">
+                  <Icon icon="solar:sort-by-time-linear" width={24} height={24} className="text-zinc-300 mb-4" />
+                  <h3 className="text-base font-medium tracking-tight text-zinc-100 mb-2">Vendor & SaaS Selection</h3>
+                  <p className="text-sm text-azure-500 mb-6 flex-grow">Stop paying for tools you don't need. We audit your stack, compare alternatives, and recommend the right tools at the right price for your stage.</p>
+                  <ul className="text-xs text-zinc-500 space-y-2">
+                    <li className="flex items-center gap-2"><Icon icon="solar:check-circle-linear" className="text-azure-500" /> SaaS cost audits</li>
+                    <li className="flex items-center gap-2"><Icon icon="solar:check-circle-linear" className="text-azure-500" /> Vendor comparison & selection</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="group relative p-6 rounded-2xl border border-white/[0.05] bg-zinc-950 hover:border-zinc-700 transition-all overflow-hidden flex flex-col h-full md:col-span-2 lg:col-span-3">
                 <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative z-10 flex flex-col h-full">
                   <Icon icon="solar:widget-linear" width={24} height={24} className="text-zinc-300 mb-4" />

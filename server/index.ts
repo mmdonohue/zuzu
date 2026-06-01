@@ -20,6 +20,7 @@ import leetmasterRoutes from "./routes/leetmaster.js";
 import wtaRoutes from "./routes/wta.js";
 import contactRoutes from "./routes/contact.js";
 import eventsRoutes from "./routes/events.js";
+import adminRoutes from "./routes/admin.js";
 import { siteResolver } from "./middleware/site-resolver.js";
 import { logger, httpLogger } from "./config/logger.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
@@ -305,6 +306,7 @@ app.use("/api/leetmaster", leetmasterRoutes);
 app.use("/api/wta", wtaRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/events", eventsRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Health check endpoint
 app.get("/health", (_req, res) => {

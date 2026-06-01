@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format, parseISO, addWeeks, isBefore, startOfDay } from 'date-fns';
 import { useEvents } from '../../../components/Events/useEvents';
 import { fetchWithCsrf } from '../../../services/api';
+import { useAuth } from '../../../context/AuthContext';
 import MOXILABS_CONFIG from '../config';
+import type { EventTopic } from '../../../components/Events/types';
 
 const BG_IMAGES = [
   "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/variants/f27d997b-82cd-4784-b79b-449c5d13aa67/3840w.png",
@@ -61,9 +63,61 @@ const MoxiLabsEventDetail: React.FC = () => {
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
   const [reference, setReference] = useState('');
   const [registeredCount, setRegisteredCount] = useState<number | null>(null);
+  const [topics, setTopics] = useState<EventTopic[]>([]);
+  const [votedTopics, setVotedTopics] = useState<Set<string>>(new Set());
+  const [votingTopicId, setVotingTopicId] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  const isAdmin = user?.role?.toLowerCase() === 'admin';
+
+  const exportTopics = () => {
+    const payload = {
+      event: events[0] ? { title: events[0].title, description: events[0].description, location: events[0].location } : null,
+      topics: topics.map(({ id, title, description, text, up_votes, display_order }) => ({
+        id, title, description, text, up_votes, display_order,
+      })),
+      exported_at: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `topics-${eventId?.slice(0, 8)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const bgImage = useMemo(() => BG_IMAGES[Math.floor(Math.random() * BG_IMAGES.length)], []);
   const maskStyle = 'linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)';
+
+  // Fetch topics when event is known
+  useEffect(() => {
+    if (!eventId) return;
+    fetch(`/api/events/${MOXILABS_CONFIG.slug}/${eventId}/topics`)
+      .then((r) => r.json())
+      .then((d: { topics: EventTopic[] }) => setTopics(d.topics ?? []))
+      .catch(() => {});
+  }, [eventId]);
+
+  const handleVote = async (topicId: string) => {
+    if (votedTopics.has(topicId) || votingTopicId) return;
+    setVotingTopicId(topicId);
+    try {
+      const res = await fetchWithCsrf(`/api/events/${MOXILABS_CONFIG.slug}/${eventId}/topics/${topicId}/vote`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      const data = await res.json() as { up_votes?: number; message?: string };
+      if (res.ok && data.up_votes != null) {
+        setTopics((prev) => prev.map((t) => t.id === topicId ? { ...t, up_votes: data.up_votes! } : t));
+        setVotedTopics((prev) => new Set(prev).add(topicId));
+      }
+    } catch {
+      // silent
+    } finally {
+      setVotingTopicId(null);
+    }
+  };
 
   useEffect(() => {
     const tailwind = document.createElement('script');
@@ -245,6 +299,71 @@ const MoxiLabsEventDetail: React.FC = () => {
               <p className="text-zinc-200 bg-zinc-200/20 leading-relaxed text-base mb-10 border-l-2 pl-4" style={{ borderColor: accent }}>
                 {event.description}
               </p>
+            )}
+
+            {/* Topics */}
+            {topics.length > 0 && (
+              <div className="mb-10">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-sm font-medium text-zinc-400 uppercase tracking-widest">Topics — Vote for what matters to you</h2>
+                  {isAdmin && (
+                    <button
+                      onClick={exportTopics}
+                      className="text-xs px-3 py-1 rounded-lg border border-white/[0.08] text-zinc-400 hover:text-zinc-100 hover:border-white/20 transition-all"
+                    >
+                      Export JSON
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-col gap-3">
+                  {topics.map((topic) => {
+                    const voted = votedTopics.has(topic.id);
+                    const voting = votingTopicId === topic.id;
+                    const maxVotes = Math.max(...topics.map((t) => t.up_votes), 1);
+                    return (
+                      <div
+                        key={topic.id}
+                        className="rounded-xl border border-white/[0.06] bg-zinc-900/40 backdrop-blur-sm p-4 flex gap-4 items-start"
+                      >
+                        {topic.image && (
+                          <img src={topic.image} alt={topic.title} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                        )}
+                        <div className="flex-grow min-w-0">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <p className="text-sm font-medium text-zinc-100">{topic.title}</p>
+                              {topic.description && (
+                                <p className="text-xs text-zinc-300 mt-0.5">{topic.description}</p>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => handleVote(topic.id)}
+                              disabled={voted || !!votingTopicId}
+                              className="flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium"
+                              style={{
+                                borderColor: voted ? accent : 'rgba(255,255,255,0.08)',
+                                color: voted ? accent : 'rgba(255,255,255,0.4)',
+                                background: voted ? `${accent}15` : 'transparent',
+                                cursor: voted ? 'default' : voting ? 'wait' : 'pointer',
+                              }}
+                            >
+                              <span>{voted ? '▲' : '△'}</span>
+                              <span>{topic.up_votes}</span>
+                            </button>
+                          </div>
+                          {/* Vote bar */}
+                          <div className="mt-2 h-0.5 rounded-full bg-white/[0.04] overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{ width: `${(topic.up_votes / maxVotes) * 100}%`, backgroundColor: accent, opacity: 0.5 }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
 
             {/* Divider */}

@@ -19,6 +19,7 @@ import VerifyCode from "./pages/VerifyCode";
 import Account from "./pages/Account";
 import Portfolio from "./pages/Portfolio";
 import WtaCorrections from "./pages/WtaCorrections";
+import Admin from "./pages/Admin";
 
 // Microsites
 import MoxiLabs from "./sites/moxilabs";
@@ -68,6 +69,14 @@ const App: React.FC = () => {
               <Route path="/auth/verify" element={<VerifyCode />} />
 
               {/* Protected routes */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/dashboard"
                 element={

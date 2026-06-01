@@ -12,7 +12,7 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
 
     const { data: site, error: siteError } = await supabase
       .from('sites')
-      .select('id')
+      .select('id, name, owner_id, config')
       .eq('slug', slug)
       .eq('active', true)
       .maybeSingle();
@@ -58,6 +58,72 @@ router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => 
   }
 });
 
+// GET /api/events/:slug/:eventId/topics
+router.get('/:slug/:eventId/topics', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { eventId } = req.params;
+
+    // Join through assignment table so topics can be reused across events
+    const { data: assignments, error } = await supabase
+      .from('event_topic_assignments')
+      .select('display_order, event_topics(*)')
+      .eq('event_id', eventId)
+      .order('display_order', { ascending: true });
+
+    const topics = (assignments || []).map((a: any) => ({ ...a.event_topics, display_order: a.display_order }));
+    const filteredTopics = topics.filter((t: any) => t.status === 'active');
+
+    if (error) throw error;
+    res.json({ topics: filteredTopics });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /api/events/:slug/:eventId/topics/:topicId/vote
+router.post('/:slug/:eventId/topics/:topicId/vote', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { topicId } = req.params;
+    const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ?? req.socket.remoteAddress ?? 'unknown';
+
+    // Check for duplicate vote
+    const { data: existing } = await supabase
+      .from('event_topic_votes')
+      .select('id')
+      .eq('topic_id', topicId)
+      .eq('ip_address', ip)
+      .maybeSingle();
+
+    if (existing) {
+      res.status(409).json({ message: 'Already voted.' });
+      return;
+    }
+
+    // Record vote
+    const { error: voteError } = await supabase
+      .from('event_topic_votes')
+      .insert({ topic_id: topicId, ip_address: ip });
+
+    if (voteError) throw voteError;
+
+    // Increment counter
+    const { data: topic, error: topicError } = await supabase
+      .from('event_topics')
+      .select('up_votes')
+      .eq('id', topicId)
+      .maybeSingle();
+
+    if (topicError || !topic) throw topicError ?? new Error('Topic not found');
+
+    const newCount = (topic.up_votes as number) + 1;
+    await supabase.from('event_topics').update({ up_votes: newCount }).eq('id', topicId);
+
+    res.json({ up_votes: newCount });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // POST /api/events/:slug/register
 router.post('/:slug/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -80,7 +146,7 @@ router.post('/:slug/register', async (req: Request, res: Response, next: NextFun
 
     const { data: site, error: siteError } = await supabase
       .from('sites')
-      .select('id, name, config')
+      .select('id, name, owner_id, config')
       .eq('slug', slug)
       .eq('active', true)
       .maybeSingle();
@@ -136,10 +202,46 @@ router.post('/:slug/register', async (req: Request, res: Response, next: NextFun
     }
 
     const newCount = registered + 1;
-    logger.info(`Event registration: ${email} → ${event.title} (${event_id}), count: ${newCount}`);
 
-    const config = site.config as { owner_email?: string };
-    const ownerEmail = config.owner_email || 'donohue.matt@gmail.com';
+    // Correlate any prior topic votes from this IP with the registrant's email
+    const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ?? req.socket.remoteAddress ?? 'unknown';
+    const { data: priorVotes } = await supabase
+      .from('event_topic_votes')
+      .select('id, topic_id')
+      .eq('ip_address', ip)
+      .is('voter_email', null);
+
+    const votedTopicIds: string[] = [];
+    if (priorVotes && priorVotes.length > 0) {
+      const voteIds = priorVotes.map((v) => v.id as string);
+      votedTopicIds.push(...priorVotes.map((v) => v.topic_id as string));
+      await supabase.from('event_topic_votes').update({ voter_email: email }).in('id', voteIds);
+    }
+
+    // Store voted topics in registration metadata
+    if (votedTopicIds.length > 0) {
+      await supabase
+        .from('event_registrations')
+        .update({ metadata: { voted_topic_ids: votedTopicIds } })
+        .eq('event_id', event_id)
+        .eq('email', email);
+    }
+
+    logger.info(`Event registration: ${email} → ${event.title} (${event_id}), count: ${newCount}, voted_topics: ${votedTopicIds.length}`);
+
+    // Resolve owner email via owner_id FK, fall back to config.owner_email, then hardcoded default
+    let ownerEmail = 'donohue.matt@gmail.com';
+    if (site.owner_id) {
+      const { data: owner } = await supabase
+        .from('users')
+        .select('email')
+        .eq('id', site.owner_id)
+        .maybeSingle();
+      if (owner?.email) ownerEmail = owner.email;
+    } else {
+      const config = site.config as { owner_email?: string };
+      if (config.owner_email) ownerEmail = config.owner_email;
+    }
 
     await EmailService.sendEventRegistrationConfirmation({
       eventId: event_id,

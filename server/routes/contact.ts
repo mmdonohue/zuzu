@@ -19,7 +19,7 @@ router.post('/:slug', async (req: Request, res: Response, next: NextFunction) =>
     // Look up site by slug
     const { data: site, error: siteError } = await supabase
       .from('sites')
-      .select('id, name, config, active')
+      .select('id, name, owner_id, config, active')
       .eq('slug', slug)
       .eq('active', true)
       .maybeSingle();
@@ -44,9 +44,19 @@ router.post('/:slug', async (req: Request, res: Response, next: NextFunction) =>
         notes: sanitizedNotes || null,
       });
 
-    // Send email notification
-    const config = site.config as { owner_email?: string; from_name?: string };
-    const ownerEmail = config.owner_email || 'donohue.matt@gmail.com';
+    // Resolve owner email via owner_id FK, fall back to config.owner_email, then hardcoded default
+    let ownerEmail = 'donohue.matt@gmail.com';
+    if (site.owner_id) {
+      const { data: owner } = await supabase
+        .from('users')
+        .select('email')
+        .eq('id', site.owner_id)
+        .maybeSingle();
+      if (owner?.email) ownerEmail = owner.email;
+    } else {
+      const config = site.config as { owner_email?: string };
+      if (config.owner_email) ownerEmail = config.owner_email;
+    }
     await EmailService.sendSiteContactRequest(site.name, ownerEmail, email, sanitizedInterest, sanitizedNotes);
 
     res.json({ success: true });
