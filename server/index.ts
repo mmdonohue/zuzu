@@ -47,16 +47,16 @@ app.use(helmet());
 // Cookie parser
 app.use(cookieParser());
 
-// Ensure logs directory exists at project root
-const logsDir = path.join(process.cwd(), "logs");
-console.log("Logs directory path:", logsDir);
-
-if (!fs.existsSync(logsDir)) {
-  console.log("Creating logs directory...");
-  fs.mkdirSync(logsDir, { recursive: true });
-  console.log("Logs directory created");
-} else {
-  console.log("Logs directory already exists");
+// Ensure logs directory exists at project root (skipped on Vercel — read-only filesystem)
+if (!process.env.VERCEL) {
+  const logsDir = path.join(process.cwd(), "logs");
+  try {
+    if (!fs.existsSync(logsDir)) {
+      fs.mkdirSync(logsDir, { recursive: true });
+    }
+  } catch (_e) {
+    console.warn("Could not create logs directory:", logsDir);
+  }
 }
 
 // Morgan logger setup - custom format that outputs to log4js
@@ -326,7 +326,11 @@ app.use(csrfErrorHandler);
 // Centralized error handler (must be last)
 app.use(errorHandler);
 
-// Start the server
+// Export app for Vercel serverless
+export { app };
+
+// Start the server (skipped in Vercel serverless environment)
+if (!process.env.VERCEL) {
 app.listen(PORT, () => {
   console.log(
     "/********************************* SERVER *********************************************/",
@@ -338,6 +342,5 @@ app.listen(PORT, () => {
   );
   // Test that logging is working
   logger.info("Test log entry - server started successfully");
-  logger.warn("Test warning log");
-  logger.error("Test error log");
 });
+}
