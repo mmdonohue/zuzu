@@ -132,7 +132,10 @@ const MoxiLabs: React.FC = () => {
       {/* Navigation */}
       <nav className="relative z-50 w-full border-b border-white/[0.05] bg-zinc-950/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-zinc-100 font-medium tracking-tighter text-4xl uppercase">MOXI LABS AI</span>
+          <div className="flex items-center gap-4">
+            <a href="/" className="text-zinc-500 hover:text-zinc-300 text-xs tracking-widest uppercase transition-colors">← ZuZu</a>
+            <span className="text-zinc-100 font-medium tracking-tighter text-4xl uppercase">MOXI LABS AI</span>
+          </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-azure-800">
             <a href="#approach" className="hover:text-zinc-100 transition-colors">Approach</a>
             <a href="#services" className="hover:text-zinc-100 transition-colors">Services</a>
