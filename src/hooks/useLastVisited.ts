@@ -21,12 +21,17 @@ const useLastVisited = (): void => {
   const navigate = useNavigate();
   const didRedirect = useRef(false);
 
-  // On initial mount: redirect from '/' to last visited page if one exists
+  // On initial mount: redirect from '/' to last visited page only on fresh external load
   useEffect(() => {
     if (didRedirect.current) return;
     didRedirect.current = true;
 
     if (location.pathname !== '/') return;
+
+    // If the user came from within the same site, they navigated to '/' intentionally — don't redirect
+    const referrer = document.referrer;
+    const isInternalNavigation = referrer && new URL(referrer).hostname === window.location.hostname;
+    if (isInternalNavigation) return;
 
     const last = readCookie();
     if (last && last !== '/' && !EXCLUDED_PATHS.includes(last)) {
