@@ -23,9 +23,14 @@ const {
 } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET || 'your-csrf-secret-change-in-production',
   getSessionIdentifier: (req: Request) => {
-    // Use the access token cookie as session identifier
-    // This ties CSRF protection to the user's session
-    return req.cookies?.accessToken || req.ip || 'anonymous';
+    // Use the access token cookie as session identifier when available.
+    // Fall back to the real client IP (from x-forwarded-for on Vercel/proxies)
+    // rather than req.ip, which is the internal Lambda IP on Vercel and
+    // changes between invocations — causing token mismatch on login.
+    const realIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim()
+      || (req.headers['x-real-ip'] as string)
+      || 'session';
+    return req.cookies?.accessToken || realIp;
   },
   cookieName: 'x-csrf-token',
   cookieOptions: {
