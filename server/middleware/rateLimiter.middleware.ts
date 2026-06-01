@@ -12,7 +12,7 @@ export const apiLimiter = rateLimit({
   validate: {
     ip: false,
     trustProxy: false,
-    forwardedHeader: false,
+    xForwardedForHeader: false,
   },
   handler: (req, res) => {
     res.status(429).json({
@@ -33,7 +33,7 @@ export const loginLimiter = rateLimit({
   validate: {
     ip: false,
     trustProxy: false,
-    forwardedHeader: false,
+    xForwardedForHeader: false,
   },
   handler: (req, res) => {
     res.status(429).json({
@@ -53,7 +53,7 @@ export const codeLimiter = rateLimit({
   validate: {
     ip: false,
     trustProxy: false,
-    forwardedHeader: false,
+    xForwardedForHeader: false,
   },
   handler: (req, res) => {
     res.status(429).json({
@@ -73,7 +73,7 @@ export const passwordResetLimiter = rateLimit({
   validate: {
     ip: false,
     trustProxy: false,
-    forwardedHeader: false,
+    xForwardedForHeader: false,
   },
   handler: (req, res) => {
     res.status(429).json({
@@ -93,7 +93,7 @@ export const enhancementLimiter = rateLimit({
   validate: {
     ip: false,
     trustProxy: false,
-    forwardedHeader: false,
+    xForwardedForHeader: false,
   },
   handler: (req, res) => {
     res.status(429).json({
@@ -114,7 +114,7 @@ export const problemGenerationLimiter = rateLimit({
   validate: {
     ip: false,
     trustProxy: false,
-    forwardedHeader: false,
+    xForwardedForHeader: false,
   },
   handler: (req, res) => {
     res.status(429).json({
