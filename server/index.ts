@@ -144,6 +144,7 @@ app.use(
 const allowedOrigins: string[] = [
   "http://localhost:3000",
   "http://localhost:3001",
+  "https://zuzuapp.vercel.app",
 ];
 
 // Add production frontend URL if set
