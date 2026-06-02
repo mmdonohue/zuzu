@@ -1,13 +1,13 @@
 {
-  "lastUpdated": "2026-04-19 05:47 UTC",
+  "lastUpdated": "2026-06-02 18:05 UTC",
   "overallStatus": "warning",
   "overallStatusDisplay": "\u26a0\ufe0f WARNING",
   "overallHealthScore": 98,
   "overallMetrics": {
     "critical": 0,
-    "warnings": 2,
+    "warnings": 3,
     "info": 3,
-    "total": 5
+    "total": 6
   },
   "reviews": [
     {
@@ -43,15 +43,15 @@
     {
       "category": "docs",
       "displayName": "Docs",
-      "lastUpdated": "2026-04-19 05:47 UTC",
+      "lastUpdated": "2026-06-02 18:05 UTC",
       "status": "warning",
       "statusDisplay": "\u26a0\ufe0f WARNING",
-      "healthScore": 91,
+      "healthScore": 88,
       "metrics": {
         "critical": 0,
-        "warnings": 2,
+        "warnings": 3,
         "info": 3,
-        "total": 5
+        "total": 6
       },
       "findings": [
         {
@@ -71,10 +71,22 @@
           "issue": "Incomplete routing documentation",
           "file": ".claude/CLAUDE.md",
           "line": 54,
-          "description": "Documentation lists 0 routes but codebase has 2 routes.",
-          "actual": "2 routes: Portfolio, Layout",
+          "description": "Documentation lists 0 routes but codebase has 5 routes.",
+          "actual": "5 routes: Portfolio, MoxiLabs, MoxiLabsEvents, MoxiLabsEventDetail, Layout",
           "documented": "0 routes: ",
-          "recommendation": "Update line 54 to include all routes: Portfolio, Layout",
+          "recommendation": "Update line 54 to include all routes: Portfolio, MoxiLabs, MoxiLabsEvents, MoxiLabsEventDetail, Layout",
+          "category": "docs",
+          "categoryDisplay": "Docs"
+        },
+        {
+          "severity": "warning",
+          "issue": "Missing /api/auth in backend routes documentation",
+          "file": ".claude/CLAUDE.md",
+          "line": 72,
+          "description": "The backend routes section does not mention /api/auth endpoint.",
+          "actual": "Routes include: /api, /api, /api, /api/auth, /api, /api/openrouter, /api/logs, /api/review, /api/templates, /api/style-guides, /api/leetmaster, /api/wta, /api/contact, /api/events, /api/admin",
+          "documented": "Routes listed do not include /api/auth",
+          "recommendation": "Add /api/auth to the backend routes list",
           "category": "docs",
           "categoryDisplay": "Docs"
         },
@@ -177,10 +189,22 @@
       "issue": "Incomplete routing documentation",
       "file": ".claude/CLAUDE.md",
       "line": 54,
-      "description": "Documentation lists 0 routes but codebase has 2 routes.",
-      "actual": "2 routes: Portfolio, Layout",
+      "description": "Documentation lists 0 routes but codebase has 5 routes.",
+      "actual": "5 routes: Portfolio, MoxiLabs, MoxiLabsEvents, MoxiLabsEventDetail, Layout",
       "documented": "0 routes: ",
-      "recommendation": "Update line 54 to include all routes: Portfolio, Layout",
+      "recommendation": "Update line 54 to include all routes: Portfolio, MoxiLabs, MoxiLabsEvents, MoxiLabsEventDetail, Layout",
+      "category": "docs",
+      "categoryDisplay": "Docs"
+    },
+    {
+      "severity": "warning",
+      "issue": "Missing /api/auth in backend routes documentation",
+      "file": ".claude/CLAUDE.md",
+      "line": 72,
+      "description": "The backend routes section does not mention /api/auth endpoint.",
+      "actual": "Routes include: /api, /api, /api, /api/auth, /api, /api/openrouter, /api/logs, /api/review, /api/templates, /api/style-guides, /api/leetmaster, /api/wta, /api/contact, /api/events, /api/admin",
+      "documented": "Routes listed do not include /api/auth",
+      "recommendation": "Add /api/auth to the backend routes list",
       "category": "docs",
       "categoryDisplay": "Docs"
     },

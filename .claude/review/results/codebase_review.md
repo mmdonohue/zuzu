@@ -2,16 +2,16 @@
 
 ## Docs Review
 
-**Last Updated**: 2026-04-19 05:47 UTC
+**Last Updated**: 2026-06-02 18:05 UTC
 **Status**: ⚠️ WARNING
-**Health Score**: 91/100
+**Health Score**: 88/100
 
 | Metric | Count |
 |--------|-------|
 | Critical Issues | 0 |
-| Warnings | 2 |
+| Warnings | 3 |
 | Info | 3 |
-| **Total Findings** | **5** |
+| **Total Findings** | **6** |
 
 **Detailed Report**: [codebase_review_docs.md](./codebase_review_docs.md)
 

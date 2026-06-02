@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Session Start Protocol
+
+**At the start of every session, do this first:**
+1. Read this file (`CLAUDE.md`) — full project architecture, stack, conventions, and gotchas
+2. Read `.claude/diary/relationship.md` — session log, current state, hard-won gotchas, and working relationship notes
+
+Do not write code until both files have been read.
+
 ## Project Overview
 
 ZuZu is a full-stack React application scaffold that integrates multiple modern web technologies. It consists of a TypeScript/React frontend with MUI components and Tailwind CSS, and an Express backend server.

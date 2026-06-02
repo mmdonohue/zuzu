@@ -1,9 +1,9 @@
 # Codebase Review Report
 
-**Generated**: 2026-04-19 05:47:55 UTC
+**Generated**: 2026-06-02 18:05:20 UTC
 **Review Version**: 1.0.0
-**Commit**: c270c99 (main)
-**Total Findings**: 5
+**Commit**: 30d42ce (main)
+**Total Findings**: 6
 
 
 ---
@@ -14,7 +14,7 @@
 
 | Category | Status | Critical | Warning | Info |
 |----------|--------|----------|---------|------|
-| Docs | ⚠️ | 0 | 2 | 3 |
+| Docs | ⚠️ | 0 | 3 | 3 |
 
 
 ---
@@ -39,13 +39,25 @@ The provider hierarchy documentation does not mention AuthProvider, but it exist
 
 **Location**: `.claude/CLAUDE.md:54`
 
-Documentation lists 0 routes but codebase has 2 routes.
+Documentation lists 0 routes but codebase has 5 routes.
 
-**Actual**: 2 routes: Portfolio, Layout
+**Actual**: 5 routes: Portfolio, MoxiLabs, MoxiLabsEvents, MoxiLabsEventDetail, Layout
 
 **Documented**: 0 routes: 
 
-**Recommendation**: Update line 54 to include all routes: Portfolio, Layout
+**Recommendation**: Update line 54 to include all routes: Portfolio, MoxiLabs, MoxiLabsEvents, MoxiLabsEventDetail, Layout
+
+#### Missing /api/auth in backend routes documentation
+
+**Location**: `.claude/CLAUDE.md:72`
+
+The backend routes section does not mention /api/auth endpoint.
+
+**Actual**: Routes include: /api, /api, /api, /api/auth, /api, /api/openrouter, /api/logs, /api/review, /api/templates, /api/style-guides, /api/leetmaster, /api/wta, /api/contact, /api/events, /api/admin
+
+**Documented**: Routes listed do not include /api/auth
+
+**Recommendation**: Add /api/auth to the backend routes list
 
 
 ### ℹ️ Information
@@ -91,7 +103,7 @@ Some environment variables in CLAUDE.md are not documented in README.md.
 
 - **Docs Checked**: 5
 - **Claims Verified**: 10
-- **Discrepancies**: 5
+- **Discrepancies**: 6
 
 
 ---
@@ -100,7 +112,8 @@ Some environment variables in CLAUDE.md are not documented in README.md.
 
 ### High Priority (Warnings)
 1. Add AuthProvider to the provider hierarchy list in CLAUDE.md around line 52
-2. Update line 54 to include all routes: Portfolio, Layout
+2. Update line 54 to include all routes: Portfolio, MoxiLabs, MoxiLabsEvents, MoxiLabsEventDetail, Layout
+3. Add /api/auth to the backend routes list
 
 ### Suggested Improvements (Info)
 1. Consider adding: Material-UI (MUI), React Router
@@ -112,15 +125,15 @@ Some environment variables in CLAUDE.md are not documented in README.md.
 
 ## Review Metrics
 
-### Health Score: 91/100
+### Health Score: 88/100
 
 **Score Breakdown**:
 - Base Score: 100
 - Critical Issues: -0 (0 × 10)
-- Warnings: -6 (2 × 3)
+- Warnings: -9 (3 × 3)
 - Info: -3 (3 × 1)
-- **Final Score**: 91
+- **Final Score**: 88
 
 ### Category Breakdown
 
-- **Docs**: 5 findings (0 critical, 2 warnings, 3 info)
+- **Docs**: 6 findings (0 critical, 3 warnings, 3 info)

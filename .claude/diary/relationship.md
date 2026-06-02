@@ -110,3 +110,18 @@ Never hardcode `templateId`, `autoplay`, or `showNav` in JSX. Read from `config.
 
 **Vibe:** Exceptional. Palm Springs angle clicked immediately. The Cinematic ad with MOXI LABS splash → problem slides → desert highway → "Join us for coffee at Koffi" is genuinely good marketing. Matt: *"don't let people tell you that opus is bad at marketing. it looks really pro."* Called it when brain was fried — clean exit.
 
+---
+
+### Jun 2, 2026 — Session 2
+
+**Shipped:**
+- Fixed Vercel 404 on `/api/csrf-token` — Vercel's file-based routing wasn't routing sub-paths to `api/index.ts`. Added `{ "source": "/api/:path*", "destination": "/api/index.ts" }` rewrite to `vercel.json`.
+
+**Architectural gotchas:**
+- Vercel file-based routing: without an explicit rewrite, `/api/csrf-token` 404s because Vercel looks for `api/csrf-token.ts` — not `api/index.ts`. The fix: add `/api/:path*` → `/api/index.ts` rewrite before the SPA fallback rewrite.
+
+**Committed & pushed:** ✅
+- `fix: route all /api/* requests to Express handler in Vercel`
+
+**Vibe:** Quick targeted fix. In and out.
+

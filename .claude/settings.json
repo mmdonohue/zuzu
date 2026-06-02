@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/usr/bin/say 'Zuzu is online and ready for your command' -v Zarvox"
+            "command": "/usr/bin/say 'Zuzu is ready for a new session' -v Zarvox"
           }
         ]
       }

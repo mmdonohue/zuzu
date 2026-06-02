@@ -1,5 +1,6 @@
 // Vercel serverless entry point — routes all /api/* requests to the Express app
-// Import from compiled dist (built by `npm run build` before Vercel deploys)
-import { app } from '../server/dist/index.js';
+// server/dist/index.js is CommonJS — use require, not ESM import
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { app } = require("../server/dist/index");
 
-export default app;
+module.exports = app;
