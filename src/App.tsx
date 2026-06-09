@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import useLastVisited from "./hooks/useLastVisited";
+import useHostnameRouter from "./hooks/useHostnameRouter";
 
 // Import components
 import Layout from "./components/Layout";
@@ -28,6 +29,7 @@ import MoxiLabsEventDetail from "./sites/moxilabs/events/EventDetail";
 
 const App: React.FC = () => {
   useLastVisited();
+  useHostnameRouter();
 
   return (
     <Routes>
@@ -37,7 +39,10 @@ const App: React.FC = () => {
       {/* Microsites — slug-based, domain overlay added when DNS is live */}
       <Route path="/moxilabs" element={<MoxiLabs />} />
       <Route path="/moxilabs/events" element={<MoxiLabsEvents />} />
-      <Route path="/moxilabs/events/:eventId" element={<MoxiLabsEventDetail />} />
+      <Route
+        path="/moxilabs/events/:eventId"
+        element={<MoxiLabsEventDetail />}
+      />
 
       {/* Routes with Layout */}
       <Route
