@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Session Start Protocol
 
 **At the start of every session, do this first:**
+
 1. Read this file (`CLAUDE.md`) — full project architecture, stack, conventions, and gotchas
 2. Read `.claude/diary/relationship.md` — session log, current state, hard-won gotchas, and working relationship notes
 
@@ -63,6 +64,7 @@ ZuZu is evolving into a **microsite factory** — a single Vercel deployment tha
 **Pattern:** one deployment. Client points a custom domain at it. `site-resolver` middleware reads `req.hostname` → looks up `sites` table → attaches `req.site`. Frontend reads `window.location.hostname` on load → fetches site config → renders the right component tree. No redirect, no iframe.
 
 ### Microsite structure
+
 ```
 src/sites/[slug]/
   index.tsx          ← full-screen component, registered in App.tsx OUTSIDE <Layout>
@@ -74,7 +76,9 @@ src/sites/[slug]/
 ```
 
 ### Microsite routes in App.tsx
+
 Microsites are full-screen — registered **outside** `<Layout>` so they don't inherit the ZuZu header/footer:
+
 ```tsx
 {/* Microsite routes — full screen, no Layout */}
 <Route path="/moxilabs" element={<MoxiLabs />} />
@@ -83,6 +87,7 @@ Microsites are full-screen — registered **outside** `<Layout>` so they don't i
 ```
 
 ### Portfolio component system
+
 ```
 src/components/Portfolio/
   index.tsx          ← <Portfolio items={} templateId={1|2|3} autoplay showNav />
@@ -96,12 +101,19 @@ src/components/Portfolio/
 ```
 
 Config drives Portfolio — never hardcode templateId in JSX:
+
 ```tsx
-import config from './config';
-<Portfolio items={portfolioItems} templateId={config.portfolioTemplate} autoplay={config.portfolioAutoplay} showNav={!config.portfolioHideNav} />
+import config from "./config";
+<Portfolio
+  items={portfolioItems}
+  templateId={config.portfolioTemplate}
+  autoplay={config.portfolioAutoplay}
+  showNav={!config.portfolioHideNav}
+/>;
 ```
 
 ### Events component system
+
 ```
 src/components/Events/
   types.ts           ← SiteEvent, EventRegistrationPayload, EventRegistrationResult
@@ -110,16 +122,53 @@ src/components/Events/
 ```
 
 ### Microsite API routes
-| Route | File | Notes |
-|---|---|---|
-| `POST /api/contact/:slug` | `server/routes/contact.ts` | Looks up site by slug, writes to `site_contacts`, sends email |
-| `GET /api/events/:slug` | `server/routes/events.ts` | Returns active events with `registered_count` |
-| `POST /api/events/:slug/register` | `server/routes/events.ts` | Validates capacity, unique constraint, dual confirmation emails |
+
+| Route                             | File                       | Notes                                                           |
+| --------------------------------- | -------------------------- | --------------------------------------------------------------- |
+| `POST /api/contact/:slug`         | `server/routes/contact.ts` | Looks up site by slug, writes to `site_contacts`, sends email   |
+| `GET /api/events/:slug`           | `server/routes/events.ts`  | Returns active events with `registered_count`                   |
+| `POST /api/events/:slug/register` | `server/routes/events.ts`  | Validates capacity, unique constraint, dual confirmation emails |
+
+### Adding a custom domain to a microsite
+
+**Three-part checklist — all three required:**
+
+**1. Vercel** — zuzu project → Settings → Domains → add the apex domain (e.g. `moxilabs.ai`) and `www` variant. Vercel generates SSL automatically once DNS resolves.
+
+**2. DNS** (Squarespace Domains or registrar):
+
+- Delete any existing A records for `@` pointing to Squarespace
+- Add: A record `@` → `76.76.21.21`
+- Add: CNAME `www` → `cname.vercel-dns.com`
+- Disable any Squarespace web forwarding — it conflicts with custom A records
+- Apex domains cannot use CNAME — use A record only
+
+**3. Code** — two places:
+
+a) `src/hooks/useHostnameRouter.ts` — add the new hostname:
+
+```ts
+const HOSTNAME_TO_PREFIX: Record<string, string> = {
+  "moxilabs.ai": "/moxilabs",
+  "www.moxilabs.ai": "/moxilabs",
+  // add new site here
+};
+```
+
+b) `src/hooks/useLastVisited.ts` — add the new hostname to `MICROSITE_HOSTNAMES` so the last-visited ZuZu redirect doesn't fire on the microsite domain:
+
+```ts
+const MICROSITE_HOSTNAMES = new Set(["moxilabs.ai", "www.moxilabs.ai"]);
+```
+
+c) `server/index.ts` — add the new domain to `allowedOrigins` for CORS.
 
 ### Site-resolver middleware
+
 `server/middleware/site-resolver.ts` — reads `req.hostname`, queries `sites` table by `domain`, attaches `req.site`. Skips localhost. Non-blocking (always calls `next()`).
 
 ### Microsite DB tables (migrations 005–007)
+
 ```
 sites (id uuid, slug, domain, parent_id → sites, config jsonb)
   → site_service_overrides (site_id, service, config jsonb)   ← per-site email/API key overrides
@@ -132,23 +181,30 @@ sites (id uuid, slug, domain, parent_id → sites, config jsonb)
 Seeded: `zuzu` (root), `moxilabs` (child of zuzu), `Tech Over Coffee` recurring Thursday event at Koffi Palm Springs.
 
 ### users table
+
 ```sql
 users(id bigint, first_name, last_name, email, role_id bigint → roles(id), ...)
 ```
+
 **`id` is `bigint` — not uuid.** Any FK referencing `users(id)` must use `bigint`. No `name` column — use `trim(first_name || ' ' || last_name)`.
 
 ### Server dist — CRITICAL
+
 The server runs from `server/dist/` (compiled JS). Every new route file **must be compiled** before the server picks it up:
+
 ```bash
 npx tsc --project ./server/tsconfig.json --noEmit  # type-check
 npx tsc --project ./server/tsconfig.json           # compile
 ```
+
 **404 on a new route = almost always missing from dist.** Check `server/dist/routes/` first.
 
 ### Supabase MCP
+
 Configured in `.mcp.json` at workspace root (`mcpServers` key). Uses `@supabase/mcp-server-supabase`. Requires personal access token (`sbp_...`) — not the service role key. Reload VS Code window to initialize after adding token.
 
 ### Last-visited cookie
+
 `src/hooks/useLastVisited.ts` — sets `zuzu_last_page` cookie (SameSite=Lax, 90-day) on every route change. On reload to `/`, redirects to last visited. Excludes auth routes.
 
 ---

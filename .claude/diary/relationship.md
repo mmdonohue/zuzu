@@ -154,3 +154,21 @@ Never hardcode `templateId`, `autoplay`, or `showNav` in JSX. Read from `config.
 - `api/index.ts` must stay CommonJS (`require`/`module.exports`) — `server/dist/index.js` is CJS and Node.js ESM can't do named imports from CJS. ESM default import (`import serverDist from ...`) would work but named destructuring (`import { app }`) silently fails.
 
 **Vibe:** Login confirmed working after revert.
+
+---
+
+### Jun 9, 2026 — Session 3
+
+**Shipped:**
+
+- `src/hooks/useHostnameRouter.ts` — detects hostname on load, redirects to microsite prefix (e.g. `moxilabs.ai` → `/moxilabs`)
+- `src/hooks/useLastVisited.ts` — skip last-visited ZuZu redirect when on a microsite hostname (`MICROSITE_HOSTNAMES` set)
+- `moxilabs.ai` DNS wired: A record `@` → `76.76.21.21`, CNAME `www` → `cname.vercel-dns.com` (Squarespace registrar)
+- Vercel custom domain added, SSL cert provisioned
+- CLAUDE.md — added "Adding a custom domain to a microsite" checklist (Vercel + DNS + 3 code touchpoints)
+
+**Bugfix:**
+
+- `api/index.ts` ESM regression: `import { app }` from CJS module fails in Node.js ESM loader. Reverted to `const { app } = require(...)` + `module.exports = app`.
+
+**Vibe:** Everything clicked. DNS → Vercel → hostname hook all worked first try after deploy. Matt: _"it's like, what if shit worked the way I imagine it to and then it does."_
