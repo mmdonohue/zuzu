@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { format, parseISO, addWeeks, isBefore, startOfDay } from 'date-fns';
-import { useEvents } from '../../../components/Events/useEvents';
-import { fetchWithCsrf } from '../../../services/api';
-import { useAuth } from '../../../context/AuthContext';
-import MOXILABS_CONFIG from '../config';
-import type { EventTopic } from '../../../components/Events/types';
+import React, { useEffect, useMemo, useState } from "react";
+import { Icon } from "@iconify-icon/react";
+import { useNavigate, useParams } from "react-router-dom";
+import { format, parseISO, addWeeks, isBefore } from "date-fns";
+import { useEvents } from "../../../components/Events/useEvents";
+import { fetchWithCsrf } from "../../../services/api";
+import { useAuth } from "../../../context/AuthContext";
+import MOXILABS_CONFIG from "../config";
+import type { EventTopic } from "../../../components/Events/types";
 
 const BG_IMAGES = [
   "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/variants/f27d997b-82cd-4784-b79b-449c5d13aa67/3840w.png",
@@ -28,12 +29,12 @@ const CUSTOM_STYLES = `
   }
 `;
 
-const ACCENT = '#74e5ff';
+const ACCENT = "#74e5ff";
 
 function getNextOccurrence(startAt: string, rrule?: string): Date {
   const base = parseISO(startAt);
   if (!rrule) return base;
-  const today = startOfDay(new Date());
+  const today = new Date();
   let next = base;
   while (isBefore(next, today)) {
     next = addWeeks(next, 1);
@@ -42,53 +43,78 @@ function getNextOccurrence(startAt: string, rrule?: string): Date {
 }
 
 function formatRecurring(rrule: string): string {
-  if (rrule.includes('BYDAY=TH')) return 'Every Thursday';
-  if (rrule.includes('BYDAY=MO')) return 'Every Monday';
-  if (rrule.includes('BYDAY=TU')) return 'Every Tuesday';
-  if (rrule.includes('BYDAY=WE')) return 'Every Wednesday';
-  if (rrule.includes('BYDAY=FR')) return 'Every Friday';
-  if (rrule.includes('FREQ=WEEKLY')) return 'Weekly';
-  return 'Recurring';
+  if (rrule.includes("BYDAY=TH")) return "Every Thursday";
+  if (rrule.includes("BYDAY=MO")) return "Every Monday";
+  if (rrule.includes("BYDAY=TU")) return "Every Tuesday";
+  if (rrule.includes("BYDAY=WE")) return "Every Wednesday";
+  if (rrule.includes("BYDAY=FR")) return "Every Friday";
+  if (rrule.includes("FREQ=WEEKLY")) return "Weekly";
+  return "Recurring";
 }
 
-type SubmitStatus = 'idle' | 'loading' | 'success' | 'error' | 'full' | 'duplicate';
+type SubmitStatus =
+  | "idle"
+  | "loading"
+  | "success"
+  | "error"
+  | "full"
+  | "duplicate";
 
 const MoxiLabsEventDetail: React.FC = () => {
   const navigate = useNavigate();
   const { eventId } = useParams<{ eventId: string }>();
   const { events, loading, error } = useEvents(MOXILABS_CONFIG.slug);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [notes, setNotes] = useState('');
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
-  const [reference, setReference] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
+  const [reference, setReference] = useState("");
   const [registeredCount, setRegisteredCount] = useState<number | null>(null);
   const [topics, setTopics] = useState<EventTopic[]>([]);
   const [votedTopics, setVotedTopics] = useState<Set<string>>(new Set());
   const [votingTopicId, setVotingTopicId] = useState<string | null>(null);
 
   const { user } = useAuth();
-  const isAdmin = user?.role?.toLowerCase() === 'admin';
+  const isAdmin = user?.role?.toLowerCase() === "admin";
 
   const exportTopics = () => {
     const payload = {
-      event: events[0] ? { title: events[0].title, description: events[0].description, location: events[0].location } : null,
-      topics: topics.map(({ id, title, description, text, up_votes, display_order }) => ({
-        id, title, description, text, up_votes, display_order,
-      })),
+      event: events[0]
+        ? {
+            title: events[0].title,
+            description: events[0].description,
+            location: events[0].location,
+          }
+        : null,
+      topics: topics.map(
+        ({ id, title, description, text, up_votes, display_order }) => ({
+          id,
+          title,
+          description,
+          text,
+          up_votes,
+          display_order,
+        }),
+      ),
       exported_at: new Date().toISOString(),
     };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `topics-${eventId?.slice(0, 8)}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const bgImage = useMemo(() => BG_IMAGES[Math.floor(Math.random() * BG_IMAGES.length)], []);
-  const maskStyle = 'linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)';
+  const bgImage = useMemo(
+    () => BG_IMAGES[Math.floor(Math.random() * BG_IMAGES.length)],
+    [],
+  );
+  const maskStyle =
+    "linear-gradient(to bottom, transparent, black 0%, black 80%, transparent)";
 
   // Fetch topics when event is known
   useEffect(() => {
@@ -103,13 +129,23 @@ const MoxiLabsEventDetail: React.FC = () => {
     if (votedTopics.has(topicId) || votingTopicId) return;
     setVotingTopicId(topicId);
     try {
-      const res = await fetchWithCsrf(`/api/events/${MOXILABS_CONFIG.slug}/${eventId}/topics/${topicId}/vote`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-      const data = await res.json() as { up_votes?: number; message?: string };
+      const res = await fetchWithCsrf(
+        `/api/events/${MOXILABS_CONFIG.slug}/${eventId}/topics/${topicId}/vote`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+      const data = (await res.json()) as {
+        up_votes?: number;
+        message?: string;
+      };
       if (res.ok && data.up_votes != null) {
-        setTopics((prev) => prev.map((t) => t.id === topicId ? { ...t, up_votes: data.up_votes! } : t));
+        setTopics((prev) =>
+          prev.map((t) =>
+            t.id === topicId ? { ...t, up_votes: data.up_votes! } : t,
+          ),
+        );
         setVotedTopics((prev) => new Set(prev).add(topicId));
       }
     } catch {
@@ -120,20 +156,23 @@ const MoxiLabsEventDetail: React.FC = () => {
   };
 
   useEffect(() => {
-    const tailwind = document.createElement('script');
-    tailwind.src = 'https://cdn.tailwindcss.com';
-    tailwind.id = 'moxilabs-tailwind-cdn';
-    if (!document.getElementById('moxilabs-tailwind-cdn')) document.head.appendChild(tailwind);
+    const tailwind = document.createElement("script");
+    tailwind.src = "https://cdn.tailwindcss.com";
+    tailwind.id = "moxilabs-tailwind-cdn";
+    if (!document.getElementById("moxilabs-tailwind-cdn"))
+      document.head.appendChild(tailwind);
 
-    const fonts = document.createElement('link');
-    fonts.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap';
-    fonts.rel = 'stylesheet';
-    fonts.id = 'moxilabs-fonts';
-    if (!document.getElementById('moxilabs-fonts')) document.head.appendChild(fonts);
+    const fonts = document.createElement("link");
+    fonts.href =
+      "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap";
+    fonts.rel = "stylesheet";
+    fonts.id = "moxilabs-fonts";
+    if (!document.getElementById("moxilabs-fonts"))
+      document.head.appendChild(fonts);
 
     return () => {
-      document.getElementById('moxilabs-tailwind-cdn')?.remove();
-      document.getElementById('moxilabs-fonts')?.remove();
+      document.getElementById("moxilabs-tailwind-cdn")?.remove();
+      document.getElementById("moxilabs-fonts")?.remove();
     };
   }, []);
 
@@ -141,42 +180,55 @@ const MoxiLabsEventDetail: React.FC = () => {
   const accent = (event?.metadata as Record<string, string>)?.accent ?? ACCENT;
   const displayCount = registeredCount ?? event?.registered_count ?? 0;
 
-  const nextDate = event ? getNextOccurrence(event.start_at, event.rrule) : null;
-  const spotsLeft = event?.max_capacity != null ? event.max_capacity - displayCount : null;
+  const nextDate = event
+    ? getNextOccurrence(event.start_at, event.rrule)
+    : null;
+  const spotsLeft =
+    event?.max_capacity != null ? event.max_capacity - displayCount : null;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
 
   const handleRegister = async () => {
-    if (!email || submitStatus === 'loading' || !event) return;
-    setSubmitStatus('loading');
+    if (!email || submitStatus === "loading" || !event) return;
+    setSubmitStatus("loading");
     try {
-      const res = await fetchWithCsrf(`/api/events/${MOXILABS_CONFIG.slug}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ event_id: event.id, email, name, notes }),
-        credentials: 'include',
-      });
+      const res = await fetchWithCsrf(
+        `/api/events/${MOXILABS_CONFIG.slug}/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ event_id: event.id, email, name, notes }),
+          credentials: "include",
+        },
+      );
 
-      const data = await res.json() as { message?: string; reference?: string; registered_count?: number };
+      const data = (await res.json()) as {
+        message?: string;
+        reference?: string;
+        registered_count?: number;
+      };
 
       if (res.status === 409) {
-        const msg = data.message ?? '';
-        setSubmitStatus(msg.toLowerCase().includes('capacity') ? 'full' : 'duplicate');
+        const msg = data.message ?? "";
+        setSubmitStatus(
+          msg.toLowerCase().includes("capacity") ? "full" : "duplicate",
+        );
         return;
       }
-      if (!res.ok) throw new Error('Registration failed');
+      if (!res.ok) throw new Error("Registration failed");
 
-      setReference(data.reference ?? '');
-      if (data.registered_count != null) setRegisteredCount(data.registered_count);
-      setSubmitStatus('success');
+      setReference(data.reference ?? "");
+      if (data.registered_count != null)
+        setRegisteredCount(data.registered_count);
+      setSubmitStatus("success");
     } catch {
-      setSubmitStatus('error');
+      setSubmitStatus("error");
     }
   };
 
   return (
     <div
       className="antialiased scroll-smooth relative min-h-screen overflow-x-hidden flex flex-col"
-      style={{ fontFamily: "'Inter', sans-serif", color: '#bcf1fe' }}
+      style={{ fontFamily: "'Inter', sans-serif", color: "#bcf1fe" }}
     >
       <style dangerouslySetInnerHTML={{ __html: CUSTOM_STYLES }} />
 
@@ -204,7 +256,12 @@ const MoxiLabsEventDetail: React.FC = () => {
             MOXI LABS AI
           </button>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-azure-800">
-            <button onClick={() => navigate(`${MOXILABS_CONFIG.route}/events`)} className="hover:text-zinc-100 transition-colors">← All Events</button>
+            <button
+              onClick={() => navigate(`${MOXILABS_CONFIG.route}/events`)}
+              className="hover:text-zinc-100 transition-colors"
+            >
+              ← All Events
+            </button>
           </div>
           <a
             href={`${MOXILABS_CONFIG.route}#contact`}
@@ -216,14 +273,18 @@ const MoxiLabsEventDetail: React.FC = () => {
       </nav>
 
       <main className="relative z-10 flex-grow">
-        {(loading) && (
-          <div className="text-center py-40 text-zinc-500 text-sm">Loading...</div>
+        {loading && (
+          <div className="text-center py-40 text-zinc-500 text-sm">
+            Loading...
+          </div>
         )}
         {error && (
           <div className="text-center py-40 text-zinc-500 text-sm">{error}</div>
         )}
         {!loading && !event && !error && (
-          <div className="text-center py-40 text-zinc-500 text-sm">Event not found.</div>
+          <div className="text-center py-40 text-zinc-500 text-sm">
+            Event not found.
+          </div>
         )}
 
         {event && nextDate && (
@@ -231,14 +292,24 @@ const MoxiLabsEventDetail: React.FC = () => {
             {/* Event hero image */}
             {event.image && (
               <div className="w-full h-56 rounded-xl overflow-hidden mb-10">
-                <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
             )}
 
             {/* Badge */}
-            {event.template === 'recurring' && event.rrule && (
-              <div className="inline-flex items-center rounded-full border border-white/10 bg-zinc-900/50 px-3 py-1 text-xs font-medium mb-5 w-fit" style={{ color: accent }}>
-                <span className="mr-1.5 h-1.5 w-1.5 rounded-full inline-block" style={{ backgroundColor: accent }} />
+            {event.template === "recurring" && event.rrule && (
+              <div
+                className="inline-flex items-center rounded-full border border-white/10 bg-zinc-900/50 px-3 py-1 text-xs font-medium mb-5 w-fit"
+                style={{ color: accent }}
+              >
+                <span
+                  className="mr-1.5 h-1.5 w-1.5 rounded-full inline-block"
+                  style={{ backgroundColor: accent }}
+                />
                 {formatRecurring(event.rrule)}
               </div>
             )}
@@ -251,22 +322,42 @@ const MoxiLabsEventDetail: React.FC = () => {
             {/* Meta */}
             <div className="flex flex-col gap-3 mb-8 text-sm text-zinc-400">
               <div className="flex items-start gap-3">
-                <span>📅</span>
+                <Icon
+                  icon="mdi:calendar-outline"
+                  width={16}
+                  height={16}
+                  className="mt-0.5 shrink-0"
+                />
                 <div>
-                  <div className="text-zinc-100">{format(nextDate, 'EEEE, MMMM d, yyyy')}</div>
+                  <div className="text-zinc-100">
+                    {format(nextDate, "EEEE, MMMM d, yyyy")}
+                  </div>
                   <div>
-                    {format(parseISO(event.start_at), 'h:mm a')}
-                    {event.end_at && ` – ${format(parseISO(event.end_at), 'h:mm a')}`}
-                    {' PT'}
-                    {event.template === 'recurring' && event.rrule && ` · ${formatRecurring(event.rrule)}`}
+                    {format(parseISO(event.start_at), "h:mm a")}
+                    {event.end_at &&
+                      ` – ${format(parseISO(event.end_at), "h:mm a")}`}
+                    {" PT"}
+                    {event.template === "recurring" &&
+                      event.rrule &&
+                      ` · ${formatRecurring(event.rrule)}`}
                   </div>
                 </div>
               </div>
               {event.location && (
                 <div className="flex items-start gap-3">
-                  <span>📍</span>
+                  <Icon
+                    icon="mdi:map-marker-outline"
+                    width={16}
+                    height={16}
+                    className="mt-0.5 shrink-0"
+                  />
                   {event.location_url ? (
-                    <a href={event.location_url} target="_blank" rel="noopener noreferrer" className="text-zinc-100 hover:text-zinc-200 transition-colors">
+                    <a
+                      href={event.location_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-zinc-100 hover:text-zinc-200 transition-colors"
+                    >
                       {event.location}
                     </a>
                   ) : (
@@ -276,12 +367,21 @@ const MoxiLabsEventDetail: React.FC = () => {
               )}
               {event.max_capacity != null && (
                 <div className="flex items-center gap-3">
-                  <span>👥</span>
+                  <Icon
+                    icon="mdi:account-group-outline"
+                    width={16}
+                    height={16}
+                    className="shrink-0"
+                  />
                   <div>
-                    <span className="text-zinc-100">{displayCount}</span> attending
+                    <span className="text-zinc-100">{displayCount}</span>{" "}
+                    attending
                     {spotsLeft !== null && !isFull && (
-                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/[0.05] border border-white/10" style={{ color: accent }}>
-                        {spotsLeft} spot{spotsLeft === 1 ? '' : 's'} remaining
+                      <span
+                        className="ml-2 text-xs px-2 py-0.5 rounded-full bg-white/[0.05] border border-white/10"
+                        style={{ color: accent }}
+                      >
+                        {spotsLeft} spot{spotsLeft === 1 ? "" : "s"} remaining
                       </span>
                     )}
                     {isFull && (
@@ -296,7 +396,10 @@ const MoxiLabsEventDetail: React.FC = () => {
 
             {/* Description */}
             {event.description && (
-              <p className="text-zinc-200 bg-zinc-200/20 leading-relaxed text-base mb-10 border-l-2 pl-4" style={{ borderColor: accent }}>
+              <p
+                className="text-zinc-200 bg-zinc-200/20 leading-relaxed text-base mb-10 border-l-2 pl-4"
+                style={{ borderColor: accent }}
+              >
                 {event.description}
               </p>
             )}
@@ -305,7 +408,9 @@ const MoxiLabsEventDetail: React.FC = () => {
             {topics.length > 0 && (
               <div className="mb-10">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-sm font-medium text-zinc-400 uppercase tracking-widest">Topics — Vote for what matters to you</h2>
+                  <h2 className="text-sm font-medium text-zinc-400 uppercase tracking-widest">
+                    Topics — Vote for what matters to you
+                  </h2>
                   {isAdmin && (
                     <button
                       onClick={exportTopics}
@@ -319,21 +424,32 @@ const MoxiLabsEventDetail: React.FC = () => {
                   {topics.map((topic) => {
                     const voted = votedTopics.has(topic.id);
                     const voting = votingTopicId === topic.id;
-                    const maxVotes = Math.max(...topics.map((t) => t.up_votes), 1);
+                    const maxVotes = Math.max(
+                      ...topics.map((t) => t.up_votes),
+                      1,
+                    );
                     return (
                       <div
                         key={topic.id}
                         className="rounded-xl border border-white/[0.06] bg-zinc-900/40 backdrop-blur-sm p-4 flex gap-4 items-start"
                       >
                         {topic.image && (
-                          <img src={topic.image} alt={topic.title} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                          <img
+                            src={topic.image}
+                            alt={topic.title}
+                            className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                          />
                         )}
                         <div className="flex-grow min-w-0">
                           <div className="flex items-start justify-between gap-4">
                             <div>
-                              <p className="text-sm font-medium text-zinc-100">{topic.title}</p>
+                              <p className="text-sm font-medium text-zinc-100">
+                                {topic.title}
+                              </p>
                               {topic.description && (
-                                <p className="text-xs text-zinc-300 mt-0.5">{topic.description}</p>
+                                <p className="text-xs text-zinc-300 mt-0.5">
+                                  {topic.description}
+                                </p>
                               )}
                             </div>
                             <button
@@ -341,13 +457,21 @@ const MoxiLabsEventDetail: React.FC = () => {
                               disabled={voted || !!votingTopicId}
                               className="flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg border transition-all text-xs font-medium"
                               style={{
-                                borderColor: voted ? accent : 'rgba(255,255,255,0.08)',
-                                color: voted ? accent : 'rgba(255,255,255,0.4)',
-                                background: voted ? `${accent}15` : 'transparent',
-                                cursor: voted ? 'default' : voting ? 'wait' : 'pointer',
+                                borderColor: voted
+                                  ? accent
+                                  : "rgba(255,255,255,0.08)",
+                                color: voted ? accent : "rgba(255,255,255,0.4)",
+                                background: voted
+                                  ? `${accent}15`
+                                  : "transparent",
+                                cursor: voted
+                                  ? "default"
+                                  : voting
+                                    ? "wait"
+                                    : "pointer",
                               }}
                             >
-                              <span>{voted ? '▲' : '△'}</span>
+                              <span>{voted ? "▲" : "△"}</span>
                               <span>{topic.up_votes}</span>
                             </button>
                           </div>
@@ -355,7 +479,11 @@ const MoxiLabsEventDetail: React.FC = () => {
                           <div className="mt-2 h-0.5 rounded-full bg-white/[0.04] overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-500"
-                              style={{ width: `${(topic.up_votes / maxVotes) * 100}%`, backgroundColor: accent, opacity: 0.5 }}
+                              style={{
+                                width: `${(topic.up_votes / maxVotes) * 100}%`,
+                                backgroundColor: accent,
+                                opacity: 0.5,
+                              }}
                             />
                           </div>
                         </div>
@@ -370,28 +498,40 @@ const MoxiLabsEventDetail: React.FC = () => {
             <div className="border-t border-white/[0.06] mb-10" />
 
             {/* Registration form */}
-            {submitStatus === 'success' ? (
+            {submitStatus === "success" ? (
               <div className="rounded-xl border border-white/[0.08] bg-zinc-900/60 backdrop-blur-sm p-8 text-center">
                 <div className="text-2xl mb-4">✓</div>
-                <h2 className="text-xl font-medium text-zinc-100 mb-2">You're in!</h2>
+                <h2 className="text-xl font-medium text-zinc-100 mb-2">
+                  You're in!
+                </h2>
                 <p className="text-sm text-zinc-200 mb-4">
-                  A confirmation has been sent to <span className="text-zinc-200">{email}</span>
+                  A confirmation has been sent to{" "}
+                  <span className="text-zinc-200">{email}</span>
                 </p>
                 {reference && (
                   <p className="text-xs text-zinc-400">
-                    Reference: <span className="font-mono" style={{ color: accent }}>#{reference}</span>
+                    Reference:{" "}
+                    <span className="font-mono" style={{ color: accent }}>
+                      #{reference}
+                    </span>
                   </p>
                 )}
                 {event.max_capacity != null && (
-                  <p className="text-xs text-zinc-400 mt-2">{displayCount} of {event.max_capacity} seats filled</p>
+                  <p className="text-xs text-zinc-400 mt-2">
+                    {displayCount} of {event.max_capacity} seats filled
+                  </p>
                 )}
               </div>
             ) : (
               <div className="rounded-xl border border-white/[0.08] bg-zinc-900/30 backdrop-blur-sm p-8">
-                <h2 className="text-lg font-medium text-zinc-100 mb-6">{event.cta_label ?? 'Reserve Your Seat'}</h2>
+                <h2 className="text-lg font-medium text-zinc-100 mb-6">
+                  {event.cta_label ?? "Reserve Your Seat"}
+                </h2>
                 <div className="flex flex-col gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-zinc-100 mb-1.5">Name <span className="text-zinc-600">(optional)</span></label>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                      Name <span className="text-zinc-600">(optional)</span>
+                    </label>
                     <input
                       type="text"
                       value={name}
@@ -401,7 +541,9 @@ const MoxiLabsEventDetail: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-zinc-100 mb-1.5">Email <span className="text-red-500">*</span></label>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                      Email <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="email"
                       value={email}
@@ -411,7 +553,10 @@ const MoxiLabsEventDetail: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-zinc-100 mb-1.5">What challenge are you trying to solve? <span className="text-zinc-600">(optional)</span></label>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+                      What challenge are you trying to solve?{" "}
+                      <span className="text-zinc-600">(optional)</span>
+                    </label>
                     <textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
@@ -422,23 +567,31 @@ const MoxiLabsEventDetail: React.FC = () => {
                     />
                   </div>
 
-                  {submitStatus === 'duplicate' && (
-                    <p className="text-xs text-amber-400">You're already registered for this event.</p>
+                  {submitStatus === "duplicate" && (
+                    <p className="text-xs text-amber-400">
+                      You're already registered for this event.
+                    </p>
                   )}
-                  {submitStatus === 'full' && (
-                    <p className="text-xs text-red-400">Sorry, this event is now at capacity.</p>
+                  {submitStatus === "full" && (
+                    <p className="text-xs text-red-400">
+                      Sorry, this event is now at capacity.
+                    </p>
                   )}
-                  {submitStatus === 'error' && (
-                    <p className="text-xs text-red-400">Something went wrong. Please try again.</p>
+                  {submitStatus === "error" && (
+                    <p className="text-xs text-red-400">
+                      Something went wrong. Please try again.
+                    </p>
                   )}
 
                   <button
                     onClick={handleRegister}
-                    disabled={!email || submitStatus === 'loading' || isFull}
+                    disabled={!email || submitStatus === "loading" || isFull}
                     className="w-full inline-flex items-center justify-center rounded-md text-sm font-medium h-10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    style={{ backgroundColor: accent, color: '#09090b' }}
+                    style={{ backgroundColor: accent, color: "#09090b" }}
                   >
-                    {submitStatus === 'loading' ? 'Reserving...' : (event.cta_label ?? 'Reserve Your Seat')}
+                    {submitStatus === "loading"
+                      ? "Reserving..."
+                      : (event.cta_label ?? "Reserve Your Seat")}
                   </button>
                 </div>
               </div>
