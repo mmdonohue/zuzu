@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import useLastVisited from "./hooks/useLastVisited";
 import useHostnameRouter from "./hooks/useHostnameRouter";
 
@@ -38,6 +38,10 @@ const App: React.FC = () => {
 
       {/* Microsites — slug-based, domain overlay added when DNS is live */}
       <Route path="/moxilabs" element={<MoxiLabs />} />
+      <Route
+        path="/moxilabs/reserve"
+        element={<Navigate to="/moxilabs/events" replace />}
+      />
       <Route path="/moxilabs/events" element={<MoxiLabsEvents />} />
       <Route
         path="/moxilabs/events/:eventId"
