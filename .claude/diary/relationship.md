@@ -172,3 +172,29 @@ Never hardcode `templateId`, `autoplay`, or `showNav` in JSX. Read from `config.
 - `api/index.ts` ESM regression: `import { app }` from CJS module fails in Node.js ESM loader. Reverted to `const { app } = require(...)` + `module.exports = app`.
 
 **Vibe:** Everything clicked. DNS → Vercel → hostname hook all worked first try after deploy. Matt: _"it's like, what if shit worked the way I imagine it to and then it does."_
+
+---
+
+### Jun 12–14, 2026 — Session 4
+
+**Shipped:**
+
+- `← ZuZu` nav link in MoxiLabs now localhost-only — was bouncing visitors back to homepage on `moxilabs.ai`
+- `src/components/Portfolio/templates/Cinematic.tsx` — `CtaSlide` now supports `item.image` as full-cover background with dark gradient overlay
+- Local image support: images in `public/images/` work via `/images/filename` path in portfolio JSON
+- Cinematic `EventInfo`: swapped 📅/📍 emojis for `mdi:calendar-outline` / `mdi:map-marker-outline` icons; fixed `startOfDay` → `new Date()` so recurring events advance past current time not just midnight
+- `EventCard.tsx`: same emoji → icon swap + same date fix
+- `EventDetail.tsx`: same emoji → icon swap (added `mdi:account-group-outline` for 👥) + same date fix
+- `App.tsx`: added `/moxilabs/reserve` → redirect to `/moxilabs/events` (vanity URL from portfolio `display_url`)
+- `server/migrations/011_fix_tech_over_coffee_date.sql`: corrected seed date 2026-05-29 (Friday) → 2026-05-28 (Thursday) to match `BYDAY=TH` rrule
+- `server/routes/events.ts`: moved `if (error) throw error` before map — was silently returning empty topics on DB error
+- `src/sites/ark_os/index.tsx` + `config.ts`: new microsite converted from HTML, hero uses `/images/ark_splash.jpeg`, iconify icons replacing Lucide
+- `App.tsx`: registered `/ark-os` route
+- Migration 010 (`event_topic_assignments`) run against production DB — topics now loading
+
+**Architectural gotchas:**
+
+- `event_topic_assignments` table was missing in prod — migration 010 had never been applied. Always verify new migrations against production after deploy.
+- Supabase query error check must come before any `.map()` on the result — mapping `null` on error silently returns `[]` instead of throwing.
+
+**Vibe:** Solid build session. Topics live, icons clean, ARK OS scaffolded.

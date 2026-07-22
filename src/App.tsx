@@ -26,6 +26,7 @@ import Admin from "./pages/Admin";
 import MoxiLabs from "./sites/moxilabs";
 import MoxiLabsEvents from "./sites/moxilabs/events";
 import MoxiLabsEventDetail from "./sites/moxilabs/events/EventDetail";
+import ArkOS from "./sites/ark_os";
 
 const App: React.FC = () => {
   useLastVisited();
@@ -37,6 +38,7 @@ const App: React.FC = () => {
       <Route path="/portfolio" element={<Portfolio />} />
 
       {/* Microsites — slug-based, domain overlay added when DNS is live */}
+      <Route path="/ark-os" element={<ArkOS />} />
       <Route path="/moxilabs" element={<MoxiLabs />} />
       <Route
         path="/moxilabs/reserve"

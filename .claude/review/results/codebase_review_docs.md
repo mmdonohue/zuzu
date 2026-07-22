@@ -1,8 +1,8 @@
 # Codebase Review Report
 
-**Generated**: 2026-06-14 18:02:04 UTC
+**Generated**: 2026-07-08 19:54:48 UTC
 **Review Version**: 1.0.0
-**Commit**: 3bcf6c3 (main)
+**Commit**: 41750e5 (main)
 **Total Findings**: 6
 
 
@@ -39,13 +39,13 @@ The provider hierarchy documentation does not mention AuthProvider, but it exist
 
 **Location**: `.claude/CLAUDE.md:54`
 
-Documentation lists 0 routes but codebase has 6 routes.
+Documentation lists 0 routes but codebase has 7 routes.
 
-**Actual**: 6 routes: Portfolio, MoxiLabs, Navigate, MoxiLabsEvents, MoxiLabsEventDetail, Layout
+**Actual**: 7 routes: Portfolio, ArkOS, MoxiLabs, Navigate, MoxiLabsEvents, MoxiLabsEventDetail, Layout
 
 **Documented**: 0 routes: 
 
-**Recommendation**: Update line 54 to include all routes: Portfolio, MoxiLabs, Navigate, MoxiLabsEvents, MoxiLabsEventDetail, Layout
+**Recommendation**: Update line 54 to include all routes: Portfolio, ArkOS, MoxiLabs, Navigate, MoxiLabsEvents, MoxiLabsEventDetail, Layout
 
 #### Missing /api/auth in backend routes documentation
 
@@ -112,7 +112,7 @@ Some environment variables in CLAUDE.md are not documented in README.md.
 
 ### High Priority (Warnings)
 1. Add AuthProvider to the provider hierarchy list in CLAUDE.md around line 52
-2. Update line 54 to include all routes: Portfolio, MoxiLabs, Navigate, MoxiLabsEvents, MoxiLabsEventDetail, Layout
+2. Update line 54 to include all routes: Portfolio, ArkOS, MoxiLabs, Navigate, MoxiLabsEvents, MoxiLabsEventDetail, Layout
 3. Add /api/auth to the backend routes list
 
 ### Suggested Improvements (Info)

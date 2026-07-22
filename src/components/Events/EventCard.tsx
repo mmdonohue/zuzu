@@ -159,7 +159,7 @@ const EventCard: React.FC<Props> = ({ event, onClick, accent = "#74e5ff" }) => {
         {/* CTA */}
         <button
           disabled={isFull}
-          className="mt-1 w-full inline-flex items-center justify-center rounded-md text-sm font-medium h-9 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="mt-1 w-full inline-flex items-center justify-center rounded-md text-sm font-medium h-9 transition-colors hover:bg-opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
           style={
             isFull
               ? { border: "1px solid rgba(255,255,255,0.1)", color: "#71717a" }
