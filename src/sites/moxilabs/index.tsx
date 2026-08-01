@@ -192,6 +192,12 @@ const MoxiLabs: React.FC = () => {
             >
               Events
             </button>
+            <button
+              onClick={() => navigate("/ark-os")}
+              className="hover:text-zinc-100 transition-colors"
+            >
+              Ark
+            </button>
           </div>
           <a
             href="#contact"
