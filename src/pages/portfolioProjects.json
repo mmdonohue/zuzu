@@ -1,0 +1,89 @@
+[
+  {
+    "id": "seravanna",
+    "title": "Seravanna – Wellness Services",
+    "subtitle": "Comprehensive wellness services framework",
+    "text": "Seamless booking workflows, intelligent chatbot integration, and complete administrative controls. Fully integrated Stripe booking, multi-tenant admin control, Meta Ads integration, and a RAG-enabled HBOT chat bot using free LLM models.",
+    "image": "/assets/img/double-exposure-portrait-with-mountain-landscape-4k.jpeg",
+    "gallery": [],
+    "tags": ["TypeScript", "Python", "Stripe", "RAG"],
+    "featured": true,
+    "type": "project",
+    "link": "https://www.seravanna.com",
+    "css_options": { "accent": "#333" }
+  },
+  {
+    "id": "mahoraga",
+    "title": "Mahoraga-AHAB – Trading Bot",
+    "subtitle": "Autonomous LLM-powered intraday trading bot",
+    "text": "Named after the Jujutsu Kaisen mythical beast that adapts to every attack — the system learns from its own trade history and adjusts behaviour in real-time. MCP server exposing 40+ tools for trading, analysis, and risk management, with yFinance integration and automated signal/sentiment scoring. Monitors positions with dynamic TP/SL, trailing stops, and LLM re-analysis via Entry/Exit Optimizer, Portfolio Manager, and Trade Journal agents.",
+    "image": "/assets/img/mahoraga_dash.png",
+    "gallery": [],
+    "tags": ["TypeScript", "Python", "LLM Agents"],
+    "featured": false,
+    "type": "project",
+    "css_options": { "accent": "#f59e0b" }
+  },
+  {
+    "id": "zuzu-scaffold",
+    "title": "ZuZu Scaffold",
+    "subtitle": "Production-ready full-stack application scaffold",
+    "text": "Focused on security, maintainability, and scalable team workflows. Built with React/TypeScript and Node/Express. Production-grade auth (JWT, CSRF, rate limiting), AI-driven workflow automation hooks, and OpenRouter integration with free-tier model evaluation tools.",
+    "image": "/assets/img/daydreaming-astronaut-in-wildflower-meadow-4k.jpeg",
+    "gallery": [],
+    "tags": ["React", "TypeScript", "Node.js", "Express"],
+    "featured": false,
+    "type": "project",
+    "link": "https://github.com/mmdonohue/zuzu",
+    "css_options": { "accent": "#dcbe83" }
+  },
+  {
+    "id": "nbc-rights-management",
+    "title": "NBCUniversal: Real-Time Rights Management",
+    "subtitle": "High-throughput distributed content protection",
+    "text": "Live content fingerprinting and rights enforcement across partner social video platforms. Event-driven architecture using Apache Kafka, FFMPEG integration for live stream processing, and zero-downtime deployment on Kubernetes and Docker Swarm.",
+    "image": "/assets/img/nbc_code_tree.png",
+    "gallery": [],
+    "tags": ["Kafka", "FFMPEG", "Kubernetes"],
+    "featured": false,
+    "type": "project",
+    "css_options": { "accent": "#34d399" }
+  },
+  {
+    "id": "multicloud-orchestration",
+    "title": "Netrix Global: Multi-Cloud Orchestration Portal",
+    "subtitle": "Enterprise infrastructure dashboard",
+    "text": "Automated infrastructure provisioning, ETL pipeline monitoring, and billing analytics. Seamless integration with managed VMSphere environments and cloud services, a Next.js frontend with complex state management, Python/Airflow billing ETL pipelines, and robust RBAC with Enterprise SSO.",
+    "image": "/assets/img/multicloud_portal.png",
+    "gallery": [],
+    "tags": ["Next.js", "Airflow", "RBAC", "SSO"],
+    "featured": false,
+    "type": "project",
+    "css_options": { "accent": "#60a5fa" }
+  },
+  {
+    "id": "moxilabs",
+    "title": "Moxi Labs AI",
+    "subtitle": "Branded microsite for an AI consultancy",
+    "text": "Full-screen cinematic microsite built on ZuZu's multi-tenant site platform — custom domain, hostname-based routing, and an events system with capacity-limited registration.",
+    "image": "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=1600&q=80",
+    "gallery": [],
+    "tags": ["React", "TypeScript", "Microsite"],
+    "featured": false,
+    "type": "project",
+    "link": "https://moxilabs.ai",
+    "css_options": { "accent": "#a78bfa" }
+  },
+  {
+    "id": "ark-os",
+    "title": "ARK OS",
+    "subtitle": "Operating architecture for AI",
+    "text": "A conceptual operating layer for orchestrating AI agents and workflows — early-stage microsite exploring the product's core narrative and visual identity.",
+    "image": "/images/ark_backpack.png",
+    "gallery": [],
+    "tags": ["React", "TypeScript", "AI"],
+    "featured": false,
+    "type": "project",
+    "css_options": { "accent": "#34d399" }
+  }
+]
