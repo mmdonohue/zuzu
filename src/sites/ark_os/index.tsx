@@ -1,5 +1,9 @@
 import React, { useEffect } from "react";
 import { Icon } from "@iconify-icon/react";
+import { Link } from "react-router-dom";
+import config from "./config";
+import MOXILABS_CONFIG from "../moxilabs/config";
+import { isMicrositeHostname } from "../../hooks/useHostnameRouter";
 
 const CUSTOM_STYLES = `
   a { color: inherit; }
@@ -39,9 +43,12 @@ const ARTIFACTS = [
   "AI conversations",
 ];
 
-const NAV_LINKS = ["Concept", "Principles", "Architecture", "Use Cases"];
+const NAV_LINKS = ["Architecture"];
 
 const ArkOS: React.FC = () => {
+  // On moxilabs.ai, "/" resolves to Moxi Labs, so a ZuZu link would loop back
+  const showZuzuLink = !isMicrositeHostname();
+
   useEffect(() => {
     const tailwind = document.createElement("script");
     tailwind.src = "https://cdn.tailwindcss.com";
@@ -73,9 +80,28 @@ const ArkOS: React.FC = () => {
       {/* Nav */}
       <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-neutral-950/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-5 h-12 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-white rounded-[3px]" />
-            <span className="text-sm font-medium tracking-tight">ARK</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 text-xs">
+              <Link
+                to={MOXILABS_CONFIG.route}
+                className="text-neutral-500 hover:text-white transition-colors"
+              >
+                ← Moxi Labs
+              </Link>
+              {showZuzuLink && (
+                <Link
+                  to="/"
+                  className="text-neutral-500 hover:text-white transition-colors"
+                >
+                  ZuZu
+                </Link>
+              )}
+            </div>
+            <div className="w-px h-4 bg-neutral-800" />
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-white rounded-[3px]" />
+              <span className="text-sm font-medium tracking-tight">ARK</span>
+            </div>
           </div>
           <div className="hidden md:flex items-center gap-8">
             {NAV_LINKS.map((item) => (
@@ -94,7 +120,9 @@ const ArkOS: React.FC = () => {
               v1.0 · Live
             </div>
             <a
-              href="#"
+              href={config.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-white transition-colors"
             >
               <Icon icon="mdi:github" width={14} height={14} />
@@ -194,6 +222,33 @@ const ArkOS: React.FC = () => {
           ))}
         </div>
 
+        {/* Architecture diagram */}
+        <div
+          id="architecture"
+          className="rounded-2xl bg-neutral-900/40 p-6 mb-3 scroll-mt-16"
+        >
+          <div className="flex items-baseline justify-between gap-4 mb-4">
+            <p className="text-xs text-neutral-500 uppercase tracking-widest">
+              Architecture
+            </p>
+            <p className="text-xs text-neutral-600">
+              Gateways · governed core · actions · adapters · stores
+            </p>
+          </div>
+          <a
+            href={config.architectureDiagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <img
+              src={config.architectureDiagram}
+              alt="ARK runtime: gateways feed the governed core, which drives actions and domain logic through adapters to the stores behind them"
+              className="block w-full h-auto rounded-xl"
+            />
+          </a>
+        </div>
+
         {/* CTA row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="md:col-span-2 rounded-2xl border border-neutral-800 bg-neutral-900/40 p-6 flex items-center justify-between gap-4">
@@ -207,18 +262,13 @@ const ArkOS: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <a
-                href="#"
+                href={config.repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="h-8 px-4 rounded-full bg-white text-black text-xs font-medium flex items-center gap-1.5 hover:bg-neutral-200 transition-colors whitespace-nowrap"
               >
                 Start Building
                 <Icon icon="mdi:arrow-right" width={12} height={12} />
-              </a>
-              <a
-                href="#"
-                className="h-8 px-4 rounded-full border border-neutral-700 text-neutral-300 text-xs font-medium flex items-center gap-1.5 hover:bg-neutral-900 transition-colors whitespace-nowrap"
-              >
-                <Icon icon="mdi:book-open-outline" width={12} height={12} />
-                Docs
               </a>
             </div>
           </div>
@@ -254,9 +304,25 @@ const ArkOS: React.FC = () => {
               ARK Architecture
             </span>
           </div>
-          <span className="text-xs text-neutral-600">
-            © 2024 · Open source orchestrator
-          </span>
+          <div className="flex items-center gap-4 text-xs">
+            <Link
+              to={MOXILABS_CONFIG.route}
+              className="text-neutral-500 hover:text-white transition-colors"
+            >
+              Moxi Labs
+            </Link>
+            {showZuzuLink && (
+              <Link
+                to="/"
+                className="text-neutral-500 hover:text-white transition-colors"
+              >
+                ZuZu
+              </Link>
+            )}
+            <span className="text-neutral-600">
+              © {new Date().getFullYear()} · Open source orchestrator
+            </span>
+          </div>
         </div>
       </footer>
     </div>

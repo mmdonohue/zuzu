@@ -222,3 +222,10 @@ Never hardcode `templateId`, `autoplay`, or `showNav` in JSX. Read from `config.
 **Gotchas:**
 
 - Supabase MCP returned Unauthorized this session (no `SUPABASE_ACCESS_TOKEN`) — migration 013 must be run in the SQL editor. Until then the limiter logs a store error per request and allows the request.
+
+**Later same session — PR Lens:**
+
+- Installed PR Lens skill (copied from Seravanna: `.agents/skills/pr-lens` + `.claude/skills/pr-lens` symlink + `skills-lock.json`; `.pr-lens/` gitignored)
+- Home page "How ZuZu fits together" panel: Architecture / Chat flow toggle over PR Lens dark SVGs in `src/assets/diagrams/`
+- Source document committed alongside as `src/assets/diagrams/zuzu-stack.graph.json` (`.pr-lens/` is throwaway). To regenerate: copy it to `.pr-lens/graph.json`, `validate`, `render --theme dark`, copy the two SVGs back over `zuzu-stack.svg` / `zuzu-stack-chat.svg`.
+- PR Lens draws `unchanged` elements in muted slate — a system map (all unchanged) renders grey, not neon. Don't fake deltas to get color.

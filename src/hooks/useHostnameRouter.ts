@@ -6,6 +6,10 @@ const HOSTNAME_TO_PREFIX: Record<string, string> = {
   "www.moxilabs.ai": "/moxilabs",
 };
 
+// True on a microsite's custom domain, where "/" resolves to the microsite, not ZuZu
+export const isMicrositeHostname = (hostname: string = window.location.hostname): boolean =>
+  hostname in HOSTNAME_TO_PREFIX;
+
 const useHostnameRouter = (): void => {
   const navigate = useNavigate();
   const location = useLocation();

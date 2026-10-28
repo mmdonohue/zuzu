@@ -40,6 +40,8 @@ const App: React.FC = () => {
       {/* Microsites — slug-based, domain overlay added when DNS is live */}
       <Route path="/ark-os" element={<ArkOS />} />
       <Route path="/moxilabs" element={<MoxiLabs />} />
+      {/* ARK under the Moxi Labs prefix so it resolves on moxilabs.ai too */}
+      <Route path="/moxilabs/ark" element={<ArkOS />} />
       <Route
         path="/moxilabs/reserve"
         element={<Navigate to="/moxilabs/events" replace />}

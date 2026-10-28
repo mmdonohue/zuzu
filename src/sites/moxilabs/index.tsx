@@ -193,7 +193,7 @@ const MoxiLabs: React.FC = () => {
               Events
             </button>
             <button
-              onClick={() => navigate("/ark-os")}
+              onClick={() => navigate(`${MOXILABS_CONFIG.route}/ark`)}
               className="hover:text-zinc-100 transition-colors"
             >
               Ark
