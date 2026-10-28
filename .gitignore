@@ -81,3 +81,5 @@ yarn-error.log*
 .claude/plans/
 /tmp/.claude-review-trigger
 .claude/del
+# PR Lens writes its previews here. They are rebuilt on demand.
+.pr-lens/

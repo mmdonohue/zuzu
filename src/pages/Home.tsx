@@ -1,10 +1,23 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Button, Card, CardContent, Container, Grid, Link, Typography, Paper } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  Link,
+  Typography,
+  Paper,
+} from "@mui/material";
 import { fetchHello } from "../services/api";
 
 import logo from "../assets/img/zuzu-logo.png";
+// PR Lens renders, regenerated from src/assets/diagrams/zuzu-stack.graph.json
+import stackDiagram from "../assets/diagrams/zuzu-stack.svg";
+import chatFlowDiagram from "../assets/diagrams/zuzu-stack-chat.svg";
 import { GoTrueClient } from "@supabase/supabase-js";
 import { CustomBackgroundPage } from "@/components/Layout.example";
 import { COLORS } from "@/styles/themes";
@@ -16,6 +29,24 @@ function Logo() {
 
 type appProps = {
   message: string;
+};
+
+type StackView = "architecture" | "chat";
+
+const STACK_DIAGRAMS: Record<
+  StackView,
+  { label: string; src: string; alt: string }
+> = {
+  architecture: {
+    label: "Architecture",
+    src: stackDiagram,
+    alt: "ZuZu architecture: React app and microsites call an Express API on Vercel, which reaches Supabase, OpenRouter and Mailgun",
+  },
+  chat: {
+    label: "Chat flow",
+    src: chatFlowDiagram,
+    alt: "A playground chat: rate-limit check in Supabase, model policy, streamed reply from OpenRouter, then the exchange saved",
+  },
 };
 
 const Modal = lazy(() => delayForDemo(import("../components/Modal")));
@@ -128,6 +159,8 @@ const Home: React.FC<appProps> = ({ message }) => {
   });
 
   const [showModal, setShowModal] = useState(false);
+  const [stackView, setStackView] = useState<StackView>("architecture");
+  const activeDiagram = STACK_DIAGRAMS[stackView];
 
   const openModal = () => {
     setShowModal(true);
@@ -211,7 +244,7 @@ const Home: React.FC<appProps> = ({ message }) => {
   ];
 
   return (
-    <Box >
+    <Box>
       {/* Hero section */}
       <Box
         sx={{
@@ -219,11 +252,12 @@ const Home: React.FC<appProps> = ({ message }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent",
+          backgroundColor:
+            BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color ||
+            "transparent",
           backdropFilter: "blur(2px)",
           border: "1px solid white",
           borderRadius: "8px",
- 
         }}
         className="rounded-lg text-white mb-8"
       >
@@ -255,18 +289,28 @@ const Home: React.FC<appProps> = ({ message }) => {
 
             {/* Text content on the right */}
             <Box
-              sx={{ textAlign: { xs: "center", md: "center"}, flexGrow: 1 }}
+              sx={{ textAlign: { xs: "center", md: "center" }, flexGrow: 1 }}
             >
               <Typography
                 variant="h2"
                 component="h1"
                 gutterBottom
                 fontWeight="bold"
-                sx={{ borderRadius: "4px", borderTextShadow: "1px 1px 2px rgba(153, 145, 145, 0.34)" }}
+                sx={{
+                  borderRadius: "4px",
+                  borderTextShadow: "1px 1px 2px rgba(153, 145, 145, 0.34)",
+                }}
               >
                 Welcome to ZuZu
               </Typography>
-              <Typography variant="h5" paragraph sx={{ backgroundColor: "transparent", color: COLORS.textSecondary }}>
+              <Typography
+                variant="h5"
+                paragraph
+                sx={{
+                  backgroundColor: "transparent",
+                  color: COLORS.textSecondary,
+                }}
+              >
                 A React scaffold application for integrating multiple tech
                 stacks
               </Typography>
@@ -286,7 +330,10 @@ const Home: React.FC<appProps> = ({ message }) => {
                   component={RouterLink}
                   to="/dashboard"
                   className="border-white text-white hover:bg-white hover:bg-opacity-10"
-                  sx={{ color: COLORS.textPrimary, backgroundColor: COLORS.transparentBlackDark }}
+                  sx={{
+                    color: COLORS.textPrimary,
+                    backgroundColor: COLORS.transparentBlackDark,
+                  }}
                 >
                   Dashboard
                 </Button>
@@ -306,7 +353,10 @@ const Home: React.FC<appProps> = ({ message }) => {
                   size="large"
                   onClick={openModal}
                   className="border-white text-white hover:bg-white hover:bg-opacity-10"
-                  sx={{ color: COLORS.textPrimary, backgroundColor: COLORS.transparentBlackDark }}
+                  sx={{
+                    color: COLORS.textPrimary,
+                    backgroundColor: COLORS.transparentBlackDark,
+                  }}
                 >
                   Messages
                 </Button>
@@ -330,7 +380,14 @@ const Home: React.FC<appProps> = ({ message }) => {
       {/* API response example */}
       <Paper
         elevation={0}
-        sx={{ p: 3, mb: 6, border: "1px solid white", borderRadius: "8px", backgroundColor: "#00000066", color: "#f8d99dde"}}
+        sx={{
+          p: 3,
+          mb: 6,
+          border: "1px solid white",
+          borderRadius: "8px",
+          backgroundColor: "#00000066",
+          color: "#f8d99dde",
+        }}
         className="border border-gray-200"
       >
         <>
@@ -353,15 +410,109 @@ const Home: React.FC<appProps> = ({ message }) => {
         )}
       </Paper>
 
+      {/* Stack diagram */}
+      <Box
+        sx={{
+          mb: 6,
+          p: 2,
+          backgroundColor:
+            BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color ||
+            "transparent",
+          border: "1px solid #fff",
+          borderRadius: "8px",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 2,
+            mb: 2,
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ pl: 1, fontWeight: 500, color: "#f8d99d" }}
+          >
+            How ZuZu fits together
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1 }}>
+            {(Object.keys(STACK_DIAGRAMS) as StackView[]).map((view) => {
+              const active = view === stackView;
+              return (
+                <Button
+                  key={view}
+                  size="small"
+                  variant="outlined"
+                  onClick={() => setStackView(view)}
+                  aria-pressed={active}
+                  sx={{
+                    color: active ? "#000" : "#f8d99d",
+                    backgroundColor: active
+                      ? "#f8d99d"
+                      : COLORS.transparentBlackDark,
+                    border: "1px solid #f8d99d",
+                    "&:hover": {
+                      backgroundColor: active ? "#f8d99d" : "#f8d99d22",
+                      border: "1px solid #f8d99d",
+                    },
+                  }}
+                >
+                  {STACK_DIAGRAMS[view].label}
+                </Button>
+              );
+            })}
+          </Box>
+        </Box>
+        <Link
+          href={activeDiagram.src}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ display: "block" }}
+        >
+          <Box
+            component="img"
+            src={activeDiagram.src}
+            alt={activeDiagram.alt}
+            sx={{
+              display: "block",
+              width: "100%",
+              height: "auto",
+              borderRadius: "8px",
+            }}
+          />
+        </Link>
+      </Box>
+
       {/* Technologies grid */}
       <Box>
-        <Typography variant="h5" gutterBottom sx={{ pl: 2, mt: 4, fontWeight: 500, backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", border: "1px solid #fff", color: "#f8d99d", borderRadius: "8px", p: 1 }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{
+            pl: 2,
+            mt: 4,
+            fontWeight: 500,
+            backgroundColor:
+              BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color ||
+              "transparent",
+            border: "1px solid #fff",
+            color: "#f8d99d",
+            borderRadius: "8px",
+            p: 1,
+          }}
+        >
           Frontend Technologies
         </Typography>
-        <Grid container spacing={3} sx={{ mb: 4}}>
+        <Grid container spacing={3} sx={{ mb: 4 }}>
           {frontendTech.map((tech) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
-              <Card className="h-full hover:shadow-md transition-shadow"  sx={{ backgroundColor: "#ffffff8f" }}>
+              <Card
+                className="h-full hover:shadow-md transition-shadow"
+                sx={{ backgroundColor: "#ffffff8f" }}
+              >
                 <CardContent>
                   <Typography variant="h6" component="h3" gutterBottom>
                     {tech.name}
@@ -375,13 +526,30 @@ const Home: React.FC<appProps> = ({ message }) => {
           ))}
         </Grid>
 
-        <Typography variant="h5" gutterBottom sx={{ pl: 2, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", border: "1px solid #fff", borderRadius: "8px", p: 1 }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{
+            pl: 2,
+            fontWeight: 500,
+            color: "#f8d99d",
+            backgroundColor:
+              BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color ||
+              "transparent",
+            border: "1px solid #fff",
+            borderRadius: "8px",
+            p: 1,
+          }}
+        >
           Backend Technologies
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {backendTech.map((tech) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
-              <Card className="h-full hover:shadow-md transition-shadow" sx={{ backgroundColor: "#ffffff8f" }}>
+              <Card
+                className="h-full hover:shadow-md transition-shadow"
+                sx={{ backgroundColor: "#ffffff8f" }}
+              >
                 <CardContent>
                   <Typography variant="h6" component="h3" gutterBottom>
                     {tech.name}
@@ -395,13 +563,30 @@ const Home: React.FC<appProps> = ({ message }) => {
           ))}
         </Grid>
 
-        <Typography variant="h5" gutterBottom sx={{ pl: 2, fontWeight: 500, color: "#f8d99d", backgroundColor: BACKGROUND_COLORS.find(c => c.name === "smoke")?.color || "transparent", border: "1px solid #fff", borderRadius: "8px", p: 1 }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{
+            pl: 2,
+            fontWeight: 500,
+            color: "#f8d99d",
+            backgroundColor:
+              BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color ||
+              "transparent",
+            border: "1px solid #fff",
+            borderRadius: "8px",
+            p: 1,
+          }}
+        >
           Development Tools
         </Typography>
         <Grid container spacing={3}>
           {devTools.map((tech) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
-              <Card className="h-full hover:shadow-md transition-shadow" sx={{ backgroundColor: "#ffffff8f" }}>
+              <Card
+                className="h-full hover:shadow-md transition-shadow"
+                sx={{ backgroundColor: "#ffffff8f" }}
+              >
                 <CardContent>
                   <Typography variant="h6" component="h3" gutterBottom>
                     {tech.name}

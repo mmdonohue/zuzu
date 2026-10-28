@@ -1,0 +1,658 @@
+{
+  "schemaVersion": "0.3.0",
+  "kind": "graph",
+  "title": "ZuZu stack",
+  "summary": "One Vercel deployment: a React SPA (and its branded microsites) talks to an Express API running as a serverless function. Express resolves the site, enforces CSRF, JWT and rate limits, then reaches Supabase for data, OpenRouter for AI and Mailgun for email. Every OpenRouter key stays on the server.",
+  "lenses": [
+    "architecture",
+    "data-flow"
+  ],
+  "provenance": {
+    "repo": {
+      "owner": "mmdonohue",
+      "name": "zuzu",
+      "host": "github.com"
+    },
+    "base": {
+      "sha": "35dc83d6a42415743129aaac9dea3356ba70f5f1",
+      "ref": "main"
+    },
+    "head": {
+      "sha": "fb5a2934ccff9567d7c4d46f552e57ae129e13a2",
+      "ref": "main"
+    }
+  },
+  "lanes": [
+    {
+      "id": "browser",
+      "label": "Browser",
+      "subtitle": "React 18 \u00b7 Webpack",
+      "order": 0
+    },
+    {
+      "id": "api",
+      "label": "Express API",
+      "subtitle": "Vercel serverless",
+      "order": 1
+    },
+    {
+      "id": "data",
+      "label": "Data",
+      "subtitle": "Supabase",
+      "order": 2
+    },
+    {
+      "id": "external",
+      "label": "External",
+      "subtitle": "Third-party APIs",
+      "order": 3
+    }
+  ],
+  "nodes": [
+    {
+      "id": "spa",
+      "label": "ZuZu app",
+      "kind": "app",
+      "delta": "unchanged",
+      "lane": "browser",
+      "subtitle": "MUI \u00b7 Tailwind",
+      "summary": "The main single-page app: dashboard, playground, LeetMaster, admin. Redux holds UI and auth state; TanStack Query caches server data.",
+      "files": [
+        {
+          "path": "src/App.tsx"
+        },
+        {
+          "path": "src/index.tsx"
+        },
+        {
+          "path": "src/store/index.ts"
+        }
+      ],
+      "badges": [
+        "Redux",
+        "TanStack Query"
+      ]
+    },
+    {
+      "id": "microsites",
+      "label": "Microsites",
+      "kind": "ui",
+      "delta": "unchanged",
+      "lane": "browser",
+      "subtitle": "moxilabs.ai \u00b7 ARK OS",
+      "summary": "Full-screen branded sites served from the same build. A custom domain maps to its site prefix on load; no redirect, no iframe.",
+      "files": [
+        {
+          "path": "src/sites/moxilabs/index.tsx"
+        },
+        {
+          "path": "src/sites/ark_os/index.tsx"
+        },
+        {
+          "path": "src/hooks/useHostnameRouter.ts"
+        }
+      ],
+      "badges": [
+        "custom domains"
+      ]
+    },
+    {
+      "id": "playground",
+      "label": "OpenRouter playground",
+      "kind": "ui",
+      "delta": "unchanged",
+      "lane": "browser",
+      "subtitle": "streaming chat",
+      "summary": "Pick a model, stream a reply, rate it. Holds no API key: every call goes through the server.",
+      "files": [
+        {
+          "path": "src/pages/OpenRouter.tsx"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "api-client",
+      "label": "API client",
+      "kind": "module",
+      "delta": "unchanged",
+      "lane": "browser",
+      "subtitle": "fetchWithCsrf \u00b7 apiFetch",
+      "summary": "Sends cookies on every call, adds the CSRF header to writes, and refreshes an expired token once.",
+      "files": [
+        {
+          "path": "src/services/api.ts"
+        },
+        {
+          "path": "src/utils/api.ts"
+        },
+        {
+          "path": "src/services/csrf.service.ts"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "vercel-entry",
+      "label": "/api/*",
+      "kind": "function",
+      "delta": "unchanged",
+      "lane": "api",
+      "subtitle": "Vercel function",
+      "summary": "Vercel rewrites every /api path to one function that loads the compiled Express app.",
+      "files": [
+        {
+          "path": "api/index.ts"
+        },
+        {
+          "path": "vercel.json"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "middleware",
+      "label": "Middleware chain",
+      "kind": "module",
+      "delta": "unchanged",
+      "lane": "api",
+      "subtitle": "helmet \u00b7 CORS \u00b7 site \u00b7 limit \u00b7 CSRF",
+      "summary": "Runs on every request: security headers, CORS, site lookup by hostname, the IP rate limit and the CSRF check on writes.",
+      "files": [
+        {
+          "path": "server/index.ts"
+        },
+        {
+          "path": "server/middleware/site-resolver.ts"
+        },
+        {
+          "path": "server/middleware/csrf.middleware.ts"
+        }
+      ],
+      "badges": [
+        "CSRF"
+      ]
+    },
+    {
+      "id": "auth",
+      "label": "JWT auth",
+      "kind": "module",
+      "delta": "unchanged",
+      "lane": "api",
+      "subtitle": "cookies \u00b7 2FA",
+      "summary": "Login with bcrypt and an emailed code, then access and refresh tokens in httpOnly cookies.",
+      "files": [
+        {
+          "path": "server/routes/auth.routes.ts"
+        },
+        {
+          "path": "server/middleware/auth.middleware.ts"
+        },
+        {
+          "path": "server/services/auth.service.ts"
+        }
+      ],
+      "badges": [
+        "bcrypt"
+      ]
+    },
+    {
+      "id": "openrouter-routes",
+      "label": "/api/openrouter",
+      "kind": "route",
+      "delta": "unchanged",
+      "lane": "api",
+      "subtitle": "chat \u00b7 usage",
+      "summary": "Streams chat replies, enforces the free-model policy (paid models are admin-only), limits each user to 10 chats a minute, and saves every exchange.",
+      "files": [
+        {
+          "path": "server/routes/openrouter.ts"
+        },
+        {
+          "path": "server/services/openrouterPolicy.ts"
+        },
+        {
+          "path": "server/services/openrouter.service.ts"
+        }
+      ],
+      "badges": [
+        "10/min per user",
+        "SSE"
+      ]
+    },
+    {
+      "id": "site-routes",
+      "label": "Site routes",
+      "kind": "route",
+      "delta": "unchanged",
+      "lane": "api",
+      "subtitle": "contact \u00b7 events",
+      "summary": "Lead forms and event sign-ups for every microsite, looked up by site slug.",
+      "files": [
+        {
+          "path": "server/routes/contact.ts"
+        },
+        {
+          "path": "server/routes/events.ts"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "app-routes",
+      "label": "App routes",
+      "kind": "route",
+      "delta": "unchanged",
+      "lane": "api",
+      "subtitle": "templates \u00b7 admin",
+      "summary": "The rest of the app's API: prompt templates, LeetMaster problems, the WTA visualizer and site admin.",
+      "files": [
+        {
+          "path": "server/routes/templates.ts"
+        },
+        {
+          "path": "server/routes/leetmaster.ts"
+        },
+        {
+          "path": "server/routes/wta.ts"
+        },
+        {
+          "path": "server/routes/admin.ts"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "email-service",
+      "label": "Email service",
+      "kind": "module",
+      "delta": "unchanged",
+      "lane": "api",
+      "subtitle": "nodemailer",
+      "summary": "Sends login codes, contact notices and event confirmations.",
+      "files": [
+        {
+          "path": "server/services/email.service.ts"
+        }
+      ],
+      "badges": []
+    },
+    {
+      "id": "supabase",
+      "label": "Supabase Postgres",
+      "kind": "datastore",
+      "delta": "unchanged",
+      "lane": "data",
+      "subtitle": "users \u00b7 sites \u00b7 events \u00b7 openrouter_events",
+      "summary": "One database for users and roles, microsite config, events and sign-ups, chat history and the shared rate-limit counters.",
+      "files": [
+        {
+          "path": "server/services/supabase.ts"
+        }
+      ],
+      "badges": [
+        "rate_limits"
+      ]
+    },
+    {
+      "id": "openrouter",
+      "label": "OpenRouter",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "external",
+      "subtitle": "hundreds of models",
+      "summary": "One API in front of many model providers. Free models by default.",
+      "files": [],
+      "badges": []
+    },
+    {
+      "id": "mailgun",
+      "label": "Mailgun",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "external",
+      "subtitle": "SMTP",
+      "summary": "Delivers every email ZuZu sends.",
+      "files": [],
+      "badges": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "spa-to-client",
+      "from": "spa",
+      "to": "api-client",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "playground-to-client",
+      "from": "playground",
+      "to": "api-client",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "microsites-to-client",
+      "from": "microsites",
+      "to": "api-client",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "client-to-entry",
+      "from": "api-client",
+      "to": "vercel-entry",
+      "kind": "http",
+      "delta": "unchanged",
+      "label": "/api/* + cookies",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "entry-to-middleware",
+      "from": "vercel-entry",
+      "to": "middleware",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "middleware-to-sites",
+      "from": "middleware",
+      "to": "supabase",
+      "kind": "data",
+      "delta": "unchanged",
+      "label": "site by hostname",
+      "emphasis": "muted",
+      "animated": false
+    },
+    {
+      "id": "middleware-to-auth",
+      "from": "middleware",
+      "to": "auth",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "middleware-to-openrouter-routes",
+      "from": "middleware",
+      "to": "openrouter-routes",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "middleware-to-site-routes",
+      "from": "middleware",
+      "to": "site-routes",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "middleware-to-app-routes",
+      "from": "middleware",
+      "to": "app-routes",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "auth-to-supabase",
+      "from": "auth",
+      "to": "supabase",
+      "kind": "data",
+      "delta": "unchanged",
+      "label": "users \u00b7 roles",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "auth-to-email",
+      "from": "auth",
+      "to": "email-service",
+      "kind": "call",
+      "delta": "unchanged",
+      "label": "login code",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "openrouter-routes-to-openrouter",
+      "from": "openrouter-routes",
+      "to": "openrouter",
+      "kind": "http",
+      "delta": "unchanged",
+      "label": "stream \u00b7 server-side key",
+      "emphasis": "hero",
+      "animated": true,
+      "summary": "The only path to OpenRouter. The browser never holds a key."
+    },
+    {
+      "id": "openrouter-routes-to-supabase",
+      "from": "openrouter-routes",
+      "to": "supabase",
+      "kind": "data",
+      "delta": "unchanged",
+      "label": "chat history \u00b7 limits",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "site-routes-to-supabase",
+      "from": "site-routes",
+      "to": "supabase",
+      "kind": "data",
+      "delta": "unchanged",
+      "label": "contacts \u00b7 sign-ups",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "site-routes-to-email",
+      "from": "site-routes",
+      "to": "email-service",
+      "kind": "call",
+      "delta": "unchanged",
+      "label": "confirmations",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "app-routes-to-supabase",
+      "from": "app-routes",
+      "to": "supabase",
+      "kind": "data",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "email-to-mailgun",
+      "from": "email-service",
+      "to": "mailgun",
+      "kind": "http",
+      "delta": "unchanged",
+      "label": "SMTP",
+      "emphasis": "normal",
+      "animated": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "playground-chat",
+      "title": "A playground chat",
+      "summary": "What happens between pressing Send and seeing the rating stars.",
+      "delta": "unchanged",
+      "participants": [
+        {
+          "node": "playground",
+          "label": "Playground"
+        },
+        {
+          "node": "openrouter-routes",
+          "label": "/api/openrouter/chat"
+        },
+        {
+          "node": "supabase",
+          "label": "Supabase"
+        },
+        {
+          "node": "openrouter",
+          "label": "OpenRouter"
+        }
+      ],
+      "messages": [
+        {
+          "id": "send",
+          "from": "playground",
+          "to": "openrouter-routes",
+          "label": "POST /chat \u00b7 model + messages",
+          "kind": "sync",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "count",
+          "from": "openrouter-routes",
+          "to": "supabase",
+          "label": "count this minute's chats",
+          "kind": "sync",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "count-ok",
+          "from": "supabase",
+          "to": "openrouter-routes",
+          "label": "under 10 \u00b7 go",
+          "kind": "return",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "policy",
+          "from": "openrouter-routes",
+          "to": "openrouter-routes",
+          "label": "free model? cap max_tokens",
+          "kind": "self",
+          "delta": "unchanged",
+          "animated": true,
+          "note": "Paid models pass only for admins."
+        },
+        {
+          "id": "stream-request",
+          "from": "openrouter-routes",
+          "to": "openrouter",
+          "label": "chat/completions \u00b7 stream",
+          "kind": "sync",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "chunks",
+          "from": "openrouter",
+          "to": "openrouter-routes",
+          "label": "SSE chunks",
+          "kind": "return",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "relay",
+          "from": "openrouter-routes",
+          "to": "playground",
+          "label": "relay chunks as they land",
+          "kind": "async",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "stats",
+          "from": "openrouter-routes",
+          "to": "openrouter",
+          "label": "GET /generation",
+          "kind": "sync",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "stats-back",
+          "from": "openrouter",
+          "to": "openrouter-routes",
+          "label": "tokens \u00b7 cost \u00b7 latency",
+          "kind": "return",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "save",
+          "from": "openrouter-routes",
+          "to": "supabase",
+          "label": "insert openrouter_events",
+          "kind": "async",
+          "delta": "unchanged",
+          "animated": true
+        },
+        {
+          "id": "saved",
+          "from": "openrouter-routes",
+          "to": "playground",
+          "label": "event: saved \u00b7 id",
+          "kind": "async",
+          "delta": "unchanged",
+          "animated": true,
+          "note": "The id turns on the rating stars."
+        }
+      ]
+    }
+  ],
+  "views": [
+    {
+      "id": "overview",
+      "title": "ZuZu stack",
+      "lens": "architecture",
+      "summary": "Browser, API, data and the services behind them.",
+      "scope": {
+        "kind": "all"
+      },
+      "defaultOpen": true,
+      "children": []
+    },
+    {
+      "id": "playground-chat-view",
+      "title": "A playground chat",
+      "lens": "data-flow",
+      "scope": {
+        "kind": "selection",
+        "flows": [
+          "playground-chat"
+        ]
+      },
+      "defaultOpen": false,
+      "children": []
+    }
+  ],
+  "layout": {
+    "direction": "right",
+    "laneOrder": [
+      "browser",
+      "api",
+      "data",
+      "external"
+    ]
+  }
+}
