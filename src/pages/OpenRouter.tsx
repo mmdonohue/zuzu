@@ -1,6 +1,5 @@
 // src/pages/OpenRouter.tsx
 import { useRef, useEffect, useState, SyntheticEvent } from "react";
-import { createParser, EventSourceParserEvent } from "eventsource-parser";
 import {
   get_encoding,
   encoding_for_model,
@@ -51,6 +50,7 @@ import { on } from "events";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/utils/api";
 import { fetchWithCsrf } from "@/services/api";
+import { csrfService } from "@/services/csrf.service";
 import {
   useCreateTemplate,
   useUpdateTemplate,
@@ -98,16 +98,11 @@ type Conversation = {
   };
 };
 
-type OpenRouterGenerationData = {
-  data?: {
-    latency?: number;
-    moderation_latency?: number;
-    generation_time?: number;
-    tokens_prompt?: number;
-    tokens_completion?: number;
-    total_cost?: number;
-  };
-} | null;
+// Events the server appends after relaying OpenRouter's stream
+type ChatServerEvent = {
+  id?: string;
+  message?: string;
+};
 
 // Updated types for OpenRouter API models response
 type ModelPricing = {
@@ -157,6 +152,8 @@ const max_context_length = 2000000;
 const min_context_length = 1000;
 const context_adjust = 1.2;
 const token_adjust = 1.2;
+const HTTP_UNAUTHORIZED = 401;
+const HTTP_FORBIDDEN = 403;
 const max_token_display = 1000000;
 const min_token_display = 1000;
 const token_step = 10000;
@@ -289,13 +286,11 @@ const OpenRouterComponent = () => {
   }, []);
 
   // State for OpenRouter API
-  const apiKey = process.env.REACT_APP_ZUZU_OPENROUTER_KEY;
   const [prompt, setPrompt] = useState("");
   const [results, setResults] = useState("");
   const [model, setModel] = useState(model_default);
   const [modelObject, setModelObject] = useState<OpenRouterModel | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
   const [messages, setMessages] = useState<
     Array<{ role: string; content: string }>
   >([]);
@@ -610,135 +605,6 @@ const OpenRouterComponent = () => {
     }
   };
 
-  // Save conversation to Supabase
-  const saveConversation = async (
-    model: string,
-    prompt: string,
-    response: string,
-    responseTime: number,
-    generationId: string | null = null,
-    generationData: OpenRouterGenerationData = null,
-    isRetry = false,
-  ) => {
-    const requestBody = {
-      model,
-      prompt,
-      response,
-      response_time: responseTime,
-      user_id: user?.id || null,
-      template_id: currentTemplate?.id || null,
-      tags: currentTemplate?.tags || [],
-      generation_id: generationId,
-      // Extract generation data fields if available
-      latency: generationData?.data?.latency || null,
-      moderation_latency: generationData?.data?.moderation_latency || null,
-      generation_time: generationData?.data?.generation_time || null,
-      tokens_prompt: generationData?.data?.tokens_prompt || null,
-      tokens_completion: generationData?.data?.tokens_completion || null,
-      total_cost: generationData?.data?.total_cost || null,
-    };
-
-    const saveResponse = await fetchWithCsrf("/api/openrouter/save", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!saveResponse.ok) {
-      const errorData = await saveResponse.json().catch(() => null);
-
-      // If auth token expired, refresh and retry once
-      if (saveResponse.status === 401 && !isRetry) {
-        console.log("Auth token expired, refreshing...");
-
-        // Call refresh endpoint
-        const refreshResponse = await fetch("/api/auth/refresh-token", {
-          method: "POST",
-          credentials: "include",
-        });
-
-        if (refreshResponse.ok) {
-          console.log("Token refreshed, retrying save...");
-          const AUTH_RETRY_DELAY_MS = 100;
-          await new Promise((resolve) =>
-            setTimeout(resolve, AUTH_RETRY_DELAY_MS),
-          );
-
-          // Retry with refreshed token
-          return saveConversation(
-            model,
-            prompt,
-            response,
-            responseTime,
-            generationId,
-            generationData,
-            true,
-          );
-        } else {
-          throw new Error(
-            "Session expired. Please refresh the page and try again.",
-          );
-        }
-      }
-
-      // If CSRF validation failed, retry once with a fresh token
-      if (
-        saveResponse.status === 403 &&
-        errorData?.code === "CSRF_VALIDATION_FAILED"
-      ) {
-        console.log("CSRF token failed, retrying with fresh token...");
-
-        const CSRF_RETRY_DELAY_MS = 100;
-        await new Promise((resolve) =>
-          setTimeout(resolve, CSRF_RETRY_DELAY_MS),
-        );
-
-        // Retry the request
-        const retryResponse = await fetchWithCsrf("/api/openrouter/save", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody),
-        });
-
-        if (!retryResponse.ok) {
-          throw new Error(
-            `Failed to save conversation after retry: ${retryResponse.statusText}`,
-          );
-        }
-
-        const retryData = await retryResponse.json();
-        // Store event ID and reset rating for new event
-        setCurrentEventId(retryData.id);
-        setCurrentRating(-1);
-        return; // Success on retry
-      }
-
-      throw new Error(
-        `Failed to save conversation: ${saveResponse.statusText}`,
-      );
-    }
-
-    // Capture the saved event data to get the ID
-    const savedEvent = await saveResponse.json();
-
-    // Verify we got an ID back
-    if (!savedEvent?.id) {
-      console.error("Save response missing ID:", savedEvent);
-      throw new Error("Failed to save: No event ID returned from server");
-    }
-
-    // Store event ID and reset rating for new event
-    setCurrentEventId(savedEvent.id);
-    setCurrentRating(-1);
-
-    // Clear current template after saving
-    setCurrentTemplate(null);
-    // Reload history if we're on the history tab
-    if (tabValue === 1) {
-      loadHistory();
-    }
-  };
-
   // Deactivate a conversation
   const deactivateConversation = async (id: string) => {
     try {
@@ -879,25 +745,6 @@ const OpenRouterComponent = () => {
     }
   }, [tabValue, historyTimeframe]);
 
-  // Validate API key on component mount
-  useEffect(() => {
-    if (!apiKey) {
-      setApiKeyError(
-        "API key is missing. Please check your environment variables.",
-      );
-    } else if (apiKey === "undefined" || apiKey === "null") {
-      setApiKeyError(
-        `API key has invalid value: "${apiKey}". Check your .env file and webpack configuration.`,
-      );
-    } else {
-      // Log only a portion of the key for debugging (first 4 chars)
-      const keyPreview =
-        apiKey.substring(0, 4) + "..." + apiKey.substring(apiKey.length - 4);
-      // console.log(`API key loaded: ${keyPreview}`);
-      setApiKeyError(null);
-    }
-  }, [apiKey]);
-
   // Cancel ongoing streaming
   const cancelStreaming = () => {
     if (controller) {
@@ -925,13 +772,63 @@ const OpenRouterComponent = () => {
     setResults("");
   };
 
-  // Stream completion from OpenRouter
-  async function streamCompletion() {
-    if (!prompt.trim()) return;
-    if (!apiKey) {
-      setApiKeyError("Cannot send request: API key is missing");
+  // POST to the server chat proxy; refresh auth or CSRF once and retry on failure
+  const postChat = async (
+    body: string,
+    signal: AbortSignal,
+    isRetry = false,
+  ): Promise<Response> => {
+    const response = await fetchWithCsrf("/api/openrouter/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      signal,
+    });
+    if (isRetry) return response;
+
+    if (response.status === HTTP_UNAUTHORIZED) {
+      const refreshResponse = await fetch("/api/auth/refresh-token", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (refreshResponse.ok) return postChat(body, signal, true);
+      return response;
+    }
+
+    if (response.status === HTTP_FORBIDDEN) {
+      const errorData = await response.clone().json().catch(() => null);
+      if (errorData?.code === "CSRF_VALIDATION_FAILED") {
+        await csrfService.refreshToken();
+        return postChat(body, signal, true);
+      }
+    }
+    return response;
+  };
+
+  // Server-emitted events that follow OpenRouter's stream
+  const handleServerEvent = (event: string, data: ChatServerEvent) => {
+    if (event === "saved" && data.id) {
+      setCurrentEventId(data.id);
+      setCurrentRating(-1);
+      setCurrentTemplate(null);
+      if (tabValue === 1) loadHistory();
       return;
     }
+    // A failed or skipped save leaves no event to rate
+    setCurrentEventId(null);
+    setCurrentRating(-1);
+    if (event === "save_error") {
+      showSnackbar(data.message || "Failed to save conversation", "error");
+    } else if (event === "save_skipped") {
+      showSnackbar(data.message || "Response was not saved", "warning");
+    } else if (event === "error") {
+      setResults((prev) => prev + "\n\nError: " + (data.message || "Stream failed"));
+    }
+  };
+
+  // Stream completion through the server proxy (key, model policy and save live server-side)
+  async function streamCompletion() {
+    if (!prompt.trim()) return;
 
     // Create an AbortController for cancellation
     const abortController = new AbortController();
@@ -939,9 +836,7 @@ const OpenRouterComponent = () => {
 
     setIsStreaming(true);
     setResults(""); // Clear previous results
-
-    // Start timer for response time tracking
-    const startTime = Date.now();
+    setCurrentEventId(null);
 
     // Prepare conversation messages including system message if provided
     const conversationMessages = [
@@ -956,207 +851,85 @@ const OpenRouterComponent = () => {
     addMessage("user", prompt);
 
     try {
-      // console.log(`Sending request to OpenRouter with model: ${model}`, 'Prompt:', prompt);
-
-      const response = await fetch(
-        "https://openrouter.ai/api/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-            "HTTP-Referer": window.location.origin, // Required by OpenRouter
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: conversationMessages,
-            stream: true,
-            temperature: temperature,
-            max_tokens: currTokens - Math.floor(promptTokens * token_adjust), // Adjust max tokens based on prompt size
-          }),
-          signal: abortController.signal, // For cancellation
-        },
+      const requestedMaxTokens = currTokens - Math.floor(promptTokens * token_adjust);
+      const response = await postChat(
+        JSON.stringify({
+          model,
+          messages: conversationMessages,
+          temperature,
+          // Server clamps this to the model's real limit
+          max_tokens: requestedMaxTokens > 0 ? requestedMaxTokens : undefined,
+          template_id: currentTemplate?.id || null,
+          tags: currentTemplate?.tags || [],
+        }),
+        abortController.signal,
       );
 
       if (!response.ok) {
-        const errorText = await response.text();
+        const errorData = await response.json().catch(() => null);
+        const retryNote = errorData?.retry_at
+          ? ` Try again after ${format(new Date(errorData.retry_at), "h:mm a")}.`
+          : "";
         throw new Error(
-          `HTTP error! status: ${response.status}. Details: ${errorText}`,
+          (errorData?.message || errorData?.error || `Request failed (${response.status})`) +
+            retryNote,
         );
       }
 
-      const parser = createParser({
-        onEvent: (event: EventSourceParserEvent) => {
-          // console.log('Received event:', event);
-          // More permissive check - just make sure we have data to parse
-          if (event.type === "event" && "data" in event) {
-            try {
-              // Handle [DONE] marker if it exists
-              if (event.data === "[DONE]") {
-                // console.log('Stream completed with [DONE] marker');
-                return;
-              }
+      if (!response.body) throw new Error("No response stream");
 
-              const json = JSON.parse(event.data);
-              // console.log('Parsed JSON:', json);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let fullResponse = "";
 
-              // Try different possible formats
-              const content =
-                json.choices?.[0]?.delta?.content || // OpenAI-style format
-                json.content || // Simple format
-                json.text || // Alternative format
-                json.completion || // Another alternative
-                "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-              if (content) {
-                // console.log('Content received:', content);
-                setResults((prev) => prev + content);
-              }
-            } catch (e) {
-              console.error("Error parsing streaming response:", e);
-            }
+        buffer += decoder.decode(value, { stream: true });
+        // SSE events are separated by a blank line
+        const parts = buffer.split("\n\n");
+        buffer = parts.pop() || "";
+
+        for (const part of parts) {
+          let eventName = "";
+          let eventData = "";
+          for (const line of part.split("\n")) {
+            if (line.startsWith("event: ")) eventName = line.slice("event: ".length).trim();
+            else if (line.startsWith("data: ")) eventData += line.slice("data: ".length);
           }
-        },
-      });
+          eventData = eventData.trim();
+          if (!eventData || eventData === "[DONE]") continue;
 
-      if (response.body) {
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-
-        try {
-          let buffer = "";
-          let fullResponse = "";
-          let capturedGenerationId: string | null = null;
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-              // console.log('Stream reading complete');
-              break;
-            }
-
-            // Decode the chunk
-            const chunk = decoder.decode(value, { stream: true });
-            // console.log('Received chunk:', chunk);
-
-            // Add to buffer and process
-            buffer += chunk;
-
-            // Split on double newlines which typically separate SSE events
-            const parts = buffer.split("\n\n");
-            buffer = parts.pop() || "";
-
-            for (const part of parts) {
-              if (part.trim()) {
-                // Handle each event
-                const eventData = part.replace(/^data: /, "").trim();
-                if (eventData) {
-                  // console.log('Processing event data:', eventData);
-                  if (eventData === "[DONE]") {
-                    // console.log('Stream completed with [DONE] marker');
-                    continue;
-                  }
-                  try {
-                    const json = JSON.parse(eventData);
-
-                    // Capture generation ID from the first chunk
-                    if (!capturedGenerationId && json.id) {
-                      capturedGenerationId = json.id;
-                      setGenerationId(json.id);
-                    }
-
-                    const content = json.choices?.[0]?.delta?.content || "";
-                    if (content) {
-                      fullResponse += content;
-                      setResults(fullResponse);
-                    }
-                  } catch (e) {
-                    console.error("Error parsing JSON:", e);
-                  }
-                }
-              }
-            }
-          }
-
-          // Calculate response time
-          const responseTime = (Date.now() - startTime) / convert_milli;
-
-          // Add assistant message to conversation history
-          addMessage("assistant", fullResponse);
-
-          // Fetch detailed generation data if we have a generation ID
-          let generationData = null;
-          if (capturedGenerationId) {
-            try {
-              // Wait for OpenRouter to process the generation data
-              console.log("Waiting for generation data to be available...");
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-
-              const genResponse = await fetch(
-                `https://openrouter.ai/api/v1/generation?id=${capturedGenerationId}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                  },
-                },
-              );
-
-              if (genResponse.ok) {
-                generationData = await genResponse.json();
-                console.log("Generation data:", generationData);
-              } else {
-                console.warn(
-                  "Generation data not available:",
-                  genResponse.status,
-                );
-              }
-            } catch (error) {
-              console.error("Error fetching generation data:", error);
-              // Continue even if this fails
-            }
-          }
-
-          // Save the conversation to Supabase
-          console.log("Saving conversation:", {
-            model,
-            prompt: prompt.substring(0, 50),
-            responseLength: fullResponse.length,
-          });
           try {
-            await saveConversation(
-              model,
-              prompt,
-              fullResponse,
-              responseTime,
-              capturedGenerationId,
-              generationData,
-            );
-            console.log("Conversation saved successfully");
-          } catch (saveError) {
-            console.error("Failed to save conversation:", saveError);
-            showSnackbar(
-              saveError instanceof Error
-                ? saveError.message
-                : "Failed to save conversation",
-              "error",
-            );
-            // Don't set event ID if save failed
-            setCurrentEventId(null);
-            setCurrentRating(-1);
-          }
+            const json = JSON.parse(eventData);
+            if (eventName) {
+              handleServerEvent(eventName, json as ChatServerEvent);
+              continue;
+            }
 
-          // Keep the prompt so it can be reused with different models
-          // Users can manually clear it if needed with "Clear All" button
-        } catch (error) {
-          if ((error as Error).name === "AbortError") {
-            // console.log('Stream reading aborted by user');
-          } else {
-            console.error("Error reading stream:", error);
-            throw error;
+            // OpenRouter chunk relayed by the server
+            if (json.id) setGenerationId(json.id);
+            if (json.error) {
+              fullResponse += `\n\nError: ${json.error.message || "Stream error"}`;
+              setResults(fullResponse);
+              continue;
+            }
+            const content = json.choices?.[0]?.delta?.content || "";
+            if (content) {
+              fullResponse += content;
+              setResults(fullResponse);
+            }
+          } catch (e) {
+            console.error("Error parsing stream event:", e);
           }
         }
       }
+
+      // Add assistant message to conversation history
+      addMessage("assistant", fullResponse);
+      // Keep the prompt so it can be reused with different models
     } catch (error) {
       if ((error as Error).name !== "AbortError") {
         console.error("Streaming error:", error);
@@ -1382,11 +1155,6 @@ const OpenRouterComponent = () => {
       {/* Chat Tab */}
       {tabValue === 0 && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          {apiKeyError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {apiKeyError}
-            </Alert>
-          )}
 
           {/* Display conversation if there are messages */}
           {messages.length > 0 && (
@@ -1936,7 +1704,7 @@ const OpenRouterComponent = () => {
                 },
               }}
               onClick={streamCompletion}
-              disabled={isStreaming || !prompt.trim() || !!apiKeyError}
+              disabled={isStreaming || !prompt.trim()}
               startIcon={
                 isStreaming ? (
                   <CircularProgress size={20} color="inherit" />

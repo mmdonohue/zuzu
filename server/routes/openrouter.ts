@@ -2,12 +2,41 @@
 import express from "express";
 import { Request, Response } from "express";
 import { supabase } from "../services/supabase.js";
-import { authenticateToken } from "../middleware/auth.middleware.js";
-import { enhancementLimiter } from "../middleware/rateLimiter.middleware.js";
-import { validatePromptEnhancement } from "../middleware/validation.middleware.js";
+import {
+  authenticateToken,
+  isAdminRole,
+} from "../middleware/auth.middleware.js";
+import {
+  chatLimiter,
+  enhancementLimiter,
+} from "../middleware/rateLimiter.middleware.js";
+import {
+  validateChatCompletion,
+  validatePromptEnhancement,
+} from "../middleware/validation.middleware.js";
+import {
+  assertModelAllowed,
+  clampMaxTokens,
+  ModelPolicyError,
+} from "../services/openrouterPolicy.js";
+import {
+  classifyUpstreamError,
+  fetchActivity,
+  fetchGeneration,
+  fetchKeyInfo,
+  OpenRouterConfigError,
+  streamChatCompletion,
+} from "../services/openrouter.service.js";
 import logger from "../config/logger.js";
 
 const router = express.Router();
+
+const HTTP_OK = 200;
+const HTTP_BAD_GATEWAY = 502;
+const HTTP_SERVICE_UNAVAILABLE = 503;
+const MS_PER_SECOND = 1000;
+const SSE_DATA_PREFIX = "data: ";
+const SSE_DONE_MARKER = "[DONE]";
 
 // Type for OpenRouter API response
 interface OpenRouterResponse {
@@ -18,6 +47,51 @@ interface OpenRouterResponse {
   }>;
 }
 
+type ChatRequestBody = {
+  model: string;
+  messages: Array<{ role: string; content: string }>;
+  temperature?: number;
+  max_tokens?: number;
+  template_id?: string | null;
+  tags?: string[];
+};
+
+type ChatStreamChunk = {
+  id?: string;
+  choices?: Array<{ delta?: { content?: string } }>;
+  error?: { message?: string };
+};
+
+function writeSseEvent(
+  res: Response,
+  event: string,
+  data: Record<string, unknown>,
+): void {
+  if (res.writableEnded || res.destroyed) return;
+  res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+}
+
+async function relay(
+  res: Response,
+  call: () => Promise<{ status: number; body: unknown }>,
+  what: string,
+): Promise<void> {
+  try {
+    const { status, body } = await call();
+    res.status(status).json(body);
+  } catch (error) {
+    const configError = error instanceof OpenRouterConfigError;
+    logger.error(`OpenRouter ${what} proxy failed:`, error);
+    res.status(configError ? HTTP_SERVICE_UNAVAILABLE : HTTP_BAD_GATEWAY).json({
+      success: false,
+      code: configError ? "NOT_CONFIGURED" : "UPSTREAM_ERROR",
+      message: configError
+        ? error.message
+        : `Failed to fetch OpenRouter ${what}`,
+    });
+  }
+}
+
 // Get conversation history (last 24 hours by default)
 router.get(
   "/history",
@@ -26,7 +100,9 @@ router.get(
     const { timeframe } = req.query;
     const days = timeframe === "week" ? 7 : timeframe === "all" ? null : 1; // Default to 1 day if not specified
 
-    logger.info(`Fetching history for user ${req.user?.userId}, timeframe: ${timeframe}`);
+    logger.info(
+      `Fetching history for user ${req.user?.userId}, timeframe: ${timeframe}`,
+    );
 
     try {
       // Build query with user name and template joins
@@ -49,7 +125,9 @@ router.get(
 
       // Add date filter only if not "all"
       if (days !== null) {
-        const dateThreshold = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+        const dateThreshold = new Date(
+          Date.now() - days * 24 * 60 * 60 * 1000,
+        ).toISOString();
         query = query.gte("created", dateThreshold);
       }
 
@@ -85,77 +163,191 @@ router.get(
   },
 );
 
-// Save a new conversation
-router.post("/save", authenticateToken, async (req: Request, res: Response) => {
-  const {
-    model,
-    prompt,
-    response,
-    response_time,
-    user_id,
-    template_id,
-    tags,
-    generation_id,
-    latency,
-    moderation_latency,
-    generation_time,
-    tokens_prompt,
-    tokens_completion,
-    total_cost,
-  } = req.body;
+// Stream a playground completion. The server holds the key, enforces the model
+// policy, relays OpenRouter's SSE unchanged, then saves the event and emits
+// `event: saved` (or `save_error` / `save_skipped`) before closing.
+router.post(
+  "/chat",
+  authenticateToken,
+  chatLimiter,
+  validateChatCompletion,
+  async (req: Request, res: Response) => {
+    const { model, messages, temperature, max_tokens, template_id, tags } =
+      req.body as ChatRequestBody;
+    const userId = req.user?.userId;
+    const startedAt = Date.now();
 
-  try {
-    // Use user_id from request body if provided, otherwise use authenticated user's ID
-    const finalUserId = user_id || req.user?.userId;
+    // Client disconnect (Stop button, tab close) cancels the upstream call too
+    const upstreamAbort = new AbortController();
+    res.on("close", () => {
+      if (!res.writableFinished) upstreamAbort.abort();
+    });
 
-    logger.info(`Saving conversation for user ${finalUserId}, model: ${model}`);
+    try {
+      await assertModelAllowed(model, {
+        allowPaid: isAdminRole(req.user?.role),
+      });
 
-    const { data, error } = await supabase
-      .from("openrouter_events")
-      .insert([
+      const upstream = await streamChatCompletion(
         {
           model,
-          prompt,
-          response,
-          response_time,
-          user_id: finalUserId,
-          template_id: template_id || null,
-          tags: tags || [],
-          generation_id: generation_id || null,
-          latency: latency || null,
-          moderation_latency: moderation_latency || null,
-          generation_time: generation_time || null,
-          tokens_prompt: tokens_prompt || null,
-          tokens_completion: tokens_completion || null,
-          total_cost: total_cost || null,
+          messages,
+          temperature,
+          max_tokens: await clampMaxTokens(model, max_tokens),
         },
-      ])
-      .select();
+        upstreamAbort.signal,
+      );
 
-    if (error) {
-      logger.error("Supabase insert error:", error);
-      throw error;
+      if (!upstream.ok || !upstream.body) {
+        const err = classifyUpstreamError(
+          upstream.status,
+          await upstream.text(),
+          upstream.headers,
+        );
+        logger.warn(
+          `Chat ${model} for user ${userId} rejected upstream: ${err.code} ${err.message}`,
+        );
+        return res.status(err.status).json({ success: false, ...err });
+      }
+
+      res.writeHead(HTTP_OK, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "X-Accel-Buffering": "no",
+      });
+      res.flushHeaders();
+
+      let fullResponse = "";
+      let generationId: string | null = null;
+      let streamError: string | null = null;
+      let buffer = "";
+      const decoder = new TextDecoder();
+      const reader = upstream.body.getReader();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(value);
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.startsWith(SSE_DATA_PREFIX)) continue;
+          const payload = line.slice(SSE_DATA_PREFIX.length).trim();
+          if (!payload || payload === SSE_DONE_MARKER) continue;
+          try {
+            const chunk = JSON.parse(payload) as ChatStreamChunk;
+            generationId ??= chunk.id ?? null;
+            if (chunk.error)
+              streamError = chunk.error.message || "Upstream stream error";
+            fullResponse += chunk.choices?.[0]?.delta?.content ?? "";
+          } catch {
+            // keep-alive comment or partial line — nothing to accumulate
+          }
+        }
+      }
+
+      const responseTime = (Date.now() - startedAt) / MS_PER_SECOND;
+
+      if (streamError || !fullResponse) {
+        const message = streamError || "Model returned an empty response";
+        logger.warn(`Chat ${model} for user ${userId} not saved: ${message}`);
+        writeSseEvent(res, "save_skipped", { message });
+        return res.end();
+      }
+
+      const generation = generationId
+        ? await fetchGeneration(generationId)
+        : null;
+      const stats = generation?.data;
+
+      const { data, error } = await supabase
+        .from("openrouter_events")
+        .insert([
+          {
+            model,
+            prompt: messages[messages.length - 1].content,
+            response: fullResponse,
+            response_time: responseTime,
+            user_id: userId,
+            template_id: template_id || null,
+            tags: tags || [],
+            generation_id: generationId,
+            latency: stats?.latency ?? null,
+            moderation_latency: stats?.moderation_latency ?? null,
+            generation_time: stats?.generation_time ?? null,
+            tokens_prompt: stats?.tokens_prompt ?? null,
+            tokens_completion: stats?.tokens_completion ?? null,
+            total_cost: stats?.total_cost ?? null,
+          },
+        ])
+        .select("id")
+        .single();
+
+      if (error || !data?.id) {
+        logger.error(
+          `Chat ${model} for user ${userId} completed but save failed:`,
+          error,
+        );
+        writeSseEvent(res, "save_error", {
+          message: "Response received but could not be saved",
+        });
+      } else {
+        logger.info(
+          `Chat ${model} for user ${userId} saved as event ${data.id} (${responseTime}s)`,
+        );
+        writeSseEvent(res, "saved", { id: data.id });
+      }
+      res.end();
+    } catch (error) {
+      if (upstreamAbort.signal.aborted) {
+        logger.info(`Chat ${model} for user ${userId} cancelled by client`);
+        if (!res.writableEnded) res.end();
+        return;
+      }
+
+      if (error instanceof ModelPolicyError) {
+        return res
+          .status(error.status)
+          .json({ success: false, code: error.code, message: error.message });
+      }
+
+      const configError = error instanceof OpenRouterConfigError;
+      logger.error(`Chat ${model} for user ${userId} failed:`, error);
+      const message = configError
+        ? "OpenRouter is not configured on the server"
+        : "Chat request failed";
+
+      if (res.headersSent) {
+        writeSseEvent(res, "error", { message });
+        return res.end();
+      }
+      res
+        .status(configError ? HTTP_SERVICE_UNAVAILABLE : HTTP_BAD_GATEWAY)
+        .json({
+          success: false,
+          code: configError ? "NOT_CONFIGURED" : "UPSTREAM_ERROR",
+          message,
+        });
     }
+  },
+);
 
-    if (!data || data.length === 0) {
-      logger.error("No data returned from insert");
-      throw new Error("Insert succeeded but no data returned");
-    }
-
-    if (!data[0].id) {
-      logger.error("Insert returned data without ID:", data[0]);
-      throw new Error("Insert returned data without ID");
-    }
-
-    logger.info(
-      `Conversation saved successfully with ID: ${data[0].id} for user ${finalUserId}`,
-    );
-    res.json(data[0]);
-  } catch (error) {
-    logger.error("Error saving conversation:", error);
-    res.status(500).json({ error: "Failed to save conversation" });
-  }
+// Proxy OpenRouter key info (usage, limits) — keeps the API key server-side
+router.get("/key", authenticateToken, async (req: Request, res: Response) => {
+  await relay(res, fetchKeyInfo, "key info");
 });
+
+// Proxy OpenRouter account activity — needs the provisioning key, server-side only
+router.get(
+  "/activity",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    await relay(res, fetchActivity, "activity");
+  },
+);
 
 // Update conversation status (deactivate)
 router.patch("/status/:id", async (req: Request, res: Response) => {

@@ -198,3 +198,27 @@ Never hardcode `templateId`, `autoplay`, or `showNav` in JSX. Read from `config.
 - Supabase query error check must come before any `.map()` on the result — mapping `null` on error silently returns `[]` instead of throwing.
 
 **Vibe:** Solid build session. Topics live, icons clean, ARK OS scaffolded.
+
+---
+
+### Oct 28, 2026 — Session 5
+
+**Shipped:**
+
+- OpenRouter playground moved fully server-side — no OpenRouter key in the browser bundle anymore
+- `POST /api/openrouter/chat` — auth → `chatLimiter` (10/min per user) → `validateChatCompletion` → model policy → relays OpenRouter SSE unchanged → server fetches generation stats, writes `openrouter_events`, emits `event: saved {id}` (or `save_error` / `save_skipped`). Client disconnect aborts upstream.
+- `GET /api/openrouter/key` and `/activity` proxies (activity uses `ZUZU_OPENROUTER_PROVISION_KEY` server-side)
+- `server/services/openrouterPolicy.ts` — ported from Seravanna `openrouterPolicy.js`: free = all catalog pricing fields 0; paid models admin-only; `clampMaxTokens` caps to `top_provider.max_completion_tokens` / `context_length`
+- `server/services/openrouter.service.ts` — `classifyUpstreamError` (borrowed from Seravanna `llmPool`): free-quota 429 → `FREE_QUOTA_EXHAUSTED` with `retry_at`
+- `server/services/rateLimitStore.ts` + migration 013 — Supabase-backed express-rate-limit store (`rate_limits` table, `increment_rate_limit` RPC). `passOnStoreError: true` — fails open.
+- Removed `POST /api/openrouter/save` (client-forgeable cost data); `express.json` limit raised to 4mb for long conversations
+
+**Architectural decisions:**
+
+- Reused Seravanna's policy, NOT its `llmPool` — pool is server-picks-model + non-streaming; playground is user-picks-model + streaming
+- No daily cap / cost clamp: free models cost nothing, but OpenRouter's free quota is account-wide, so the per-user per-minute limit is about fair sharing
+- `roles.role` is uppercase `ADMIN` — `isAdminRole()` compares case-insensitively
+
+**Gotchas:**
+
+- Supabase MCP returned Unauthorized this session (no `SUPABASE_ACCESS_TOKEN`) — migration 013 must be run in the SQL editor. Until then the limiter logs a store error per request and allows the request.

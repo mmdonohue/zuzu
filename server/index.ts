@@ -183,7 +183,9 @@ app.use(
   }),
 );
 
-app.use(express.json());
+// Playground chat posts whole conversations; Vercel caps request bodies at 4.5MB
+const JSON_BODY_LIMIT = "4mb";
+app.use(express.json({ limit: JSON_BODY_LIMIT }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
@@ -332,16 +334,16 @@ export { app };
 
 // Start the server (skipped in Vercel serverless environment)
 if (!process.env.VERCEL) {
-app.listen(PORT, () => {
-  console.log(
-    "/********************************* SERVER *********************************************/",
-  );
-  logger.info(`Server running on http://localhost:${PORT}`);
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(
-    "/********************************* SERVER *********************************************/",
-  );
-  // Test that logging is working
-  logger.info("Test log entry - server started successfully");
-});
+  app.listen(PORT, () => {
+    console.log(
+      "/********************************* SERVER *********************************************/",
+    );
+    logger.info(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(
+      "/********************************* SERVER *********************************************/",
+    );
+    // Test that logging is working
+    logger.info("Test log entry - server started successfully");
+  });
 }

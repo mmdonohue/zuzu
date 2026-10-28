@@ -6,6 +6,7 @@ import {
   AccessTime as AccessTimeIcon,
   Info as InfoIcon,
 } from "@mui/icons-material";
+import { apiFetch } from "@/utils/api";
 
 type KeyInfo = {
   data?: {
@@ -35,23 +36,12 @@ const OpenRouterDashboard: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Get API key from environment
-        const apiKey = process.env.REACT_APP_ZUZU_OPENROUTER_KEY;
-
-        if (!apiKey) {
-          throw new Error("OpenRouter API key not configured");
-        }
-
-        // Use OpenRouter REST API directly for key info
-        const response = await fetch("https://openrouter.ai/api/v1/auth/key", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-          },
-        });
+        // Key info is proxied by the server so the API key never reaches the browser
+        const response = await apiFetch("/api/openrouter/key");
 
         if (!response.ok) {
-          throw new Error(`API request failed: ${response.statusText}`);
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.message || `API request failed: ${response.statusText}`);
         }
 
         const info = await response.json();

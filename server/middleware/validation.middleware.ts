@@ -232,6 +232,49 @@ export const validatePromptEnhancement = [
   handleValidationErrors,
 ];
 
+// Playground chat completion validation
+const MAX_CHAT_MESSAGES = 200;
+const MAX_MODEL_ID_LENGTH = 200;
+const MAX_CHAT_TEMPERATURE = 2;
+const MAX_TAGS = 50;
+
+export const validateChatCompletion = [
+  body("model")
+    .isString()
+    .trim()
+    .notEmpty()
+    .isLength({ max: MAX_MODEL_ID_LENGTH })
+    .withMessage("model is required"),
+  body("messages")
+    .isArray({ min: 1, max: MAX_CHAT_MESSAGES })
+    .withMessage(`messages must be an array of 1-${MAX_CHAT_MESSAGES} items`),
+  body("messages.*.role")
+    .isIn(["system", "user", "assistant"])
+    .withMessage("message role must be system, user, or assistant"),
+  body("messages.*.content")
+    .isString()
+    .withMessage("message content must be a string"),
+  body("temperature")
+    .optional()
+    .isFloat({ min: 0, max: MAX_CHAT_TEMPERATURE })
+    .withMessage(`temperature must be between 0 and ${MAX_CHAT_TEMPERATURE}`)
+    .toFloat(),
+  body("max_tokens")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("max_tokens must be a positive integer")
+    .toInt(),
+  body("template_id")
+    .optional({ nullable: true })
+    .isUUID()
+    .withMessage("template_id must be a valid UUID"),
+  body("tags")
+    .optional()
+    .isArray({ max: MAX_TAGS })
+    .withMessage("tags must be an array"),
+  handleValidationErrors,
+];
+
 // Template usage tracking validation
 export const validateTemplateUsage = [
   body("template_id")

@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { COLORS } from "@/styles/themes";
+import { apiFetch } from "@/utils/api";
 
 type ActivityRequest = {
   date: string; // Format: "2026-01-16 00:00:00"
@@ -73,22 +74,12 @@ const OpenRouterActivity: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const provisionKey =
-          process.env.REACT_APP_ZUZU_OPENROUTER_PROVISION_KEY;
-
-        if (!provisionKey) {
-          throw new Error("OpenRouter provision key not configured");
-        }
-
-        const response = await fetch("https://openrouter.ai/api/v1/activity", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${provisionKey}`,
-          },
-        });
+        // Activity needs the provisioning key, so the server proxies it
+        const response = await apiFetch("/api/openrouter/activity");
 
         if (!response.ok) {
-          throw new Error(`API request failed: ${response.statusText}`);
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.message || `API request failed: ${response.statusText}`);
         }
 
         const data: ActivityData = await response.json();

@@ -1,6 +1,6 @@
 // server/middleware/rateLimiter.middleware.ts
 import rateLimit from "express-rate-limit";
-import { RateLimitError } from "../utils/errors.js";
+import { SupabaseRateLimitStore } from "../services/rateLimitStore.js";
 
 // General API rate limiter (1000 requests per 30 minutes)
 export const apiLimiter = rateLimit({
@@ -100,6 +100,32 @@ export const enhancementLimiter = rateLimit({
       success: false,
       message:
         "Too many enhancement requests. Please wait before trying again.",
+    });
+  },
+});
+
+// Per-user limiter for playground chat (10 requests per minute). Shares the
+// OpenRouter free-tier quota fairly across users. Supabase-backed so the count
+// holds across Vercel instances; fails open if the store is unreachable.
+// Must run after authenticateToken.
+export const chatLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  store: new SupabaseRateLimitStore("chat:"),
+  keyGenerator: (req) => req.user?.userId ?? "anonymous",
+  passOnStoreError: true,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: {
+    ip: false,
+    trustProxy: false,
+    xForwardedForHeader: false,
+  },
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      code: "CHAT_RATE_LIMITED",
+      message: "Too many chat requests. Please wait a moment and try again.",
     });
   },
 });

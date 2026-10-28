@@ -46,6 +46,10 @@ export const authenticateToken = async (
   }
 };
 
+// roles.role is stored uppercase ("ADMIN"); compare case-insensitively
+export const isAdminRole = (role: string | undefined): boolean =>
+  role?.toLowerCase() === "admin";
+
 // Check user role authorization
 export const authorizeRole = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
