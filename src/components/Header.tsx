@@ -33,6 +33,7 @@ const publicPages = [
   { name: "About", path: "/about" },
   { name: "Portfolio", path: "/portfolio" },
   { name: "Moxi Labs", path: "/moxilabs" },
+  { name: "ARK", path: "/ark-os" },
 ];
 
 const protectedPages = [

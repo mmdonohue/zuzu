@@ -4,13 +4,11 @@ import { Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   Container,
-  Grid,
   Link,
   Typography,
   Paper,
+  Tooltip,
 } from "@mui/material";
 import { fetchHello } from "../services/api";
 
@@ -30,6 +28,9 @@ function Logo() {
 type appProps = {
   message: string;
 };
+
+const SMOKE_BG =
+  BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color || "transparent";
 
 type StackView = "architecture" | "chat";
 
@@ -488,117 +489,63 @@ const Home: React.FC<appProps> = ({ message }) => {
 
       {/* Technologies grid */}
       <Box>
-        <Typography
-          variant="h5"
-          gutterBottom
-          sx={{
-            pl: 2,
-            mt: 4,
-            fontWeight: 500,
-            backgroundColor:
-              BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color ||
-              "transparent",
-            border: "1px solid #fff",
-            color: "#f8d99d",
-            borderRadius: "8px",
-            p: 1,
-          }}
-        >
-          Frontend Technologies
-        </Typography>
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {frontendTech.map((tech) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
-              <Card
-                className="h-full hover:shadow-md transition-shadow"
-                sx={{ backgroundColor: "#ffffff8f" }}
-              >
-                <CardContent>
-                  <Typography variant="h6" component="h3" gutterBottom>
+        {[
+          { title: "Frontend Technologies", items: frontendTech },
+          { title: "Backend Technologies", items: backendTech },
+          { title: "Development Tools", items: devTools },
+        ].map((section, i) => (
+          <Box key={section.title} sx={{ mt: i === 0 ? 4 : 2 }}>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 500,
+                color: "#f8d99d",
+                backgroundColor: SMOKE_BG,
+                border: "1px solid #fff",
+                borderRadius: "8px",
+                px: 2,
+                py: 0.5,
+                mb: 1,
+              }}
+            >
+              {section.title}
+            </Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {section.items.map((tech) => (
+                <Tooltip
+                  key={tech.name}
+                  title={tech.description}
+                  arrow
+                  enterTouchDelay={0}
+                >
+                  <Box
+                    component="span"
+                    sx={{
+                      px: 1.25,
+                      py: 0.5,
+                      fontSize: "0.8125rem",
+                      fontWeight: 500,
+                      lineHeight: 1.4,
+                      whiteSpace: "nowrap",
+                      borderRadius: "6px",
+                      color: "#f5f5f5",
+                      backgroundColor: "rgba(10, 10, 14, 0.78)",
+                      border: "1px solid rgba(255, 255, 255, 0.12)",
+                      cursor: "default",
+                      transition: "background-color 150ms, border-color 150ms",
+                      "&:hover": {
+                        backgroundColor: "rgba(10, 10, 14, 0.92)",
+                        borderColor: "#f8d99d",
+                      },
+                    }}
+                  >
                     {tech.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {tech.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-
-        <Typography
-          variant="h5"
-          gutterBottom
-          sx={{
-            pl: 2,
-            fontWeight: 500,
-            color: "#f8d99d",
-            backgroundColor:
-              BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color ||
-              "transparent",
-            border: "1px solid #fff",
-            borderRadius: "8px",
-            p: 1,
-          }}
-        >
-          Backend Technologies
-        </Typography>
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {backendTech.map((tech) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
-              <Card
-                className="h-full hover:shadow-md transition-shadow"
-                sx={{ backgroundColor: "#ffffff8f" }}
-              >
-                <CardContent>
-                  <Typography variant="h6" component="h3" gutterBottom>
-                    {tech.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {tech.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-
-        <Typography
-          variant="h5"
-          gutterBottom
-          sx={{
-            pl: 2,
-            fontWeight: 500,
-            color: "#f8d99d",
-            backgroundColor:
-              BACKGROUND_COLORS.find((c) => c.name === "smoke")?.color ||
-              "transparent",
-            border: "1px solid #fff",
-            borderRadius: "8px",
-            p: 1,
-          }}
-        >
-          Development Tools
-        </Typography>
-        <Grid container spacing={3}>
-          {devTools.map((tech) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tech.name}>
-              <Card
-                className="h-full hover:shadow-md transition-shadow"
-                sx={{ backgroundColor: "#ffffff8f" }}
-              >
-                <CardContent>
-                  <Typography variant="h6" component="h3" gutterBottom>
-                    {tech.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {tech.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                  </Box>
+                </Tooltip>
+              ))}
+            </Box>
+          </Box>
+        ))}
       </Box>
     </Box>
   );
