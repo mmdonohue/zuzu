@@ -1,0 +1,327 @@
+{
+  "schemaVersion": "0.3.0",
+  "kind": "graph",
+  "title": "CloudHelm",
+  "summary": "A multi-cloud service brokerage and contract automation platform. Customers order and manage infrastructure through one portal; Node.js middleware orchestrates Python/Flask services that provision across AWS, Azure, GCP and VMware, automate contracts, and hand off to NOC managed operations. Every change lands on an event bus that drives the Airflow billing ETL, the MRR billing engine and the NetSuite ERP sync.",
+  "lenses": ["architecture"],
+  "provenance": {
+    "repo": { "owner": "mmdonohue", "name": "zuzu", "host": "github.com" },
+    "base": {
+      "sha": "1c3f7fd797d72660fa9b3fd0e981c0b23fe0a266",
+      "ref": "main"
+    },
+    "head": { "sha": "1c3f7fd797d72660fa9b3fd0e981c0b23fe0a266", "ref": "main" }
+  },
+  "lanes": [
+    { "id": "portal", "label": "Portal", "subtitle": "Next.js", "order": 0 },
+    {
+      "id": "services",
+      "label": "CloudHelm services",
+      "subtitle": "Node.js · Python/Flask",
+      "order": 1
+    },
+    {
+      "id": "data",
+      "label": "Data & billing",
+      "subtitle": "PostgreSQL · Airflow",
+      "order": 2
+    },
+    {
+      "id": "external",
+      "label": "Clouds & enterprise",
+      "subtitle": "Third-party platforms",
+      "order": 3
+    }
+  ],
+  "nodes": [
+    {
+      "id": "customer-portal",
+      "label": "Customer portal",
+      "kind": "ui",
+      "delta": "unchanged",
+      "lane": "portal",
+      "subtitle": "orders · dashboards",
+      "summary": "One place to order, provision and track infrastructure across every cloud, with ETL monitoring and billing analytics.",
+      "badges": ["RBAC"]
+    },
+    {
+      "id": "sso",
+      "label": "Enterprise SSO",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "portal",
+      "subtitle": "identity provider",
+      "summary": "Customer staff sign in with their own identity provider; roles map to RBAC in the portal."
+    },
+    {
+      "id": "api-orchestration",
+      "label": "API orchestration",
+      "kind": "service",
+      "delta": "unchanged",
+      "lane": "services",
+      "subtitle": "Node.js middleware",
+      "summary": "Secure API orchestration in front of every service: auth, routing, centralized logging and long-running workflow automation.",
+      "badges": ["logging"]
+    },
+    {
+      "id": "provisioning",
+      "label": "Provisioning engine",
+      "kind": "service",
+      "delta": "unchanged",
+      "lane": "services",
+      "subtitle": "Python/Flask",
+      "summary": "Multi-cloud infrastructure provisioning across AWS, Azure, GCP and VMware from one request."
+    },
+    {
+      "id": "contracts",
+      "label": "Contract automation",
+      "kind": "service",
+      "delta": "unchanged",
+      "lane": "services",
+      "subtitle": "Python/Flask",
+      "summary": "Turns orders into service contracts and keeps them in step with what is provisioned."
+    },
+    {
+      "id": "event-bus",
+      "label": "Event bus",
+      "kind": "queue",
+      "delta": "unchanged",
+      "lane": "services",
+      "subtitle": "event-driven messaging",
+      "summary": "Provisioning and contract changes are published as events for billing and operations to consume."
+    },
+    {
+      "id": "platform-db",
+      "label": "Platform DB",
+      "kind": "datastore",
+      "delta": "unchanged",
+      "lane": "data",
+      "subtitle": "PostgreSQL",
+      "summary": "Customers, contracts, provisioned resources and usage."
+    },
+    {
+      "id": "billing-etl",
+      "label": "Billing ETL",
+      "kind": "job",
+      "delta": "unchanged",
+      "lane": "data",
+      "subtitle": "Python · Airflow",
+      "summary": "Scheduled extraction, transformation and sync of usage and contract data."
+    },
+    {
+      "id": "mrr-engine",
+      "label": "MRR billing engine",
+      "kind": "service",
+      "delta": "unchanged",
+      "lane": "data",
+      "subtitle": "800+ invoices/mo",
+      "summary": "Recurring revenue billing with audit controls across 25,000+ parts."
+    },
+    {
+      "id": "clouds",
+      "label": "AWS · Azure · GCP",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "external",
+      "subtitle": "public cloud",
+      "summary": "Public cloud accounts provisioned and brokered on the customer's behalf."
+    },
+    {
+      "id": "vmware",
+      "label": "VMware vSphere",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "external",
+      "subtitle": "private cloud",
+      "summary": "Managed private-cloud environments run alongside the public clouds."
+    },
+    {
+      "id": "noc",
+      "label": "NOC managed ops",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "external",
+      "subtitle": "monitoring · support",
+      "summary": "The network operations centre takes over provisioned resources for managed operations."
+    },
+    {
+      "id": "netsuite",
+      "label": "NetSuite ERP",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "external",
+      "subtitle": "financials",
+      "summary": "System of record for invoices and revenue."
+    },
+    {
+      "id": "crm-tax",
+      "label": "Salesforce · ServiceNow · Avalara",
+      "kind": "external",
+      "delta": "unchanged",
+      "lane": "external",
+      "subtitle": "CRM · ITSM · tax",
+      "summary": "Accounts, service tickets and tax calculation feed the billing run."
+    }
+  ],
+  "edges": [
+    {
+      "id": "portal-to-api",
+      "from": "customer-portal",
+      "to": "api-orchestration",
+      "kind": "http",
+      "delta": "unchanged",
+      "label": "orders",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "sso-to-portal",
+      "from": "sso",
+      "to": "customer-portal",
+      "kind": "other",
+      "delta": "unchanged",
+      "label": "SAML / OIDC",
+      "emphasis": "muted",
+      "animated": false
+    },
+    {
+      "id": "api-to-provisioning",
+      "from": "api-orchestration",
+      "to": "provisioning",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "api-to-contracts",
+      "from": "api-orchestration",
+      "to": "contracts",
+      "kind": "call",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "provisioning-to-clouds",
+      "from": "provisioning",
+      "to": "clouds",
+      "kind": "http",
+      "delta": "unchanged",
+      "label": "provision",
+      "emphasis": "hero",
+      "animated": true
+    },
+    {
+      "id": "provisioning-to-vmware",
+      "from": "provisioning",
+      "to": "vmware",
+      "kind": "http",
+      "delta": "unchanged",
+      "label": "provision",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "provisioning-to-bus",
+      "from": "provisioning",
+      "to": "event-bus",
+      "kind": "event",
+      "delta": "unchanged",
+      "label": "resource events",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "contracts-to-bus",
+      "from": "contracts",
+      "to": "event-bus",
+      "kind": "event",
+      "delta": "unchanged",
+      "label": "contract events",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "contracts-to-db",
+      "from": "contracts",
+      "to": "platform-db",
+      "kind": "data",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "bus-to-noc",
+      "from": "event-bus",
+      "to": "noc",
+      "kind": "event",
+      "delta": "unchanged",
+      "label": "hand-off",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "bus-to-etl",
+      "from": "event-bus",
+      "to": "billing-etl",
+      "kind": "event",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "etl-to-db",
+      "from": "billing-etl",
+      "to": "platform-db",
+      "kind": "data",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": false
+    },
+    {
+      "id": "etl-to-mrr",
+      "from": "billing-etl",
+      "to": "mrr-engine",
+      "kind": "data",
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "animated": true
+    },
+    {
+      "id": "crm-to-mrr",
+      "from": "crm-tax",
+      "to": "mrr-engine",
+      "kind": "http",
+      "delta": "unchanged",
+      "label": "accounts · tax",
+      "emphasis": "muted",
+      "animated": false
+    },
+    {
+      "id": "mrr-to-netsuite",
+      "from": "mrr-engine",
+      "to": "netsuite",
+      "kind": "http",
+      "delta": "unchanged",
+      "label": "invoices",
+      "emphasis": "hero",
+      "animated": true
+    }
+  ],
+  "views": [
+    {
+      "id": "overview",
+      "title": "CloudHelm",
+      "lens": "architecture",
+      "summary": "Portal, services, billing and the clouds behind them.",
+      "scope": { "kind": "all" },
+      "defaultOpen": true,
+      "children": []
+    }
+  ],
+  "layout": {
+    "direction": "right",
+    "laneOrder": ["portal", "services", "data", "external"]
+  }
+}

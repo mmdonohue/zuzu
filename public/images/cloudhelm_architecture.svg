@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1708 998" width="1708" height="998" role="img" aria-label="CloudHelm" font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, &quot;Noto Sans&quot;, Helvetica, Arial, sans-serif">
+<title>CloudHelm</title>
+<desc>Portal, services, billing and the clouds behind them.</desc>
+<defs><pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="rgba(140,149,159,.5)"/></pattern><marker id="mk-added" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f883d"/></marker><marker id="mko-added" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#1f883d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-modified" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#bf8700"/></marker><marker id="mko-modified" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#bf8700" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-removed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#cf222e"/></marker><marker id="mko-removed" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#cf222e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-neutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8c959f"/></marker><marker id="mko-neutral" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M2,1 L10,5 L2,9" fill="none" stroke="#8c959f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1708" height="998" rx="12" fill="#f4f5f7"/>
+<rect x="0" y="0" width="1708" height="998" rx="12" fill="url(#dots)"/>
+<g><rect class="lanebox" x="16" y="44" width="404" height="938" rx="12" fill="rgba(255,255,255,.55)"/>
+<text class="lanelabel" x="32" y="68" font-size="10" font-weight="700" letter-spacing=".12em" fill="#59636e">PORTAL · NEXT.JS</text>
+<rect class="lanebox" x="440" y="44" width="404" height="938" rx="12" fill="rgba(255,255,255,.55)"/>
+<text class="lanelabel" x="456" y="68" font-size="10" font-weight="700" letter-spacing=".12em" fill="#59636e">CLOUDHELM SERVICES · NODE.JS · PYTHON/FLASK</text>
+<rect class="lanebox" x="864" y="44" width="404" height="938" rx="12" fill="rgba(255,255,255,.55)"/>
+<text class="lanelabel" x="880" y="68" font-size="10" font-weight="700" letter-spacing=".12em" fill="#59636e">DATA &amp; BILLING · POSTGRESQL · AIRFLOW</text>
+<rect class="lanebox" x="1288" y="44" width="404" height="938" rx="12" fill="rgba(255,255,255,.55)"/>
+<text class="lanelabel" x="1304" y="68" font-size="10" font-weight="700" letter-spacing=".12em" fill="#59636e">CLOUDS &amp; ENTERPRISE · THIRD-PARTY PLATFORMS</text></g>
+<g><path class="edge edge-neutral context" d="M404,237 L417,237 C424.18,237 430,242.82 430,250 L430,338 C430,345.18 435.82,351 443,351 L456,351" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<circle r="2.6" fill="#8c959f"><animateMotion dur="1.6s" repeatCount="indefinite" path="M404,237 L417,237 C424.18,237 430,242.82 430,250 L430,338 C430,345.18 435.82,351 443,351 L456,351"/></circle>
+<path class="edge edge-neutral faded context" d="M218,154 L218,206" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.45"/>
+<path class="edge edge-neutral context" d="M642,382 L642,391 C642,395.97 646.03,400 651,400 L721,400 C730.39,400 738,407.61 738,417 L738,434" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<circle r="2.6" fill="#8c959f"><animateMotion dur="1.6s" repeatCount="indefinite" path="M642,382 L642,391 C642,395.97 646.03,400 651,400 L721,400 C730.39,400 738,407.61 738,417 L738,434"/></circle>
+<path class="edge edge-neutral context" d="M642,382 L642,399 C642,408.39 634.39,416 625,416 L555,416 C550.03,416 546,420.03 546,425 L546,434" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<path class="glow" stroke="#8c959f" d="M828,457 L831,457 C832.66,457 834,458.34 834,460 L834,484.5 C834,499.69 846.31,512 861.5,512 L1234,512 C1252.78,512 1268,527.22 1268,546 L1268,571 C1268,580.94 1276.06,589 1286,589 L1304,589" fill="none" stroke-width="7" opacity="0.14"/>
+<path class="edge edge-neutral hero context" d="M828,457 L831,457 C832.66,457 834,458.34 834,460 L834,484.5 C834,499.69 846.31,512 861.5,512 L1234,512 C1252.78,512 1268,527.22 1268,546 L1268,571 C1268,580.94 1276.06,589 1286,589 L1304,589" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="2.25" opacity="0.82"/>
+<circle r="3" fill="#8c959f"><animateMotion dur="2.1s" repeatCount="indefinite" path="M828,457 L831,457 C832.66,457 834,458.34 834,460 L834,484.5 C834,499.69 846.31,512 861.5,512 L1234,512 C1252.78,512 1268,527.22 1268,546 L1268,571 C1268,580.94 1276.06,589 1286,589 L1304,589"/></circle>
+<circle r="3" fill="#8c959f"><animateMotion dur="2.1s" begin="-1.4s" repeatCount="indefinite" path="M828,457 L831,457 C832.66,457 834,458.34 834,460 L834,484.5 C834,499.69 846.31,512 861.5,512 L1234,512 C1252.78,512 1268,527.22 1268,546 L1268,571 C1268,580.94 1276.06,589 1286,589 L1304,589"/></circle>
+<circle r="3" fill="#8c959f"><animateMotion dur="2.1s" begin="-0.7s" repeatCount="indefinite" path="M828,457 L831,457 C832.66,457 834,458.34 834,460 L834,484.5 C834,499.69 846.31,512 861.5,512 L1234,512 C1252.78,512 1268,527.22 1268,546 L1268,571 C1268,580.94 1276.06,589 1286,589 L1304,589"/></circle>
+<path class="edge edge-neutral context" d="M828,473 L836,473 C840.42,473 844,476.58 844,481 L844,497.5 C844,511.03 854.97,522 868.5,522 L1293,522 C1295.76,522 1298,524.24 1298,527 C1298,529.76 1300.24,532 1303,532 L1573,532 C1580.18,532 1586,537.82 1586,545 L1586,558" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<circle r="2.6" fill="#8c959f"><animateMotion dur="1.6s" repeatCount="indefinite" path="M828,473 L836,473 C840.42,473 844,476.58 844,481 L844,497.5 C844,511.03 854.97,522 868.5,522 L1293,522 C1295.76,522 1298,524.24 1298,527 C1298,529.76 1300.24,532 1303,532 L1573,532 C1580.18,532 1586,537.82 1586,545 L1586,558"/></circle>
+<path class="edge edge-neutral context" d="M694,496 L694,558" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<circle r="2.6" fill="#8c959f"><animateMotion dur="1.6s" repeatCount="indefinite" path="M694,496 L694,558"/></circle>
+<path class="edge edge-neutral context" d="M586,496 L586,558" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<path class="edge edge-neutral context" d="M554,496 L554,499 C554,500.66 555.34,502 557,502 L820,502 C838.78,502 854,517.22 854,536 L854,804 C854,811.18 859.82,817 867,817 L880,817" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<path class="edge edge-neutral context" d="M828,581 L846,581 C855.94,581 864,589.06 864,599 L864,613.5 C864,631.45 878.55,646 896.5,646 L1249.5,646 C1265.24,646 1278,658.76 1278,674.5 L1278,690 C1278,697.18 1283.82,703 1291,703 L1304,703" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<path class="edge edge-neutral context" d="M828,597 L851,597 C863.7,597 874,607.3 874,620 L874,700 C874,701.66 875.34,703 877,703 L880,703" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<circle r="2.6" fill="#8c959f"><animateMotion dur="1.6s" repeatCount="indefinite" path="M828,597 L851,597 C863.7,597 874,607.3 874,620 L874,700 C874,701.66 875.34,703 877,703 L880,703"/></circle>
+<path class="edge edge-neutral context" d="M1066,734 L1066,751 C1066,760.39 1058.39,768 1049,768 L979,768 C974.03,768 970,772.03 970,777 L970,786" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<path class="edge edge-neutral context" d="M1066,734 L1066,743 C1066,747.97 1070.03,752 1075,752 L1145,752 C1154.39,752 1162,759.61 1162,769 L1162,786" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.82"/>
+<circle r="2.6" fill="#8c959f"><animateMotion dur="1.6s" repeatCount="indefinite" path="M1066,734 L1066,743 C1066,747.97 1070.03,752 1075,752 L1145,752 C1154.39,752 1162,759.61 1162,769 L1162,786"/></circle>
+<path class="edge edge-neutral faded context" d="M1304,123 L1281,123 C1268.3,123 1258,133.3 1258,146 L1258,806 C1258,807.66 1256.66,809 1255,809 L1252,809" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="1.5" opacity="0.45"/>
+<path class="glow" stroke="#8c959f" d="M1252,825 L1270,825 C1279.94,825 1288,833.06 1288,843 L1288,923 C1288,927.42 1291.58,931 1296,931 L1304,931" fill="none" stroke-width="7" opacity="0.14"/>
+<path class="edge edge-neutral hero context" d="M1252,825 L1270,825 C1279.94,825 1288,833.06 1288,843 L1288,923 C1288,927.42 1291.58,931 1296,931 L1304,931" marker-end="url(#mk-neutral)" fill="none" stroke="#8c959f" stroke-width="2.25" opacity="0.82"/>
+<circle r="3" fill="#8c959f"><animateMotion dur="2.1s" repeatCount="indefinite" path="M1252,825 L1270,825 C1279.94,825 1288,833.06 1288,843 L1288,923 C1288,927.42 1291.58,931 1296,931 L1304,931"/></circle>
+<circle r="3" fill="#8c959f"><animateMotion dur="2.1s" begin="-1.4s" repeatCount="indefinite" path="M1252,825 L1270,825 C1279.94,825 1288,833.06 1288,843 L1288,923 C1288,927.42 1291.58,931 1296,931 L1304,931"/></circle>
+<circle r="3" fill="#8c959f"><animateMotion dur="2.1s" begin="-0.7s" repeatCount="indefinite" path="M1252,825 L1270,825 C1279.94,825 1288,833.06 1288,843 L1288,923 C1288,927.42 1291.58,931 1296,931 L1304,931"/></circle></g>
+<g><g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="32" y="92" width="372" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="46" y="110" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="51" y="117" width="16" height="12" rx="2" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M51,119 l8,6 8,-6" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="82" y="119" font-size="13" font-weight="600" fill="#1f2328">Enterprise SSO</text>
+<text class="nsub" x="82" y="137" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">identity provider</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="32" y="206" width="372" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="46" y="224" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="52" y="231" width="14" height="12" rx="2" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M56.5,231 v12" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="82" y="233" font-size="13" font-weight="600" fill="#1f2328">Customer portal</text>
+<text class="nsub" x="82" y="251" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">orders · dashboards</text>
+<g class="bdg bdg-neutral"><rect x="351.93" y="198" width="45.07" height="16" rx="8" fill="#f1f3f5" stroke="#d1d9e0" stroke-width="1"/><text x="374.47" y="209" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#59636e">RBAC</text></g></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="456" y="320" width="372" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="470" y="338" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="476.5" y="344.5" width="13" height="13" rx="3" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#59636e" cx="483" cy="351" r="2"/></g>
+<text class="ntitle" x="506" y="347" font-size="13" font-weight="600" fill="#1f2328">API orchestration</text>
+<text class="nsub" x="506" y="365" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">Node.js middleware</text>
+<g class="bdg bdg-neutral"><rect x="770.38" y="312" width="50.62" height="16" rx="8" fill="#f1f3f5" stroke="#d1d9e0" stroke-width="1"/><text x="795.69" y="323" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing=".06em" fill="#59636e">logging</text></g></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="456" y="434" width="180" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="470" y="452" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="476.5" y="458.5" width="13" height="13" rx="3" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#59636e" cx="483" cy="465" r="2"/></g>
+<text class="ntitle" x="506" y="461" font-size="11.5" font-weight="600" fill="#1f2328">Contract automation</text>
+<text class="nsub" x="506" y="479" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">Python/Flask</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="648" y="434" width="180" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="662" y="452" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="668.5" y="458.5" width="13" height="13" rx="3" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#59636e" cx="675" cy="465" r="2"/></g>
+<text class="ntitle" x="698" y="461" font-size="11.5" font-weight="600" fill="#1f2328">Provisioning engine</text>
+<text class="nsub" x="698" y="479" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">Python/Flask</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="456" y="558" width="372" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="470" y="576" width="26" height="26" rx="7" fill="#f1f3f5"/><g><path class="glyph-stroke" d="M476.5,584.5 h13" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M476.5,589 h13" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M476.5,593.5 h13" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="506" y="585" font-size="13" font-weight="600" fill="#1f2328">Event bus</text>
+<text class="nsub" x="506" y="603" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">event-driven messaging</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="880" y="672" width="372" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="894" y="690" width="26" height="26" rx="7" fill="#f1f3f5"/><g><circle class="glyph-stroke" stroke="#59636e" stroke-width="1.4" fill="none" cx="907" cy="703" r="6.5"/>
+<path class="glyph-stroke" d="M907,699.5 V703 H910" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="930" y="699" font-size="13" font-weight="600" fill="#1f2328">Billing ETL</text>
+<text class="nsub" x="930" y="717" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">Python · Airflow</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="880" y="786" width="180" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="894" y="804" width="26" height="26" rx="7" fill="#f1f3f5"/><g><ellipse class="glyph-stroke" stroke="#59636e" stroke-width="1.4" fill="none" cx="907" cy="812.5" rx="6.5" ry="2.6"/>
+<path class="glyph-stroke" d="M900.5,812.5 v9 a6.5,2.6 0 0 0 13 0 v-9" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="930" y="813" font-size="11.5" font-weight="600" fill="#1f2328">Platform DB</text>
+<text class="nsub" x="930" y="831" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">PostgreSQL</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="1072" y="786" width="180" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="1086" y="804" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="1092.5" y="810.5" width="13" height="13" rx="3" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<circle class="glyph" fill="#59636e" cx="1099" cy="817" r="2"/></g>
+<text class="ntitle" x="1122" y="813" font-size="11.5" font-weight="600" fill="#1f2328">MRR billing engine</text>
+<text class="nsub" x="1122" y="831" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">800+ invoices/mo</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="1304" y="92" width="372" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="1318" y="110" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="1323" y="117" width="16" height="12" rx="2" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1323,119 l8,6 8,-6" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1354" y="119" font-size="13" font-weight="600" fill="#1f2328">Salesforce · ServiceNow · Avalara</text>
+<text class="nsub" x="1354" y="137" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">CRM · ITSM · tax</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="1304" y="558" width="180" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="1318" y="576" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="1323" y="583" width="16" height="12" rx="2" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1323,585 l8,6 8,-6" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1354" y="585" font-size="11.5" font-weight="600" fill="#1f2328">AWS · Azure · GCP</text>
+<text class="nsub" x="1354" y="603" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">public cloud</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="1496" y="558" width="180" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="1510" y="576" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="1515" y="583" width="16" height="12" rx="2" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1515,585 l8,6 8,-6" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1546" y="585" font-size="11.5" font-weight="600" fill="#1f2328">VMware vSphere</text>
+<text class="nsub" x="1546" y="603" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">private cloud</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="1304" y="672" width="372" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="1318" y="690" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="1323" y="697" width="16" height="12" rx="2" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1323,699 l8,6 8,-6" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1354" y="699" font-size="13" font-weight="600" fill="#1f2328">NOC managed ops</text>
+<text class="nsub" x="1354" y="717" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">monitoring · support</text></g>
+<g class="cardsh context" filter="drop-shadow(0 1px 2px rgba(31,35,40,.14))" opacity="0.82"><rect class="card" x="1304" y="900" width="372" height="62" rx="10" fill="#ffffff" stroke-width="1" stroke="#d1d9e0"/>
+<rect class="chip" x="1318" y="918" width="26" height="26" rx="7" fill="#f1f3f5"/><g><rect class="glyph-stroke" x="1323" y="925" width="16" height="12" rx="2" stroke="#59636e" stroke-width="1.4" fill="none"/>
+<path class="glyph-stroke" d="M1323,927 l8,6 8,-6" stroke="#59636e" stroke-width="1.4" fill="none"/></g>
+<text class="ntitle" x="1354" y="927" font-size="13" font-weight="600" fill="#1f2328">NetSuite ERP</text>
+<text class="nsub" x="1354" y="945" font-size="9.5" fill="#59636e" font-family="ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, monospace">financials</text></g></g>
+<g><g><rect class="lpill" x="407.73" y="286.5" width="44.54" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="430" y="297.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">orders</text></g>
+<g><rect class="lpill" x="179.51" y="172.5" width="76.99" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="218" y="183.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">SAML / OIDC</text></g>
+<g><rect class="lpill" x="1019.61" y="504.5" width="56.29" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="1047.75" y="515.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">provision</text></g>
+<g><rect class="lpill" x="1085.9" y="514.5" width="56.29" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="1114.04" y="525.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">provision</text></g>
+<g><rect class="lpill" x="650.18" y="519.5" width="87.64" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="694" y="530.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">resource events</text></g>
+<g><rect class="lpill" x="543.86" y="519.5" width="84.28" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="586" y="530.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">contract events</text></g>
+<g><rect class="lpill" x="1046.53" y="638.5" width="52.95" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="1073" y="649.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">hand-off</text></g>
+<g><rect class="lpill" x="1217.32" y="468.5" width="81.37" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="1258" y="479.5" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">accounts · tax</text></g>
+<g><rect class="lpill" x="1261.82" y="873" width="52.37" height="15" rx="7.5" fill="#ffffff" stroke="#d8dee4" stroke-width="1"/><text class="ltext" x="1288" y="884" text-anchor="middle" font-size="9.5" font-weight="600" fill="#59636e">invoices</text></g></g>
+</svg>

@@ -51,15 +51,31 @@
   },
   {
     "id": "multicloud-orchestration",
-    "title": "Netrix Global: Multi-Cloud Orchestration Portal",
-    "subtitle": "Enterprise infrastructure dashboard",
-    "text": "Automated infrastructure provisioning, ETL pipeline monitoring, and billing analytics. Seamless integration with managed VMSphere environments and cloud services, a Next.js frontend with complex state management, Python/Airflow billing ETL pipelines, and robust RBAC with Enterprise SSO.",
-    "image": "/assets/img/multicloud_portal.png",
+    "title": "CloudHelm: Multi-Cloud Service Brokerage",
+    "subtitle": "Provisioning and contract automation across every cloud",
+    "text": "A multi-cloud service brokerage and contract automation platform across AWS, Azure, GCP and VMware, supporting core recurring revenue lines. Node.js middleware orchestrates Python/Flask provisioning and contract services, hands off to NOC managed operations, and feeds an Airflow billing ETL into NetSuite.",
+    "image": "/images/cloudhelm_architecture.svg",
     "gallery": [],
-    "tags": ["Next.js", "Airflow", "RBAC", "SSO"],
+    "tags": ["Node.js", "Python/Flask", "Airflow", "Multi-Cloud"],
     "featured": false,
     "type": "project",
-    "css_options": { "accent": "#60a5fa" }
+    "css_options": {
+      "accent": "#60a5fa",
+      "image_expand": true,
+      "image_position": "30% 45%"
+    }
+  },
+  {
+    "id": "rapidata",
+    "title": "Rapidata: Real-Time Economic Data Feed",
+    "subtitle": "Low-latency news distribution for algorithmic trading",
+    "text": "High-throughput, latency-sensitive services in C# and Java that distributed economic indicator releases in real time to elite algorithmic trading clients, including Susquehanna and Jump Trading. The platform was subsequently acquired by Nasdaq and the Associated Press.",
+    "image": "/images/rapidata_signal_path.svg",
+    "gallery": [],
+    "tags": ["C#", "Java", "Low-Latency", "Market Data"],
+    "featured": false,
+    "type": "project",
+    "css_options": { "accent": "#f8fafc" }
   },
   {
     "id": "moxilabs",

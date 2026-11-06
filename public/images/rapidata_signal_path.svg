@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 800" width="900" height="800">
+  <style>
+    .mono { font-family: "IBM Plex Mono", Menlo, "SF Mono", monospace; }
+    .sans { font-family: "IBM Plex Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .label { font-size: 13px; letter-spacing: 1.2px; fill: #6F7478; }
+    .title { font-size: 24px; font-weight: 500; fill: #0F1112; }
+    .meta { font-size: 15px; fill: #6F7478; }
+    .box { fill: #FFFFFF; stroke: rgba(111,116,120,0.35); stroke-width: 1; }
+    .box-ink { fill: #0F1112; }
+    .wire { stroke: #0F1112; stroke-width: 1.25; fill: none; }
+  </style>
+
+  <rect width="900" height="800" fill="#F2F2EF"/>
+
+  <text x="150" y="140" class="mono label">FIG. — RAPIDATA SIGNAL PATH</text>
+
+  <!-- 01 -->
+  <rect x="150" y="180" width="600" height="84" rx="8" class="box"/>
+  <text x="176" y="214" class="mono label">01 — RELEASE</text>
+  <text x="176" y="246" class="sans title">Economic indicator published</text>
+
+  <line x1="450" y1="264" x2="450" y2="296" class="wire"/>
+  <path d="M444 290 L450 298 L456 290" class="wire"/>
+
+  <!-- 02 -->
+  <rect x="150" y="298" width="600" height="84" rx="8" class="box"/>
+  <text x="176" y="332" class="mono label">02 — CAPTURE</text>
+  <text x="176" y="364" class="sans title">Parse, normalise, validate</text>
+  <text x="724" y="364" class="mono meta" text-anchor="end">C# · Java</text>
+
+  <line x1="450" y1="382" x2="450" y2="414" class="wire"/>
+  <path d="M444 408 L450 416 L456 408" class="wire"/>
+
+  <!-- 03 — the hot path, inked -->
+  <rect x="150" y="416" width="600" height="84" rx="8" class="box-ink"/>
+  <text x="176" y="450" class="mono label" style="fill: rgba(255,255,255,0.6)">03 — DISTRIBUTE</text>
+  <text x="176" y="482" class="sans title" style="fill: #FFFFFF">Low-latency real-time feed</text>
+
+  <!-- fan-out -->
+  <path d="M450 500 L450 518 M450 518 L300 518 L300 534 M450 518 L600 518 L600 534" class="wire"/>
+  <path d="M294 528 L300 536 L306 528" class="wire"/>
+  <path d="M594 528 L600 536 L606 528" class="wire"/>
+
+  <!-- 04 -->
+  <rect x="150" y="536" width="290" height="104" rx="8" class="box"/>
+  <text x="172" y="570" class="mono label">04 — EXECUTE</text>
+  <text x="172" y="602" class="sans title">Algo desk</text>
+  <text x="172" y="626" class="mono meta">Susquehanna</text>
+
+  <rect x="460" y="536" width="290" height="104" rx="8" class="box"/>
+  <text x="482" y="570" class="mono label">04 — EXECUTE</text>
+  <text x="482" y="602" class="sans title">Algo desk</text>
+  <text x="482" y="626" class="mono meta">Jump Trading</text>
+
+  <text x="750" y="676" class="mono label" text-anchor="end">ACQUIRED BY NASDAQ · ASSOCIATED PRESS</text>
+</svg>

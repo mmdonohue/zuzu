@@ -2,6 +2,10 @@ export type CssOptions = {
   accent?: string;
   card_class?: string;
   bg_color?: string;
+  /** paper theme: show a click-to-expand chip that opens the full image (for diagrams) */
+  image_expand?: boolean;
+  /** CSS object-position for the cropped image, e.g. '20% 40%' */
+  image_position?: string;
 };
 
 export type PortfolioItem = {
@@ -26,9 +30,13 @@ export type PortfolioItem = {
 
 export type PortfolioTemplateId = 1 | 2 | 3;
 
+/** 'dark' = full-bleed cinematic (default), 'paper' = flat light split layout (design.md) */
+export type PortfolioTheme = 'dark' | 'paper';
+
 export type PortfolioProps = {
   items: PortfolioItem[];
   templateId?: PortfolioTemplateId;
   autoplay?: boolean;
   showNav?: boolean;
+  theme?: PortfolioTheme;
 };

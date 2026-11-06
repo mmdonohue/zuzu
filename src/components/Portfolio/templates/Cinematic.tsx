@@ -1,27 +1,37 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "@iconify-icon/react";
 import { format, parseISO, addWeeks, isBefore } from "date-fns";
 import { useEvents } from "../../Events/useEvents";
-import type { PortfolioItem } from "../types";
+import type { PortfolioItem, PortfolioTheme } from "../types";
 
 const DEFAULT_ACCENT = "#74e5ff";
 const GALLERY_INTERVAL_MS = 4000;
 const AUTO_ADVANCE_MS = 6000;
+const PAPER_HEIGHT = "min(78vh, 600px)";
+const DARK_HEIGHT = "85vh";
+
+// Paper tokens resolve from the host page's design.md variables, with fallbacks.
+const PAPER = {
+  primary: "var(--pf-primary, #0F1112)",
+  secondary: "var(--pf-secondary, #6F7478)",
+  surface: "var(--pf-surface, #FFFFFF)",
+  neutral: "var(--pf-neutral, #FAFAF8)",
+  hairline: "var(--pf-hairline, rgba(111,116,120,0.22))",
+  mono: "var(--pf-mono, 'IBM Plex Mono', ui-monospace, monospace)",
+} as const;
 
 type CinematicProps = {
   items: PortfolioItem[];
   autoplay?: boolean;
   showNav?: boolean;
+  theme?: PortfolioTheme;
 };
 
-function ProjectSlide({
-  item,
-  isActive,
-}: {
-  item: PortfolioItem;
-  isActive: boolean;
-}) {
-  const accent = item.css_options?.accent ?? DEFAULT_ACCENT;
+function useGalleryCycle(
+  item: PortfolioItem,
+  isActive: boolean,
+): string | undefined {
   const images = [item.image, ...(item.gallery ?? [])].filter(
     Boolean,
   ) as string[];
@@ -36,7 +46,224 @@ function ProjectSlide({
     return () => clearInterval(id);
   }, [isActive, images.length]);
 
-  const bg = images[bgIndex];
+  return images[bgIndex];
+}
+
+function ImageLightbox({
+  src,
+  alt,
+  onClose,
+}: {
+  src: string;
+  alt: string;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={alt}
+      onClick={onClose}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 cursor-zoom-out"
+      style={{ background: "rgba(250,250,248,0.97)" }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="max-w-full max-h-full object-contain rounded-lg border"
+        style={{ borderColor: PAPER.hairline, background: PAPER.surface }}
+      />
+      <button
+        onClick={onClose}
+        aria-label="Close"
+        className="absolute top-4 right-4 w-9 h-9 rounded flex items-center justify-center border"
+        style={{
+          background: PAPER.surface,
+          borderColor: PAPER.hairline,
+          color: PAPER.primary,
+        }}
+      >
+        <Icon icon="lucide:x" width={16} height={16} />
+      </button>
+    </div>,
+    document.body,
+  );
+}
+
+function PaperProjectSlide({
+  item,
+  isActive,
+  index,
+  total,
+}: {
+  item: PortfolioItem;
+  isActive: boolean;
+  index: number;
+  total: number;
+}) {
+  const img = useGalleryCycle(item, isActive);
+  const pad = (n: number): string => String(n).padStart(2, "0");
+  const expandable = item.css_options?.image_expand === true;
+  const objectPosition = item.css_options?.image_position;
+  const [expanded, setExpanded] = useState(false);
+  const closeLightbox = useCallback(() => setExpanded(false), []);
+
+  return (
+    <div className="absolute inset-0 grid grid-rows-[40%_60%] md:grid-rows-1 md:grid-cols-[3fr_2fr]">
+      <div
+        className="relative overflow-hidden"
+        style={{ background: PAPER.neutral }}
+      >
+        {img && !expandable && (
+          <img
+            key={img}
+            src={img}
+            alt={item.title}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition }}
+          />
+        )}
+        {img && expandable && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded(true);
+            }}
+            className="group absolute inset-0 w-full h-full cursor-zoom-in"
+            style={{ border: 0, padding: 0, background: "transparent" }}
+            aria-label={`Expand ${item.title} diagram`}
+          >
+            <img
+              key={img}
+              src={img}
+              alt={item.title}
+              className="w-full h-full object-cover"
+              style={{ objectPosition }}
+            />
+            <span
+              className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 px-2 py-1 rounded border transition-colors group-hover:border-current"
+              style={{
+                fontFamily: PAPER.mono,
+                fontSize: "0.72rem",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                background: PAPER.surface,
+                borderColor: PAPER.hairline,
+                color: PAPER.secondary,
+              }}
+            >
+              <Icon icon="lucide:maximize-2" width={12} height={12} />
+              Expand
+            </span>
+          </button>
+        )}
+        {expanded && img && (
+          <ImageLightbox src={img} alt={item.title} onClose={closeLightbox} />
+        )}
+      </div>
+      <div
+        className="flex flex-col overflow-y-auto p-6 pb-16 md:p-8 md:pb-16 border-t md:border-t-0 md:border-l"
+        style={{ background: PAPER.surface, borderColor: PAPER.hairline }}
+      >
+        <span
+          style={{
+            fontFamily: PAPER.mono,
+            fontSize: "0.72rem",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: PAPER.secondary,
+          }}
+        >
+          Project {pad(index + 1)} / {pad(total)}
+        </span>
+        <h3
+          style={{
+            fontSize: "2rem",
+            fontWeight: 500,
+            letterSpacing: "-0.01em",
+            lineHeight: 1.15,
+            color: PAPER.primary,
+            margin: "12px 0 0",
+          }}
+        >
+          {item.title}
+        </h3>
+        {item.subtitle && (
+          <p style={{ color: PAPER.secondary, margin: "8px 0 0" }}>
+            {item.subtitle}
+          </p>
+        )}
+        {item.text && (
+          <p
+            style={{
+              color: PAPER.primary,
+              fontSize: "0.95rem",
+              lineHeight: 1.6,
+              margin: "16px 0 0",
+            }}
+          >
+            {item.text}
+          </p>
+        )}
+        {item.tags && item.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                style={{
+                  fontFamily: PAPER.mono,
+                  fontSize: "0.72rem",
+                  padding: "2px 8px",
+                  border: `1px solid ${PAPER.hairline}`,
+                  borderRadius: 3,
+                  color: PAPER.secondary,
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+        {item.link && item.link !== "#" && (
+          <a
+            href={item.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="mt-auto pt-6 self-start underline underline-offset-4 decoration-1 hover:opacity-70 transition-opacity"
+            style={{ color: PAPER.primary, fontWeight: 500 }}
+          >
+            View project →
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProjectSlide({
+  item,
+  isActive,
+}: {
+  item: PortfolioItem;
+  isActive: boolean;
+}) {
+  const accent = item.css_options?.accent ?? DEFAULT_ACCENT;
+  const bg = useGalleryCycle(item, isActive);
 
   return (
     <div className="absolute inset-0">
@@ -330,7 +557,9 @@ export default function Cinematic({
   items,
   autoplay = false,
   showNav = true,
+  theme = "dark",
 }: CinematicProps) {
+  const paper = theme === "paper";
   const [activeIndex, setActiveIndex] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
   const [direction, setDirection] = useState<"next" | "prev">("next");
@@ -402,10 +631,33 @@ export default function Cinematic({
     };
   };
 
+  const navButtonClass = paper
+    ? "flex items-center justify-center border transition-colors hover:!border-current"
+    : "flex items-center justify-center backdrop-blur-sm bg-white/10 hover:bg-white/20 transition-all";
+  const navButtonStyle: React.CSSProperties | undefined = paper
+    ? {
+        background: PAPER.surface,
+        borderColor: PAPER.hairline,
+        color: PAPER.primary,
+      }
+    : undefined;
+  const activeMark = paper ? PAPER.primary : DEFAULT_ACCENT;
+  const idleMark = paper
+    ? "var(--pf-hairline-strong, rgba(111,116,120,0.55))"
+    : "rgba(255,255,255,0.3)";
+
   return (
     <div
-      className="relative w-full overflow-hidden rounded-2xl"
-      style={{ height: "85vh" }}
+      className={`relative w-full overflow-hidden ${paper ? "rounded-lg border" : "rounded-2xl"}`}
+      style={
+        paper
+          ? {
+              height: PAPER_HEIGHT,
+              background: PAPER.surface,
+              borderColor: PAPER.hairline,
+            }
+          : { height: DARK_HEIGHT }
+      }
       onClick={() => autoplay && setPaused((p) => !p)}
     >
       {items.map((item, i) => (
@@ -414,13 +666,20 @@ export default function Cinematic({
             <SplashSlide item={item} />
           ) : item.type === "cta" ? (
             <CtaSlide item={item} />
+          ) : paper ? (
+            <PaperProjectSlide
+              item={item}
+              isActive={i === activeIndex}
+              index={i}
+              total={items.length}
+            />
           ) : (
             <ProjectSlide item={item} isActive={i === activeIndex} />
           )}
         </div>
       ))}
 
-      {showNav && (
+      {showNav && !paper && (
         <button
           onClick={back}
           className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm bg-white/10 hover:bg-white/20 transition-all"
@@ -440,7 +699,7 @@ export default function Cinematic({
           </svg>
         </button>
       )}
-      {showNav && (
+      {showNav && !paper && (
         <button
           onClick={next}
           className="absolute right-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm bg-white/10 hover:bg-white/20 transition-all"
@@ -461,7 +720,7 @@ export default function Cinematic({
         </button>
       )}
 
-      {showNav && (
+      {showNav && !paper && (
         <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
           {items.map((_, i) => (
             <button
@@ -469,8 +728,7 @@ export default function Cinematic({
               onClick={() => goTo(i, i > activeIndex ? "next" : "prev")}
               className="w-2 h-2 rounded-full transition-all"
               style={{
-                background:
-                  i === activeIndex ? DEFAULT_ACCENT : "rgba(255,255,255,0.3)",
+                background: i === activeIndex ? activeMark : idleMark,
                 transform: i === activeIndex ? "scale(1.4)" : "scale(1)",
               }}
               aria-label={`Slide ${i + 1}`}
@@ -479,13 +737,84 @@ export default function Cinematic({
         </div>
       )}
 
+      {showNav && paper && (
+        <div
+          className="absolute bottom-0 left-0 right-0 md:left-auto z-10 flex items-center justify-end gap-3 px-6 py-3 md:pb-5 border-t md:border-t-0"
+          style={{ background: PAPER.surface, borderColor: PAPER.hairline }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={back}
+            className={`w-8 h-8 rounded ${navButtonClass}`}
+            style={navButtonStyle}
+            aria-label="Previous"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <div className="flex items-center gap-1.5">
+            {items.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i, i > activeIndex ? "next" : "prev")}
+                aria-label={`Slide ${i + 1}`}
+                style={{
+                  width: i === activeIndex ? 16 : 6,
+                  height: 6,
+                  padding: 0,
+                  border: 0,
+                  borderRadius: 3,
+                  background: i === activeIndex ? activeMark : idleMark,
+                  transition: "width .3s ease, background .3s ease",
+                  cursor: "pointer",
+                }}
+              />
+            ))}
+          </div>
+          <button
+            onClick={next}
+            className={`w-8 h-8 rounded ${navButtonClass}`}
+            style={navButtonStyle}
+            aria-label="Next"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       {autoplay && !paused && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/10 z-10">
+        <div
+          className="absolute bottom-0 left-0 right-0 h-px z-10"
+          style={{
+            background: paper ? PAPER.hairline : "rgba(255,255,255,0.1)",
+          }}
+        >
           <div
             key={activeIndex}
             style={{
               height: "100%",
-              background: DEFAULT_ACCENT,
+              background: activeMark,
               animation: `cinematic-progress ${AUTO_ADVANCE_MS}ms linear forwards`,
             }}
           />

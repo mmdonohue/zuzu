@@ -1,580 +1,595 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Icon } from "@iconify-icon/react";
 import PortfolioComponent from "../components/Portfolio";
 import type { PortfolioItem } from "../components/Portfolio/types";
 import portfolioProjects from "./portfolioProjects.json";
 
+// design.md — "AI Labs": research-paper white, single terminal-green accent.
+const FONT_URL =
+  "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap";
+const CONTACT_EMAIL = "donohue.matt@gmail.com";
+
+type Skill = {
+  icon: string;
+  title: string;
+  text: string;
+  tags: string[];
+};
+
+type Highlight = { title: string; text: string };
+
+type Role = {
+  title: string;
+  company: string;
+  period: string;
+  bullets: string[];
+  highlights?: Highlight[];
+  tags?: string[];
+};
+
+const SKILLS: Skill[] = [
+  {
+    icon: "lucide:layers",
+    title: "Full-Stack Architecture",
+    text: "React, Next.js, TypeScript, MUI, Tailwind CSS, Node.js, Express, Python Flask/FastAPI.",
+    tags: ["React", "TypeScript", "Node.js", "Flask", "FastAPI"],
+  },
+  {
+    icon: "lucide:server",
+    title: "Distributed Systems",
+    text: "Microservices, Event-Driven Messaging, High-throughput data services.",
+    tags: ["Kafka", "RabbitMQ", "AWS/GCP"],
+  },
+  {
+    icon: "lucide:database",
+    title: "Data & ML Operations",
+    text: "Airflow, PostgreSQL, MongoDB, Redis, Python/Pandas, Jupyter.",
+    tags: ["PostgreSQL", "Airflow", "Python"],
+  },
+  {
+    icon: "lucide:cpu",
+    title: "AI & Automation",
+    text: "LLM integration, agent-based workflows, AI-assisted code review pipelines.",
+    tags: ["LLM Inference", "Automation"],
+  },
+  {
+    icon: "lucide:video",
+    title: "Streaming & Media",
+    text: "High-volume live streaming workflows, asset metadata sync, fingerprinting.",
+    tags: ["FFMPEG", "HLS", "RTMP"],
+  },
+  {
+    icon: "lucide:shield-check",
+    title: "DevOps & Reliability",
+    text: "Docker, Kubernetes, CI/CD, Observability, and Production Optimization.",
+    tags: ["Kubernetes", "Docker", "CI/CD"],
+  },
+];
+
+const ROLES: Role[] = [
+  {
+    title: "Senior Engineer / Solution Architect",
+    company: "NBCUniversal",
+    period: "Feb 2022 – Apr 2025",
+    bullets: [
+      "Architected distributed systems for large-scale rights management and live content protection workflows.",
+      "Built cross-platform asset metadata sync across YouTube Content ID & Facebook Rights Manager, reducing manual overhead by 50%+.",
+      "Designed and operated live streaming infrastructure supporting 20+ concurrent streams with real-time monitoring.",
+    ],
+    highlights: [
+      {
+        title: "Olympics 2024 Operations",
+        text: "70,000+ live fingerprints, 800+ IP sources, 99.9% accuracy. Supported partnership extension.",
+      },
+      {
+        title: "Platform Optimization",
+        text: "Reduced asset latency by 40%, achieved 100% delivery SLA within year one.",
+      },
+    ],
+  },
+  {
+    title: "Senior Developer / Solution Architect",
+    company: "Netrix LLC",
+    period: "2005 – 2022",
+    bullets: [
+      "Built multi-cloud platform services across AWS, Azure, GCP, and VMware, supporting recurring revenue products.",
+      "Designed Node.js middleware and Python/Flask services for secure API orchestration and long-running workflows.",
+      "Led senior engineering team through major releases, owning architecture decisions and delivery execution.",
+    ],
+    tags: ["CloudHelm", "ERP/ETL Pipelines", "Rapidata (acquired by Nasdaq)"],
+  },
+];
+
+const SOCIAL_LINKS = [
+  {
+    icon: "lucide:linkedin",
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/matt-donohue-609b084/",
+  },
+  {
+    icon: "lucide:github",
+    label: "GitHub",
+    href: "https://github.com/mmdonohue",
+  },
+  { icon: "lucide:mail", label: "Email", href: `mailto:${CONTACT_EMAIL}` },
+];
+
+const DESERT_IMAGES = [
+  "/assets/img/desert_2135.JPEG",
+  "/assets/img/desert_2699.JPEG",
+  "/assets/img/desert_4776.JPEG",
+  "/assets/img/desert_3993.JPEG",
+];
+
+const ARK_FEATURE = {
+  href: "/ark-os",
+  image: "/images/ark_backpack.png",
+  alt: "ARK field kit — backpack with AI First, DevOps First, ADHD First and Apocalypse First patches",
+  title: "ARK OS",
+  subtitle: "Operating architecture for AI",
+};
+
+const NAV_LINKS = [
+  { href: "#about", label: "About" },
+  { href: "#skills", label: "Expertise" },
+  { href: "#experience", label: "Experience" },
+  { href: "#projects", label: "Projects" },
+];
+
+const STYLES = `
+.pf {
+  --pf-primary: #0F1112;
+  --pf-secondary: #6F7478;
+  --pf-tertiary: #00A36C;
+  --pf-tertiary-hover: #008F5F;
+  --pf-neutral: #FAFAF8;
+  --pf-surface: #FFFFFF;
+  --pf-on-primary: #FFFFFF;
+  --pf-hairline: rgba(111, 116, 120, 0.22);
+  --pf-hairline-strong: rgba(111, 116, 120, 0.55);
+  --pf-r-sm: 3px;
+  --pf-r-md: 5px;
+  --pf-r-lg: 8px;
+  --pf-sp-sm: 8px;
+  --pf-sp-md: 16px;
+  --pf-sp-lg: 32px;
+  --pf-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --pf-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  background: var(--pf-neutral);
+  color: var(--pf-primary);
+  font-family: var(--pf-sans);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.pf section { scroll-margin-top: 96px; }
+.pf ::selection { background: var(--pf-primary); color: var(--pf-on-primary); }
+
+.pf-label {
+  font-family: var(--pf-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pf-secondary);
+}
+.pf-display {
+  font-size: 3.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.pf-h1 { font-size: 2rem; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2; }
+.pf-h2 { font-size: 1.1rem; font-weight: 500; line-height: 1.35; }
+.pf-muted { color: var(--pf-secondary); }
+
+/* Nav */
+.pf-nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 50;
+  background: var(--pf-neutral);
+  border-bottom: 1px solid var(--pf-hairline);
+}
+.pf-nav-inner {
+  max-width: 72rem; margin: 0 auto; height: 64px;
+  padding: 0 var(--pf-sp-md);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--pf-sp-md);
+}
+.pf-link { color: var(--pf-secondary); text-decoration: none; transition: color .15s; }
+.pf-link:hover { color: var(--pf-primary); }
+
+.pf-btn-primary {
+  display: inline-flex; align-items: center; gap: var(--pf-sp-sm);
+  background: var(--pf-tertiary); color: var(--pf-on-primary);
+  border-radius: var(--pf-r-md); padding: 12px 20px;
+  font-weight: 500; text-decoration: none; white-space: nowrap;
+  transition: background .15s;
+}
+.pf-btn-primary:hover { background: var(--pf-tertiary-hover); }
+
+.pf-btn-outline {
+  display: inline-flex; align-items: center; gap: var(--pf-sp-sm);
+  background: var(--pf-surface); color: var(--pf-primary);
+  border: 1px solid var(--pf-hairline); border-radius: var(--pf-r-md);
+  padding: 8px 14px; text-decoration: none; transition: border-color .15s;
+}
+.pf-btn-outline:hover { border-color: var(--pf-primary); }
+
+/* Layout */
+.pf-main {
+  max-width: 72rem; margin: 0 auto;
+  padding: calc(64px + 96px) var(--pf-sp-md) 96px;
+  display: flex; flex-direction: column; gap: 112px;
+}
+@media (min-width: 1024px) {
+  .pf-main { padding-left: calc(var(--pf-sp-md) + 15rem); }
+}
+.pf-section-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--pf-sp-lg); }
+
+/* Hero + featured figure */
+.pf-hero { display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
+@media (min-width: 1024px) { .pf-hero { grid-template-columns: minmax(0, 1fr) 20rem; gap: 56px; } }
+@media (min-width: 1280px) { .pf-hero { grid-template-columns: minmax(0, 1fr) 22rem; } }
+.pf-hero-copy { max-width: 46rem; }
+.pf-feature {
+  display: block; text-decoration: none; color: var(--pf-primary);
+  background: var(--pf-surface); border: 1px solid var(--pf-hairline);
+  border-radius: var(--pf-r-lg); overflow: hidden; max-width: 24rem;
+  transition: border-color .15s;
+}
+.pf-feature:hover { border-color: var(--pf-hairline-strong); }
+.pf-feature img {
+  display: block; width: 100%; aspect-ratio: 1145 / 1374; object-fit: cover;
+  border-bottom: 1px solid var(--pf-hairline);
+}
+.pf-feature-caption { display: flex; flex-direction: column; gap: 4px; padding: var(--pf-sp-md); }
+.pf-feature-title { font-weight: 500; }
+.pf-feature-cta {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+  color: var(--pf-secondary); transition: color .15s, gap .15s;
+}
+.pf-feature:hover .pf-feature-cta { color: var(--pf-primary); gap: 10px; }
+
+/* Portrait figure */
+.pf-figure {
+  display: none; position: fixed; left: 24px; top: 112px; z-index: 40; width: 12rem; margin: 0;
+}
+@media (min-width: 1024px) { .pf-figure { display: block; } }
+.pf-figure img {
+  display: block; width: 100%;
+  border: 1px solid var(--pf-hairline); border-radius: var(--pf-r-sm);
+  filter: grayscale(1) brightness(2.7) contrast(0.85);
+}
+.pf-figure figcaption { margin-top: var(--pf-sp-sm); }
+
+/* Status */
+.pf-status { display: inline-flex; align-items: center; gap: var(--pf-sp-sm); margin-bottom: var(--pf-sp-lg); }
+.pf-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pf-primary); }
+
+/* Cards */
+.pf-grid { display: grid; grid-template-columns: 1fr; gap: var(--pf-sp-md); }
+@media (min-width: 768px) { .pf-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .pf-grid { grid-template-columns: repeat(3, 1fr); } }
+.pf-card {
+  background: var(--pf-surface); color: var(--pf-primary);
+  border: 1px solid var(--pf-hairline); border-radius: var(--pf-r-lg);
+  padding: 24px; transition: border-color .15s;
+}
+.pf-card:hover { border-color: var(--pf-hairline-strong); }
+.pf-card-icon {
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--pf-hairline); border-radius: var(--pf-r-md);
+  margin-bottom: var(--pf-sp-md); color: var(--pf-primary);
+}
+.pf-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.pf-tag {
+  font-family: var(--pf-mono); font-size: 0.72rem;
+  padding: 2px 8px; border: 1px solid var(--pf-hairline); border-radius: var(--pf-r-sm);
+  color: var(--pf-secondary); background: var(--pf-surface);
+}
+
+/* Timeline */
+.pf-timeline { border-left: 1px solid var(--pf-hairline); margin-left: 4px; display: flex; flex-direction: column; gap: 56px; }
+.pf-role { position: relative; padding-left: var(--pf-sp-lg); }
+.pf-role-marker {
+  position: absolute; left: -4px; top: 9px; width: 7px; height: 7px;
+  background: var(--pf-primary); border-radius: 1px;
+}
+.pf-role-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--pf-sp-sm); }
+.pf-bullets { list-style: none; padding: 0; margin: var(--pf-sp-md) 0 0; display: flex; flex-direction: column; gap: 10px; }
+.pf-bullets li { display: flex; gap: 12px; }
+.pf-bullets li::before { content: "—"; color: var(--pf-secondary); flex-shrink: 0; }
+.pf-highlights {
+  margin-top: var(--pf-sp-md); padding: var(--pf-sp-md);
+  border: 1px solid var(--pf-hairline); border-radius: var(--pf-r-lg); background: var(--pf-surface);
+}
+.pf-highlights-grid { display: grid; grid-template-columns: 1fr; gap: var(--pf-sp-md); margin-top: 12px; }
+@media (min-width: 768px) { .pf-highlights-grid { grid-template-columns: 1fr 1fr; } }
+.pf-highlight { border-left: 1px solid var(--pf-primary); padding-left: 12px; }
+
+/* Desert hover figure */
+.pf-desert-trigger {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 4px;
+  color: var(--pf-secondary); cursor: pointer; background: none; border: 0; font: inherit;
+}
+.pf-desert-trigger:hover { color: var(--pf-primary); }
+.pf-desert {
+  position: fixed; top: 96px; right: 32px; z-index: 60; width: min(36rem, calc(100vw - 32px));
+  background: var(--pf-surface); border: 1px solid var(--pf-hairline); border-radius: var(--pf-r-lg);
+  padding: var(--pf-sp-md);
+}
+.pf-desert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--pf-sp-sm); margin-top: var(--pf-sp-sm); }
+.pf-desert-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--pf-r-sm); display: block; }
+
+/* Footer */
+.pf-footer { border-top: 1px solid var(--pf-hairline); padding-top: 48px; }
+
+@media (max-width: 640px) {
+  .pf-display { font-size: 2.5rem; }
+  .pf-h1 { font-size: 1.6rem; }
+}
+`;
+
+const SectionHead: React.FC<{ index: string; title: string }> = ({
+  index,
+  title,
+}) => (
+  <div className="pf-section-head">
+    <span className="pf-label">
+      {index} — {title}
+    </span>
+    <h2 className="pf-h1" style={{ margin: 0 }}>
+      {title}
+    </h2>
+  </div>
+);
+
 const Portfolio: React.FC = () => {
-  const [desertModalOpen, setDesertModalOpen] = useState(false);
+  const [desertOpen, setDesertOpen] = useState(false);
 
   useEffect(() => {
-    const tailwindCSS = document.createElement("link");
-    tailwindCSS.href =
-      "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css";
-    tailwindCSS.rel = "stylesheet";
-    // Load Google Fonts
     const link = document.createElement("link");
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Patrick+Hand&family=Amatic+SC:wght@400;700&display=swap";
+    link.href = FONT_URL;
     link.rel = "stylesheet";
     document.head.appendChild(link);
-
-    // Load Lucide Icons
-    const script = document.createElement("script");
-    script.src = "https://unpkg.com/lucide@latest";
-    script.onload = () => {
-      // @ts-ignore
-      if (window.lucide) {
-        // @ts-ignore
-        window.lucide.createIcons({
-          attrs: {
-            "stroke-width": 1.5,
-          },
-        });
-      }
-    };
-    document.body.appendChild(script);
-
     return () => {
       document.head.removeChild(link);
-      document.body.removeChild(script);
     };
   }, []);
 
   return (
-    <div
-      className="text-zinc-200 antialiased selection:text-indigo-200 relative min-h-screen flex flex-col"
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      {/* Top Navigation */}`{" "}
-      <div className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800/50 bg-zinc-950/60 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto pl-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <a
-              href="/"
-              className="text-zinc-500 hover:text-zinc-300 text-xs tracking-widest uppercase transition-colors"
-            >
+    <div className="pf">
+      <style>{STYLES}</style>
+
+      <header className="pf-nav">
+        <div className="pf-nav-inner">
+          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+            <a href="/" className="pf-link pf-label">
               ← ZuZu
             </a>
-            <div className="text-zinc-100 font-normal text-lg tracking-[1em]">
+            <span style={{ fontWeight: 500, letterSpacing: "-0.01em" }}>
               Matt Donohue
-            </div>
+            </span>
           </div>
-          <nav className="hidden md:flex items-center gap-6 text-base font-normal text-zinc-200">
-            <a href="#about" className="hover:text-zinc-100 text-[#749eb4f0]">
-              About
-            </a>
-            <a href="#skills" className="hover:text-zinc-100 text-[#749eb4f0]">
-              Expertise
-            </a>
-            <a
-              href="#experience"
-              className="hover:text-zinc-100 text-[#749eb4f0]"
-            >
-              Experience
-            </a>
-            <a
-              href="#projects"
-              className="hover:text-zinc-100 text-[#749eb4f0]"
-            >
-              Projects
-            </a>
+          <nav className="hidden md:flex" style={{ gap: 28 }}>
+            {NAV_LINKS.map((l) => (
+              <a key={l.href} href={l.href} className="pf-link">
+                {l.label}
+              </a>
+            ))}
           </nav>
-          <a
-            href="mailto:donohue.matt@gmail.com"
-            className="text-base font-normal text-zinc-100 bg-zinc-800/80 backdrop-blur-sm hover:bg-zinc-700 px-4 py-2 rounded-full transition-colors border border-zinc-700/50"
-          >
+          <a href={`mailto:${CONTACT_EMAIL}`} className="pf-btn-primary">
             Get in touch
           </a>
         </div>
-      </div>
-      `{/* Fixed Background Image backgroundImage: "url('/assets/img/foggy_coast.png')" */}
-      <div
-        className="fixed inset-0 z-[-2] bg-cover bg-center"
-        style={{ backgroundColor: "#7b9eb4" }}
-      ></div>
-      {/* Glass/Dark Overlay */}
-      <div className="fixed inset-0 z-[-1]"></div>
-      {/* Desert Images Modal */}
-      {desertModalOpen && (
-        <div className="fixed top-0 right-0 bottom-10 z-50 flex items-center bg-[transparent]">
-          <div className="relative max-w-2xl mr-8 p-12">
+      </header>
+
+      {desertOpen && (
+        <div
+          className="pf-desert"
+          onMouseEnter={() => setDesertOpen(true)}
+          onMouseLeave={() => setDesertOpen(false)}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span className="pf-label">fig. 3 — Desert Hot Springs, CA</span>
             <button
-              onClick={() => setDesertModalOpen(false)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/50 flex items-center justify-center text-zinc-200 hover:text-zinc-100 transition-colors z-10"
+              onClick={() => setDesertOpen(false)}
+              className="pf-link"
+              style={{ background: "none", border: 0, cursor: "pointer" }}
+              aria-label="Close"
             >
-              <span className="text-xl">×</span>
+              <Icon icon="lucide:x" width={16} height={16} />
             </button>
-            <div className="grid grid-cols-2 gap-4 opacity-75 transition-opacity duration-300">
-              <div className="bg-[transparent] backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
-                <img
-                  src="/assets/img/desert_2135.JPEG"
-                  alt="Desert Hot Springs View 1"
-                  className="w-full h-full object-cover aspect-[4/3]"
-                />
-              </div>
-              <div className="bg-[transparent] backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
-                <img
-                  src="/assets/img/desert_2699.JPEG"
-                  alt="Desert Hot Springs View 2"
-                  className="w-full h-full object-cover aspect-[4/3]"
-                />
-              </div>
-              <div className="bg-[transparent] backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
-                <img
-                  src="/assets/img/desert_4776.JPEG"
-                  alt="Desert Hot Springs View 3"
-                  className="w-full h-full object-cover aspect-[4/3]"
-                />
-              </div>
-              <div className="bg-[transparent] backdrop-blur-sm border border-zinc-800/50 rounded-xl overflow-hidden hover:border-zinc-700 transition-colors">
-                <img
-                  src="/assets/img/desert_3993.JPEG"
-                  alt="Desert Hot Springs View 4"
-                  className="w-full h-full object-cover aspect-[4/3]"
-                />
-              </div>
-            </div>
+          </div>
+          <div className="pf-desert-grid">
+            {DESERT_IMAGES.map((src, i) => (
+              <img
+                key={src}
+                src={src}
+                alt={`Desert Hot Springs view ${i + 1}`}
+              />
+            ))}
           </div>
         </div>
       )}
-      {/* Fixed Profile ASCII Art */}
-      <div className="hidden lg:block bg-[#333e45] fixed left-6 top-24 z-40">
+
+      <figure className="pf-figure">
         <img
           src="/assets/img/profile_ascii.png"
-          alt="Matthew Donohue ASCII Portrait"
-          className="w-48 backdrop-blur-md p-3 shadow-2xl hover:border-zinc-700/70 transition-all"
+          alt="Matt Donohue, ASCII portrait"
         />
-      </div>
-      {/* Main Content */}
-      <main className="relative z-10 flex-grow max-w-8xl mx-auto pl-6 lg:pl-64 lg:pr-4 pt-16 pb-24 space-y-32">
-        {/* Hero Section */}
-        <section id="about" className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#34424a] border border-indigo-500/20 text-indigo-100 text-sm font-normal mb-8 backdrop-blur-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#3acbf0]"></span>
-            </span>
-            Available for new opportunities
-          </div>
-          {/* 
-          <h1 className="text-4xl md:text-6xl font-medium tracking-tight text-zinc-100 mb-6 bg-gradient-to-br from-zinc-100 to-zinc-500 bg-clip-text text-transparent">
-            Matt Donohue
-          </h1>
-            */}
-          <h2 className="text-xl md:text-2xl font-normal tracking-tight text-zinc-300 mb-6">
-            Senior Software Engineer & Solution Architect
-          </h2>
+        <figcaption className="pf-label">fig. 1 — portrait.txt</figcaption>
+      </figure>
 
-          <p className="text-lg md:text-lg leading-relaxed text-zinc-200 mb-10 max-w-2xl">
-            15+ years of experience building and operating mission-critical
-            production systems. Expertise in distributed architecture,
-            full-stack development, and technical leadership. Proven ability to
-            deliver scalable platforms and drive measurable business outcomes.
-          </p>
-
-          {/* Contact & Social Links */}
-          <div
-            className="flex flex-wrap items-center gap-4 text-base font-normal"
-            style={{ minHeight: 100 }}
-          >
-            <a
-              href="https://www.linkedin.com/in/matt-donohue-609b084/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700"
+      <main className="pf-main">
+        <section id="about" className="pf-hero">
+          <div className="pf-hero-copy">
+            <div className="pf-status pf-label">
+              <span className="pf-status-dot" />
+              Available for new opportunities
+            </div>
+            <h1 className="pf-display" style={{ margin: 0 }}>
+              Senior Software Engineer &amp; Solution Architect
+            </h1>
+            <p
+              style={{
+                fontSize: "1.1rem",
+                margin: "24px 0 32px",
+                maxWidth: "40rem",
+              }}
+              className="pf-muted"
             >
-              <i data-lucide="user" className="w-5 h-5"></i>
-              LinkedIn
-            </a>
-            <a
-              href="https://github.com/mmdonohue"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700"
-            >
-              <i data-lucide="code" className="w-5 h-5"></i>
-              GitHub
-            </a>
-            <a
-              href="mailto:donohue.matt@gmail.com"
-              className="flex items-center gap-2 text-zinc-200 hover:text-zinc-100 transition-colors bg-zinc-900/40 backdrop-blur-md px-4 py-2 rounded-lg border border-zinc-800/50 hover:border-zinc-700"
-            >
-              <i data-lucide="mail" className="w-5 h-5"></i>
-              Email
-            </a>
+              15+ years of experience building and operating mission-critical
+              production systems. Expertise in distributed architecture,
+              full-stack development, and technical leadership. Proven ability
+              to deliver scalable platforms and drive measurable business
+              outcomes.
+            </p>
             <div
-              className="flex items-center gap-2 text-indiglo-300 px-4 py-2 cursor-pointer hover:text-indigo-200 transition-colors"
-              onClick={() => setDesertModalOpen(true)}
-              onMouseEnter={() => setDesertModalOpen(true)}
-              onMouseLeave={() => setDesertModalOpen(false)}
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: 10,
+              }}
             >
-              <i data-lucide="map-pin" className="w-5 h-5"></i>
-              Desert Hot Springs, CA
+              {SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  className="pf-btn-outline"
+                  {...(s.href.startsWith("http")
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                >
+                  <Icon icon={s.icon} width={16} height={16} />
+                  {s.label}
+                </a>
+              ))}
+              <button
+                className="pf-desert-trigger"
+                onClick={() => setDesertOpen((o) => !o)}
+                onMouseEnter={() => setDesertOpen(true)}
+                onMouseLeave={() => setDesertOpen(false)}
+              >
+                <Icon icon="lucide:map-pin" width={16} height={16} />
+                Desert Hot Springs, CA
+              </button>
             </div>
           </div>
+
+          <a href={ARK_FEATURE.href} className="pf-feature">
+            <img src={ARK_FEATURE.image} alt={ARK_FEATURE.alt} />
+            <span className="pf-feature-caption">
+              <span className="pf-label">fig. 2 — {ARK_FEATURE.title}</span>
+              <span className="pf-feature-title">{ARK_FEATURE.subtitle}</span>
+              <span className="pf-feature-cta">
+                Explore ARK
+                <Icon icon="lucide:arrow-right" width={14} height={14} />
+              </span>
+            </span>
+          </a>
         </section>
 
-        {/* Core Strengths & Skills */}
-        <section id="skills" className="space-y-5">
-          <h3 className="text-1xl font-medium tracking-tight text-zinc-100">
-            Technical Expertise
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Skill Card 1 */}
-            <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-indigo-500/30 group-hover:text-indigo-200 transition-colors">
-                <i data-lucide="layers" className="w-5 h-5"></i>
-              </div>
-              <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">
-                Full-Stack Architecture
-              </h4>
-              <p className="text-base text-zinc-200 mb-4 leading-relaxed">
-                React, Next.js, TypeScript, MUI, Tailwind CSS, Node.js, Express,
-                Python Flask/FastAPI.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  React
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  TypeScript
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  Node.js
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  Flask
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  FastAPI
-                </span>
-              </div>
-            </div>
-
-            {/* Skill Card 2 */}
-            <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-emerald-500/30 group-hover:text-emerald-200 transition-colors">
-                <i data-lucide="server" className="w-5 h-5"></i>
-              </div>
-              <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">
-                Distributed Systems
-              </h4>
-              <p className="text-base text-zinc-200 mb-4 leading-relaxed">
-                Microservices, Event-Driven Messaging, High-throughput data
-                services.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  Kafka
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  RabbitMQ
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  AWS/GCP
-                </span>
-              </div>
-            </div>
-
-            {/* Skill Card 3 */}
-            <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-blue-500/30 group-hover:text-blue-200 transition-colors">
-                <i data-lucide="database" className="w-5 h-5"></i>
-              </div>
-              <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">
-                Data & ML Operations
-              </h4>
-              <p className="text-base text-zinc-200 mb-4 leading-relaxed">
-                Airflow, PostgreSQL, MongoDB, Redis, Python/Pandas, Jupyter.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  PostgreSQL
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  Airflow
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  Python
-                </span>
-              </div>
-            </div>
-
-            {/* Skill Card 4 */}
-            <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-amber-500/30 group-hover:text-amber-200 transition-colors">
-                <i data-lucide="cpu" className="w-5 h-5"></i>
-              </div>
-              <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">
-                AI & Automation
-              </h4>
-              <p className="text-base text-zinc-200 mb-4 leading-relaxed">
-                LLM integration, agent-based workflows, AI-assisted code review
-                pipelines.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  LLM Inference
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  Automation
-                </span>
-              </div>
-            </div>
-
-            {/* Skill Card 5 */}
-            <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-rose-500/30 group-hover:text-rose-200 transition-colors">
-                <i data-lucide="video" className="w-5 h-5"></i>
-              </div>
-              <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">
-                Streaming & Media
-              </h4>
-              <p className="text-base text-zinc-200 mb-4 leading-relaxed">
-                High-volume live streaming workflows, asset metadata sync,
-                fingerprinting.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  FFMPEG
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  HLS
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  RTMP
-                </span>
-              </div>
-            </div>
-
-            {/* Skill Card 6 */}
-            <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/60 rounded-xl pl-6 py-6 hover:bg-zinc-900/60 transition-colors group">
-              <div className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-cyan-500/30 group-hover:text-cyan-200 transition-colors">
-                <i data-lucide="shield-check" className="w-5 h-5"></i>
-              </div>
-              <h4 className="text-zinc-100 text-lg font-normal tracking-tight mb-2">
-                DevOps & Reliability
-              </h4>
-              <p className="text-base text-zinc-200 mb-4 leading-relaxed">
-                Docker, Kubernetes, CI/CD, Observability, and Production
-                Optimization.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  Kubernetes
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  Docker
-                </span>
-                <span className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 rounded text-sm font-normal text-zinc-300">
-                  CI/CD
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Experience Timeline */}
-        <section
-          id="experience"
-          className="space-y-8 bg-zinc-900/20 border border-zinc-800/50 rounded-xl p-6"
-        >
-          <h3 className="text-2xl font-medium tracking-tight text-zinc-100">
-            Experience
-          </h3>
-
-          <div className="relative border-l border-zinc-800/50 ml-3 md:ml-4 space-y-12 pb-4">
-            {/* NBCUniversal */}
-            <div className="relative pl-8 md:pl-10">
-              <div className="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-900 border-2 border-zinc-800 ring-4 ring-zinc-950/50"></div>
-
-              <div className="flex flex-col md:flex-row md:items-baseline justify-between mb-2">
-                <h4 className="text-lg font-normal tracking-tight text-zinc-100">
-                  Senior Engineer / Solution Architect
-                </h4>
-                <span className="text-base font-normal text-indiglo-300 md:ml-4">
-                  Feb 2022 – Apr 2025
-                </span>
-              </div>
-              <div className="text-base font-normal text-indigo-200 mb-4">
-                NBCUniversal
-              </div>
-
-              <ul className="space-y-3 text-base text-zinc-200 leading-relaxed mb-6">
-                <li className="flex items-start gap-2">
-                  <i
-                    data-lucide="chevron-right"
-                    className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"
-                  ></i>
-                  <span>
-                    Architected distributed systems for large-scale rights
-                    management and live content protection workflows.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <i
-                    data-lucide="chevron-right"
-                    className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"
-                  ></i>
-                  <span>
-                    Built cross-platform asset metadata sync across YouTube
-                    Content ID &amp; Facebook Rights Manager, reducing manual
-                    overhead by 50%+.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <i
-                    data-lucide="chevron-right"
-                    className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"
-                  ></i>
-                  <span>
-                    Designed and operated live streaming infrastructure
-                    supporting 20+ concurrent streams with real-time monitoring.
-                  </span>
-                </li>
-              </ul>
-
-              {/* Achievements Box */}
-              <div className="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-lg p-4">
-                <h5 className="text-sm font-normal text-zinc-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <i
-                    data-lucide="trophy"
-                    className="w-4 h-4 text-amber-400"
-                  ></i>
-                  Major Highlights
-                </h5>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="border-l-2 border-zinc-700/50 pl-3">
-                    <div className="text-zinc-200 text-base font-normal">
-                      Olympics 2024 Operations
-                    </div>
-                    <div className="text-sm text-indiglo-300 mt-1">
-                      70,000+ live fingerprints, 800+ IP sources, 99.9%
-                      accuracy. Supported partnership extension.
-                    </div>
-                  </div>
-                  <div className="border-l-2 border-zinc-700/50 pl-3">
-                    <div className="text-zinc-200 text-base font-normal">
-                      Platform Optimization
-                    </div>
-                    <div className="text-sm text-indiglo-300 mt-1">
-                      Reduced asset latency by 40%, achieved 100% delivery SLA
-                      within year one.
-                    </div>
-                  </div>
+        <section id="skills">
+          <SectionHead index="01" title="Technical Expertise" />
+          <div className="pf-grid">
+            {SKILLS.map((s) => (
+              <div key={s.title} className="pf-card">
+                <div className="pf-card-icon">
+                  <Icon icon={s.icon} width={18} height={18} />
+                </div>
+                <h3 className="pf-h2" style={{ margin: "0 0 6px" }}>
+                  {s.title}
+                </h3>
+                <p className="pf-muted" style={{ margin: "0 0 16px" }}>
+                  {s.text}
+                </p>
+                <div className="pf-tags">
+                  {s.tags.map((t) => (
+                    <span key={t} className="pf-tag">
+                      {t}
+                    </span>
+                  ))}
                 </div>
               </div>
-            </div>
-
-            {/* Netrix LLC */}
-            <div className="relative pl-8 md:pl-10">
-              <div className="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-zinc-900 border-2 border-indigo-200 ring-4 ring-zinc-950/50"></div>
-
-              <div className="flex flex-col md:flex-row md:items-baseline justify-between mb-2">
-                <h4 className="text-lg font-normal tracking-tight text-zinc-100">
-                  Senior Developer / Solution Architect
-                </h4>
-                <span className="text-base font-normal text-indiglo-300 md:ml-4">
-                  2005 – 2022
-                </span>
-              </div>
-              <div className="text-base font-normal text-indigo-200 mb-4">
-                Netrix LLC
-              </div>
-
-              <ul className="space-y-3 text-base text-zinc-200 leading-relaxed mb-6">
-                <li className="flex items-start gap-2">
-                  <i
-                    data-lucide="chevron-right"
-                    className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"
-                  ></i>
-                  <span>
-                    Built multi-cloud platform services across AWS, Azure, GCP,
-                    and VMware, supporting recurring revenue products.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <i
-                    data-lucide="chevron-right"
-                    className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"
-                  ></i>
-                  <span>
-                    Designed Node.js middleware and Python/Flask services for
-                    secure API orchestration and long-running workflows.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <i
-                    data-lucide="chevron-right"
-                    className="mt-1 w-4 h-4 flex-shrink-0 text-zinc-600"
-                  ></i>
-                  <span>
-                    Led senior engineering team through major releases, owning
-                    architecture decisions and delivery execution.
-                  </span>
-                </li>
-              </ul>
-
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">
-                  CloudHelm
-                </span>
-                <span className="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">
-                  ERP/ETL Pipelines
-                </span>
-                <span className="px-2 py-1 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/50 rounded text-sm text-zinc-200">
-                  Rapidata (acquired by Nasdaq)
-                </span>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* Projects Section */}
-        <section id="projects" className="space-y-8">
-          <h3
-            className="text-1xl font-medium tracking-tight text-zinc-100"
-            style={{ fontWeight: 700 }}
-          >
-            Featured Projects & Architecture
-          </h3>
+        <section id="experience">
+          <SectionHead index="02" title="Experience" />
+          <div className="pf-timeline">
+            {ROLES.map((r) => (
+              <article key={r.company} className="pf-role">
+                <span className="pf-role-marker" />
+                <div className="pf-role-head">
+                  <h3 className="pf-h2" style={{ margin: 0 }}>
+                    {r.title}
+                  </h3>
+                  <span className="pf-label">{r.period}</span>
+                </div>
+                <div className="pf-muted" style={{ fontWeight: 500 }}>
+                  {r.company}
+                </div>
+                <ul className="pf-bullets">
+                  {r.bullets.map((b) => (
+                    <li key={b}>{b}</li>
+                  ))}
+                </ul>
+                {r.highlights && (
+                  <div className="pf-highlights">
+                    <span className="pf-label">Major highlights</span>
+                    <div className="pf-highlights-grid">
+                      {r.highlights.map((h) => (
+                        <div key={h.title} className="pf-highlight">
+                          <div style={{ fontWeight: 500 }}>{h.title}</div>
+                          <div className="pf-muted">{h.text}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {r.tags && (
+                  <div className="pf-tags" style={{ marginTop: 16 }}>
+                    {r.tags.map((t) => (
+                      <span key={t} className="pf-tag">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
 
+        <section id="projects">
+          <SectionHead index="03" title="Featured Projects & Architecture" />
           <PortfolioComponent
             items={portfolioProjects as PortfolioItem[]}
             templateId={3}
+            theme="paper"
             autoplay
             showNav
           />
         </section>
 
-        {/* Footer / Education & Certs */}
-        <footer className="pt-12 border-t border-zinc-800/50 grid grid-cols-1 md:grid-cols-2 gap-12 text-base">
+        <footer className="pf-footer">
           <div>
-            <h4 className="font-normal text-lg tracking-tight text-zinc-100 mb-4 flex items-center gap-2">
-              <i
-                data-lucide="graduation-cap"
-                className="w-5 h-5 text-indiglo-300"
-              ></i>
-              Education
-            </h4>
-            <div className="text-zinc-300 font-normal">
+            <span className="pf-label">Education</span>
+            <div style={{ fontWeight: 500, marginTop: 12 }}>
               Bachelor of Fine Arts (B.F.A.)
             </div>
-            <div className="text-indiglo-300">
+            <div className="pf-muted">
               School of the Art Institute of Chicago — Chicago, IL
             </div>
-          </div>
-          <div>
-            <h4 className="font-normal text-lg tracking-tight text-zinc-100 mb-4 flex items-center gap-2">
-              <i data-lucide="award" className="w-5 h-5 text-indiglo-300"></i>
-              Certifications
-            </h4>
-            <ul className="space-y-2 text-zinc-200">
-              <li>AWS Cloud Technical Essentials</li>
-              <li>IBM Machine Learning with Python</li>
-              <li>Building Modern Node.js Applications on AWS</li>
-              <li>Google Analytics</li>
-            </ul>
           </div>
         </footer>
       </main>
